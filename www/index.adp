@@ -51,7 +51,7 @@
                   <tr bgcolor="#ffffff">
   	            <td valign="top"><input type="checkbox" name="item_id" value="@items.item_id@"></td>
                       <td>
-		        @items.content@
+		        @items.content;noquote@
 		        <if @items.item_link@ not nil>
                           <a href="@items.item_link@" title="Permanent URL for this entry">#</a>
 		        </if>
