@@ -20,7 +20,7 @@ as
         creation_ip in acs_objects.creation_ip%TYPE default null
     ) return na_sources.source_id%TYPE;
 
-    procedure delete (
+    procedure del (
         source_id in na_sources.source_id%TYPE
     );
 
@@ -86,7 +86,7 @@ as
 
     end new;
 
-    procedure delete (
+    procedure del (
         source_id in na_sources.source_id%TYPE
     )
     is
@@ -94,11 +94,11 @@ as
 
         delete
         from na_sources
-        where source_id = na_source.delete.source_id;
+        where source_id = na_source.del.source_id;
 
-        acs_object.delete(na_source.delete.source_id);
+        acs_object.del(na_source.del.source_id);
 
-    end delete;
+    end del;
 
     function title (
         source_id in na_sources.source_id%TYPE

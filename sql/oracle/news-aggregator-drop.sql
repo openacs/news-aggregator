@@ -10,7 +10,7 @@ begin
 
     for na_source in (select source_id from na_sources) loop
 
-        na_source.delete(na_source.source_id);
+        na_source.del(na_source.source_id);
     end loop;
 
     acs_object_type.drop_type(
