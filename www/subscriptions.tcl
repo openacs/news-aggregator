@@ -36,11 +36,20 @@ if { [empty_string_p $feed_url] } {
     #ad_script_abort
 
 if { [exists_and_not_null source_id] } {
+    set delete_count 0
     foreach delete_id $source_id {
         news_aggregator::subscription::delete \
             -source_id $delete_id \
             -aggregator_id $aggregator_id
+	incr delete_count
     }
+    if { $delete_count > 1 } {
+	set message "You have been unsubscribed from $delete_count sources."
+    } else {
+	set message "You have been unsubscribed from one source."
+    }
+    ad_returnredirect -message $message "${package_url}$aggregator_id"
+    ad_script_abort
 }
 
 set aggregator_count [db_string count_aggregators {}]
@@ -49,7 +58,7 @@ set bulk_actions {
     Unsubscribe subscriptions Unsubscribe
 }
 
-if { $aggregator_count  > 1 } {
+if { $aggregator_count > 1 } {
     # user has more than 1 aggregator, let's present our fancy move and copy features
     if { $aggregator_count > 2 } {
         set title "another aggregator"
@@ -69,7 +78,6 @@ list::create \
     -row_pretty_plural "subscriptions" \
     -actions {
        "Export Subscriptions" "opml" "Export your subscriptions as an OPML file"
-       "Import Subscriptions" "opml-import" "Import your subscriptions from an OPML file"
     } -bulk_actions $bulk_actions -elements {
         title {
             label "Name"
@@ -121,9 +129,6 @@ list::create \
 set package_url [ad_conn package_url]
 
 db_multirow -extend {xml_graphics_url} sources sources {} {
-    if { [exists_and_not_null new_source_id] && $source_id == $new_source_id } {
-        set new_source_title $title
-    }
     set xml_graphics_url "${package_url}graphics/xml.gif"
 }
 
@@ -143,13 +148,18 @@ ad_form -name add_subscription -form {
         { You must specify a URL }
     }
 } -new_data {
-    set new_source_id [news_aggregator::source::new \
+    set channel_array [news_aggregator::source::new \
                            -feed_url $feed_url \
                            -aggregator_id $aggregator_id \
                            -user_id $user_id \
-                           -package_id $package_id]
-
- 
-    ad_returnredirect [export_vars -base subscriptions {new_source_id}]
+                           -package_id $package_id \
+			   -array]
+    if { $channel_array eq "0" } {
+        ad_returnredirect -message "The feed $feed_url has an error."
+        ad_script_abort
+    }
+    array set channel $channel_array
+    set title $channel(title)
+    ad_returnredirect -message "You have been subscribed to $title." subscriptions
     ad_script_abort
 }
