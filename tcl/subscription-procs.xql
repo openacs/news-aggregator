@@ -2,19 +2,6 @@
 
 <queryset>
 
-    <fullquery name="news_aggregator::subscription::new.insert_subscription">
-          <querytext>
-            insert into na_subscriptions (
-                aggregator_id,
-                source_id,
-                creation_date
-            ) values (
-                :aggregator_id,
-                :source_id,
-                now()
-            )
-          </querytext>
-    </fullquery>
 
     <fullquery name="news_aggregator::subscription::new.subscription_exists_p">
           <querytext>
@@ -39,20 +26,6 @@
             set    aggregator_id = :move_to
             where  source_id = :source_id
             and    aggregator_id = :move_from
-          </querytext>
-    </fullquery>
-
-    <fullquery name="news_aggregator::subscription::copy.copy_subscription">
-          <querytext>
-            insert into na_subscriptions (
-                aggregator_id,
-                source_id,
-                creation_date
-            ) values (
-                :copy_to,
-                :source_id,
-                now()
-            )
           </querytext>
     </fullquery>
 

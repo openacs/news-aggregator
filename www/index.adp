@@ -1,11 +1,15 @@
 <master>
   <property name="title">@page_title@</property>
   <property name="context">@context@</property>
+  <property name="header_stuff"><style type="text/css"><!-- .item_pub_date, .item_author { color: #777; padding-right: 1em; }
+.item_pub_date { font-size: 10px; }  
+ --></style></property>
 
 <if @write_p@ true>
   <p>
     <b>&raquo;</b> <a href="@url@subscriptions">Manage Subscriptions</a> <br />
     <b>&raquo;</b> <a href="@aggregator_url@">Manage This Aggregator</a> <br />
+    <b>&raquo;</b> <a href="@create_url@">Create New Aggregator</a><br />
   <p>
     <if @aggregator_description@ not nil>
       @aggregator_description@
@@ -41,12 +45,12 @@
 	      <group column="source_id">
                 <tr bgcolor="#ffffff" id="@items.item_id@">
                   <td>
-		    @items.content@
+		    @items.content;noquote@
 		    <if @items.item_link@ not nil and @items.item_guid_link@ not nil>
                       <a href="@items.item_guid_link@" title="Permanent URL for this entry">#</a>
 		    </if>
 		  </td>
-                  <td valign="top" width="40" align="center">
+                  <td valign="top" width="40" align="left">
                     <if @public_p@ false and @write_p@ true>
        		      <if @items.save_url@ not nil>
 		        <a href="@items.save_url@"><img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /></a>
@@ -56,6 +60,8 @@
 		      </if>
                       <a href="@items.item_blog_url@"><img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /></a>
                     </if>
+                    
+                    <span class="item_pub_date">@items.pub_date@</span>
 		  </td>
                 </tr>
               </group>
