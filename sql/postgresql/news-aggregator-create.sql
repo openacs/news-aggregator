@@ -20,7 +20,7 @@ create table na_sources (
                                     constraint na_sources_source_id_pk
                                     primary key,
        package_id                   integer
-                                    constraint na_sources_source_id_fk
+                                    constraint na_sources_package_id_fk
                                     references apm_packages(package_id),
        owner_id                     integer 
                                     constraint na_sources_owner_id_fk
@@ -41,7 +41,7 @@ create table na_items (
                                     default nextval('na_items_item_id_seq')
                                     primary key,
        source_id                    integer
-                                    constraint na_sources_source_id_fk
+                                    constraint na_items_source_id_fk
                                     references na_sources (source_id),
        link                         varchar(255),
        title                        varchar(255),
