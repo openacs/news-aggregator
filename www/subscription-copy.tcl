@@ -38,7 +38,6 @@ if { [string equal $aggregator_count "2"] } {
     foreach source $source_id {
         news_aggregator::subscription::copy \
             -source_id $source \
-            -copy_from $aggregator_id \
             -copy_to $copy_to
     }
 
