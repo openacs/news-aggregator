@@ -2,6 +2,8 @@
 
 <queryset>
 
+    <rdbms><type>postgresql</type><version>7.2</version></rdbms>
+
     <fullquery name="news_aggregator::subscription::copy.copy_subscription">
           <querytext>
             insert into na_subscriptions (

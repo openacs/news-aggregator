@@ -2,6 +2,8 @@
 
 <queryset>
 
+<rdbms><type>postgresql</type><version>7.2</version></rdbms>
+
 <fullquery name="na_add_source.add_source">
         <querytext>
             select na_source__new (

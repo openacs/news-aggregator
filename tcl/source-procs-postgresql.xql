@@ -2,6 +2,8 @@
 
 <queryset>
 
+<rdbms><type>postgresql</type><version>7.2</version></rdbms>
+
 <fullquery name="news_aggregator::source::update.update_source_no_new">
     <querytext>
         update na_sources
