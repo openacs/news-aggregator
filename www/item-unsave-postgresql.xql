@@ -2,6 +2,8 @@
 
 <queryset>
 
+<rdbms><type>postgresql</type><version>7.2</version></rdbms>
+
 <fullquery name="aggregator_info">
 <querytext>
 	select aggregator_id
