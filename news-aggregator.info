@@ -6,20 +6,26 @@
     <pretty-plural>News Aggregators</pretty-plural>
     <initial-install-p>f</initial-install-p>
     <singleton-p>f</singleton-p>
-    
-    <version name="0.2d" url="http://openacs.org/repository/download/apm/news-aggregator-0.2d.apm">
-        <owner url="http://bcuni.net">Simon Carstensen</owner>
+    <auto-mount>na</auto-mount>
+
+    <version name="0.5d" url="http://openacs.org/repository/download/apm/news-aggregator-0.5d.apm">
+        <owner url="http://unicast.org/">Guan Yang</owner>
+        <owner url="http://bcuni.net/">Simon Carstensen</owner>
         <summary>Read news sources from your website.</summary>
-        <release-date>2003-11-10</release-date>
+        <release-date>2004-03-20</release-date>
         <description format="text/plain">The news aggregator periodically reads a set of news sources, in one of several XML-based formats, finds the new bits, and displays them in reverse-chronological order on a single page.</description>
 
-        <provides url="news-aggregator" version="0.2d"/>
+        <provides url="news-aggregator" version="0.5d"/>
+        <requires url="feed-parser" version="0.1d"/>
 
         <callbacks>
         </callbacks>
         <parameters>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="blogger_url"  description="What is the URL for the lars-blogger instance we should post item content to, relative to the server root. Leave blank if no post button."/>
+            <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="max_purges"  default="5" description="The maximum number of purges per aggregator before we clear &quot;holes&quot;"/>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="number_of_items_shown"  default="100" description="The number of items displayed on the news aggregator index page."/>
+            <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="purge_time"  default="259200" description="Number of seconds that items are kept in individual non-public aggregators"/>
+            <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="referer"  default="http://www.lucmo.com/" description="The HTTP referer header when we fetch RSS feeds"/>
         </parameters>
 
     </version>

@@ -41,17 +41,4 @@
         </querytext>
     </fullquery>
 
-<fullquery name="na_update_source.update_source">
-      <querytext>
-        update na_sources
-        set link = :link,
-            title = :title,
-            description = :description,
- 	    updates = (updates + 1),
-	    last_scanned = sysdate,
-	    last_modified = :last_modified
-        where source_id = :source_id
-        </querytext>
-    </fullquery>
-
 </queryset>

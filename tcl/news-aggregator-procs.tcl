@@ -1,73 +1,34 @@
 ad_library {
-     Procs used by the News Aggregator module.
+     Procs used by the News Aggregator application.
+
      @author Simon Carstensen (simon@bcuni.net)
-     @creation-date January 2003
+     @author Guan Yang (guan@unicast.org)
+     @creation-date 2003-06-28
 }
 
-ad_proc -public util_httpget_full {
-    url {headers ""} {timeout 30} {depth 0}
-} {
-    Just like ns_httpget, but first optional argument is an ns_set of
-    headers to send during the fetch.
-} {
-    if {[incr depth] > 10} {
-        return -code error "util_httpget:  Recursive redirection:  $url"
-    }
-    ns_log Debug "Getting {$url} {$headers} {$timeout} {$depth}"
-    set http [ns_httpopen GET $url $headers $timeout]
-    set rfd [lindex $http 0]
-    close [lindex $http 1]
-    set headers [lindex $http 2]
-    set response [ns_set name $headers]
-    set status [lindex $response 1]
-    set last_modified [ns_set iget $headers last-modified]
-    if {$status == 302} {
-	set location [ns_set iget $headers location]
-	if {$location != ""} {
-            ns_set free $headers
-            close $rfd
-	    return [util_httpget_full $location {} $timeout $depth]
-	}
-    } elseif { $status == 304 } {
-        # The requested variant has not been modified since the time specified
-        # A conditional get didn't return anything.
-        ns_set free $headers
-        close $rfd
-	return [list "" $status]
-    }
-    set length [ns_set iget $headers content-length]
-    if [string match "" $length] {set length -1}
-    set err [catch {
-        while 1 {
-            set buf [_ns_http_read $timeout $rfd $length]
-            append page $buf
-            if [string match "" $buf] break
-            if {$length > 0} {
-                incr length -[string length $buf]
-                if {$length <= 0} break
-            }
-        }
-    } errMsg]
-	ns_set free $headers
-	close $rfd
-	if $err {
-	    global errorInfo
-	    return -code error -errorinfo $errorInfo $errMsg
-	}
-	return [list $page $status $last_modified]
-    }
 
-ad_proc -public na_check_link {
-    domain
-    link
+namespace eval news_aggregator {}
+
+
+ad_proc -public news_aggregator::check_link {
+    {-domain:required}
+    {-link:required}
+} {
+    @author Simon Carstensen
 } {
     regexp {(https?://[^/]+)+} $domain domain
     regexp {(https?://[^/]+)+} $link link
     return [string equal $link $domain]
 }
 
-ad_proc -public na_last_scanned {
-    diff
+
+ad_proc -public news_aggregator::last_scanned {
+    {-diff:required}
+} {
+
+    Returns the number of hours and minutes since the feed was last updated.
+
+    @author Simon Carstensen    
 } {
     if {$diff < 120 && $diff > 60} {
 	set to_return "1 hour and "
@@ -83,45 +44,207 @@ ad_proc -public na_last_scanned {
     return $to_return
 }
 
-ad_proc -public na_get_nodes {
-    nodes
+ad_proc -private news_aggregator::dom_set_child_text {
+    {-node:required}
+    {-child:required}
 } {
-    foreach node_id $nodes {
-        switch -- [xml_node_get_name $node_id] {
-            title {
-		catch {set title [xml_node_get_content $node_id]}
-	    }
-            "link" {
-                catch {set link [xml_node_get_content $node_id]}
-	    }
-	    "guid" {
-                catch {set guid [xml_node_get_content $node_id]}
-            }
-            "description" {
-                catch {set description [xml_node_get_content $node_id]}
-            }
-	}
-    }
+    If node contains a child node named child,
+    the variable child is set to the text of that node
+    in the caller's stack frame.
 
-    if { ![exists_and_not_null title] } {
-	set title ""
+    @author Guan Yang
+    @creation-date 2003-07-03
+} {
+    if { [$node hasChildNodes] } {
+        set child_nodes [$node selectNodes "*\[local-name()='$child'\]"]
+        if { [llength $child_nodes] == 1 } {
+            set child_node [lindex $child_nodes 0]
+            upvar $child var
+            set var [$child_node text]
+        }
     }
-    if { ![exists_and_not_null link] } {
-	if { [exists_and_not_null guid] } {
-	    set link $guid
-	} else {
-	    set link ""
-	}
-    }
-    if { ![exists_and_not_null description] } {
-	set description ""
-    }
-	
-    return [list $title $link $description]
 }
 
-ad_proc -public na_sort_result {
-    result
+ad_proc -private news_aggregator::channel_parse {
+    {-channel_node:required}
+} {
+    Takes a tDOM node which is supposed to represent an RSS
+    channel, and returns a list with the RSS/RDF elements
+    of that node. This proc should later be extended to
+    support Dublin Core elements and other funk.
+
+    @author Guan Yang (guan@unicast.org)
+    @creation-date 2003-07-03
+} {
+    set properties [list title link description language copyright lastBuildDate docs generator managingEditor webMaster]
+
+    foreach property $properties {
+        set $property ""
+	    news_aggregator::dom_set_child_text -node $channel_node -child $property
+        set channel($property) [set $property]
+    }
+    
+    set channel_name [$channel_node nodeName]
+    
+    # Do weird Atom-like stuff
+    if { [string equal $channel_name "feed"] } {
+        # link
+        if { [string equal $link ""] } {
+            # Link is in a href
+            set link_node [$channel_node selectNodes {*[local-name()='link' and @rel = 'alternate' and @type = 'text/html']/@href}]
+            if { [llength $link_node] == 1 } {
+                set link_node [lindex $link_node 0]
+                set channel(link) [lindex $link_node 1]
+            }
+        }
+        
+        # author
+        set author_node [$channel_node selectNodes {*[local-name()='author']}]
+        if { [llength $author_node] == 1 } {
+            set author_node [lindex $author_node 0]
+            news_aggregator::dom_set_child_text -node $author_node -child name
+            news_aggregator::dom_set_child_text -node $author_node -child email
+            if { [info exists email] && [info exists name] } {
+                set channel(managingEditor) "$email ($name)"
+            }
+        }
+        
+        # tagline
+        news_aggregator::dom_set_child_text -node $channel_node -child tagline
+        if { [info exists tagline] } {
+            set channel(tagline) $tagline
+        }
+    }
+
+    return [array get channel]
+}
+
+ad_proc -private news_aggregator::items_fetch {
+    {-doc_node:required}
+} {
+    Takes a tDOM document node which is supposed to be some
+    form of RSS. Returns a list with the item nodes. Returns
+    an empty list if none could be found.
+
+    @author Guan Yang (guan@unicast.org)
+    @creation-date 2003-07-03
+} {
+    set items [$doc_node selectNodes {//*[local-name()='item' or local-name()='entry']}]
+    return $items
+}
+
+ad_proc -private news_aggregator::item_parse {
+    {-item_node:required}
+} {
+    Takes a tDOM node which is supposed to represent an RSS item,
+    and returns a list with the RSS/RDF elements of that node.
+
+    @author Simon Carstensen
+    @author Guan Yang (guan@unicast.org)
+} {
+    set title ""
+    set link ""
+    set guid ""
+    set permalink_p false
+    set description ""
+    set content_encoded ""
+
+    news_aggregator::dom_set_child_text -node $item_node -child title
+    news_aggregator::dom_set_child_text -node $item_node -child link
+    news_aggregator::dom_set_child_text -node $item_node -child guid
+    news_aggregator::dom_set_child_text -node $item_node -child description
+    
+    set maybe_atom_p 0
+    
+    # Try to handle Atom link
+    if { [string equal $link ""] } {
+        set link_attr [$item_node selectNodes {*[local-name()='link']/@href}]
+        if { [llength $link_attr] == 1 } {
+            set link [lindex [lindex $link_attr 0] 1]
+            set maybe_atom_p 1
+        }
+    }
+
+    set encoded_nodes [$item_node selectNodes {*[local-name()='encoded' and namespace-uri()='http://purl.org/rss/1.0/modules/content/']}]
+    if { [llength $encoded_nodes] == 1 } {
+        set encoded_node [lindex $encoded_nodes 0]
+	    set content_encoded [$encoded_node text]
+    }
+
+    if { [llength [$item_node selectNodes "*\[local-name()='guid'\]"]] } {
+        # If guid exists, we assume that it's a permalink
+        set permalink_p true
+    }
+
+    # Retrieve isPermaLink attribute
+    set isPermaLink_nodes [$item_node selectNodes "*\[local-name()='guid'\]/@isPermaLink"]
+    if { [llength isPermaLink_nodes] == 1} {
+        set isPermaLink_node [lindex $isPermaLink_nodes 0]
+    	set isPermaLink [lindex $isPermaLink_node 1]
+	if { [string equal $isPermaLink false] } {
+	    set permalink_p false
+	}
+    }
+
+    if { [empty_string_p $link] } {
+        if { [exists_and_not_null guid] } {
+            set link $guid
+            set permalink_p true
+        } elseif { [empty_string_p $guid] && ![string equal $link $guid] } {
+            set permalink_p true
+        }
+    }
+    
+    # Try to handle Atom guid
+    if { [empty_string_p $guid] && $maybe_atom_p } {
+        news_aggregator::dom_set_child_text -node $item_node -child id
+        if { [info exists id] } {
+            # We don't really know if it's an URL
+            set guid $id
+            if { [util_url_valid_p $id] } {
+                set permalink_p true
+            } else {
+                set permalink_p false
+            }
+        }
+    }
+    
+    # For Atom, description is summary, content is content_encoded
+    if { $maybe_atom_p } {
+        news_aggregator::dom_set_child_text -node $item_node -child summary
+        if { [info exists summary] } {
+            set description $summary
+        }
+        
+        news_aggregator::dom_set_child_text -node $item_node -child content
+        if { [info exists content] } {
+            set content_encoded $content
+        }
+    }
+
+    #remove unsafe html
+    set description [news_aggregator::remove_unsafe_html -html $description]
+
+    return [list title $title link $link guid $guid permalink_p $permalink_p description $description content_encoded $content_encoded]
+}
+
+ad_proc -private news_aggregator::external_entity {
+    base_uri
+    system_identifier
+    public_identifier
+} {
+    A callback for tDOM to resolve external entities.
+
+    @author Guan Yang
+    @creation-date 2003-07-03
+} {
+    return [list string "" ""]
+}
+
+ad_proc -public news_aggregator::sort_result {
+    {-result:required}
+} {
+    @author Simon Carstensen
 } {
     set sorted [list]
     for {set i 0} {$i < [llength $result]} {incr i} {
@@ -130,150 +253,109 @@ ad_proc -public na_sort_result {
     return $sorted
 }
 
-ad_proc -public na_parse {
-    xml
+ad_proc -public news_aggregator::parse {
+    {-xml:required}
+} {
+    The workhorse of news-aggregator: A Very Ugly RSS Parser.
+    Now also supports Atom and weird formats in between. 
+
+    @author Simon Carstensen
+    @author Guan Yang (guan@unicast.org)
 } {
     if { [catch {
-	set doc_id [xml_parse -persist $xml]
-	set nodes [xml_node_get_children [xml_doc_get_first_node $doc_id]]
-	set channel [na_get_elements $nodes "channel"]
-	set result [list [na_get_nodes [xml_node_get_children $channel]]]
+    	# Pre-process the doc and remove any processing instruction
+	regsub {^<\?xml [^\?]+\?>} $xml {<?xml version="1.0"?>} xml
+	set doc [dom parse $xml]
+        set doc_node [$doc documentElement]
+        set node_name [$doc_node nodeName]
 
-	set items [na_get_elements $nodes "item"]
-	set items_sorted [na_sort_result $items]
-	foreach item $items_sorted {
-	    lappend result [na_get_nodes [xml_node_get_children $item]]
-	}
+	# feed is the doc-node name for Atom feeds
+        if { [lsearch {rdf RDF rdf:RDF rss feed} $node_name] == -1 } {
+	    ns_log Debug "news_aggregator::parse: doc node name is not rdf, RDF, rdf:RDF or rss"
+            set rss_p 0
+        } else {
+            set rss_p 1
+        }
+    } errmsg] } {
+	ns_log Debug "news_aggregator::parse: error in initial itdom parse, errmsg = $errmsg"
+        set rss_p 0
+    }
+
+    if { !$rss_p } {
+        # not valid xml, let's try autodiscovery
+	ns_log Debug "news_aggregator::parse: not  valid xml, we'll try autodiscovery"
+        
+        set doc [dom parse -html $xml]
+        set doc_node [$doc documentElement]
+
+        set link_nodes [$doc_node selectNodes {/html/head/link[@rel='alternate' and @title='RSS' and @type='application/rss+xml']/@href}]
+      
+	$doc delete
+
+        if { [llength $link_nodes] == 1} {
+            set link_node [lindex $link_nodes 0]
+            set feed_url [lindex $link_node 1]
+            array set f [ad_httpget -url $feed_url]
+            return [news_aggregator::parse -xml $f(page)]
+        }
+        return 0
+    }
+
+    if { [catch {
+	set doc_name [$doc_node nodeName]
 	
+	if { [string equal $doc_name "feed"] } {
+	    # It's an Atom feed
+	    set channel [news_aggregator::channel_parse \
+	                   -channel_node $doc_node]
+    } else {
+        # It looks RSS/RDF'fy
+	    set channel [news_aggregator::channel_parse \
+			-channel_node [$doc_node getElementsByTagName channel]]
+    }    
+        
+    set item_nodes [news_aggregator::items_fetch -doc_node $doc_node]
+	set item_nodes [news_aggregator::sort_result -result $item_nodes]
+	set items [list]
+  
+        foreach item_node $item_nodes {
+            lappend items [news_aggregator::item_parse -item_node $item_node]
+        }
 
+	$doc delete
     } err] } {
-	ns_log Notice "Error parsing RSS feed: $err"
         return 0
     } else {
-	return $result
+        return [list channel "$channel" items "$items"]
     }
 }
 
-ad_proc -public na_add_source {
-    feed_url
-    owner_id
-    package_id
-    source_id
+ad_proc -public news_aggregator::remove_unsafe_html { 
+    -html:required
 } {
-    Parse $feed_url for host_url, title, and description. Then add the source.
+    Make sure we are consuming RSS safely by removing unsafe tags.
+
+    See http://diveintomark.org/archives/2003/06/12/how_to_consume_rss_safely.html.
+
+    @author Simon Carstensen
+    @creation-date 2003-07-06
 } {
-    if { ![catch {set f [util_httpget_full $feed_url]}] && [string equal 200 [lindex $f 1]] } {
-	set result [na_parse [lindex $f 0]]
-	if { ![string equal 0 $result] } {
 
-	    set channel [lindex $result 0]
-	    set title [string_truncate -len 245 -no_format -- [lindex $channel 0]]
-	    set link [string_truncate -len 245 -no_format -- [lindex $channel 1]]
-	    set description [string_truncate -len 245 -no_format -- [lindex $channel 2]]
-	    set source_id [db_nextval "acs_object_id_seq"]
-	    set creation_ip [ns_conn peeraddr]
-	    set last_modified [lindex $f 2]
-	
-	    # check whether the source already exists
-	    if { ![db_0or1row source { *SQL* }] } {
-		db_exec_plsql add_source { *SQL* }
-		set items [lrange $result 1 end]
-		foreach item $items {
-		    set title [string_truncate -len 245 -no_format -- [lindex $item 0]]
-		    set link [string_truncate -len 245 -no_format -- [lindex $item 1]]
-		    set description [lindex $item 2]
-		    db_exec_plsql add_item { *SQL* }
-		}
-	    }
-	}
-    }
-}
-
-ad_proc -public na_update_source {
-    owner_id
-    source_id
-    feed_url
-    last_modified
-} {
-    Parse source and then update the source if it has changed.
-} {
-    set header [ns_set create]
-    ns_set put $header "If-Modified-Since" $last_modified
-    if { [catch { 
-	set f [util_httpget_full $feed_url $header] }]
-    } {
-	return
-    }
-    # check the http status code
-    if { [exists_and_not_null f] && [string equal 200 [lindex $f 1]] } {
-
-	set result [na_parse [lindex $f 0]]
-	set host [lindex [lindex $result 0] 1]
-        set items [lrange $result 1 end]
-        foreach item $items {
-            set title [string_truncate -len 245 -no_format -- [lindex $item 0]]
-            set link [string_truncate -len 245 -no_format -- [lindex $item 1]]
-	    set description [lindex $item 2]
-
-	    # check whether link and description have been set as we
-	    # need these to check against already added items
-	    # also we check whether link is an external or internal URL
-	    # if not, it might occur in other items, and we can't check against it
-	    if { [exists_and_not_null link] && [na_check_link $link $host] } {
-		set identifier "link"
-	    } elseif { [exists_and_not_null description]  } {
-		set identifier "description"
-	    } else {
-		set identifier "none"
-	    }
-
-	    # check whether the item already exists
-	    # that it has at least a link or description
-	    # and that we're not handling a deleted item
-	    
-	    if { ![string equal "none" $identifier] } {
-		if {![db_0or1row item { *SQL* }]} {
-		    db_exec_plsql add_item { *SQL* }
-		    set updated_p 1
-		} elseif { [string equal f $deleted_p] && ((![string equal $title $item_title]) || (![string equal $description $item_description])) } {
-		    db_dml update_item { *SQL* }
-		    set updated_p 1
-		}
-	    }
-	}
-	if { [exists_and_not_null updated_p] } {
-	    # one or more items were added/updated
-	    # let's update the rss metadata as well
-	    set channel [lindex $result 0]
-	    set last_modified [lindex $f 2]
-	    set title [string_truncate -len 245 -no_format -- [lindex $channel 0]]
-	    set link [string_truncate -len 245 -no_format -- [lindex $channel 1]]
-	    set description [string_truncate -len 245 -no_format -- [lindex $channel 2]]
-	    
-	    db_dml update_source { *SQL* }
-	}
-    }
-}
-
-ad_proc -public na_update_sources { } {
-    Update sources by a one hour interval.
-} {
-    ns_log Debug "na_update_sources: updating news-aggregator sources"
-    
-    db_foreach sources { *SQL* } {
-	na_update_source $owner_id $source_id $feed_url $last_modified
+    set unsafe_tags {
+        script
+        embed
+        object
+        frameset
+        frame
+        iframe
+        meta
+        link
+        style
     }
 
+    foreach tag $unsafe_tags {
+        regsub -all "(<$tag\[^>\]*>(\[^<\]*</$tag>)?)+"  $html {} html
+    }
+
+    return $html
 }
-
-# schedule hourly updates
-ad_schedule_proc 600 na_update_sources
-
-ad_proc -public na_cleanup_items {} {
-    Clean up the items that have been retrieved more than two months ago.
-} {
-    db_dml deleted_items { *SQL* }
-}
-
-# schedule daily cleanup of one-week-old deleted items
-#ad_schedule_proc 86400 na_cleanup_items
