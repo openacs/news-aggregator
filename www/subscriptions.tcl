@@ -36,11 +36,20 @@ if { [empty_string_p $feed_url] } {
     #ad_script_abort
 
 if { [exists_and_not_null source_id] } {
+    set delete_count 0
     foreach delete_id $source_id {
         news_aggregator::subscription::delete \
             -source_id $delete_id \
             -aggregator_id $aggregator_id
+	incr delete_count
     }
+    if { $delete_count > 1 } {
+	set message "You have been unsubscribed from $delete_count sources."
+    } else {
+	set message "You have been unsubscribed from one source."
+    }
+    ad_returnredirect -message $message "${package_url}$aggregator_id"
+    ad_script_abort
 }
 
 set aggregator_count [db_string count_aggregators {}]
