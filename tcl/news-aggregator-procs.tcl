@@ -30,15 +30,15 @@ ad_proc -public news_aggregator::last_scanned {
     @author Simon Carstensen    
 } {
     if {$diff < 120 && $diff > 60} {
-	set to_return "1 hour and "
+        set to_return "1 hour and "
     } elseif {$diff >= 60} {
-	set to_return "[expr $diff / 60] hours and "
+        set to_return "[expr $diff / 60] hours and "
     }
     set mins [expr $diff % 60]
     if {[string equal 1 $mins]} {
-	append to_return "1 minute ago"
+        append to_return "1 minute ago"
     } else {
-	append to_return "$mins minutes ago"
+        append to_return "$mins minutes ago"
     }
     return $to_return
 }
