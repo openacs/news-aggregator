@@ -7,6 +7,15 @@ ad_page_contract {
     {return_url ""}
 }
 
+set package_id [ad_conn package_id]
+
+if { ![parameter::get -package_id -$package_id -parameter PerUserAggregatorsP -default 0] } {
+    # May this user create her own aggregator?
+    permission::require_permission \
+	-object_id $package_id \
+	-privilege write
+}
+
 set page_title "Create aggregator"
 set context [list $page_title]
 

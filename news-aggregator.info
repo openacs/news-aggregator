@@ -8,19 +8,20 @@
     <singleton-p>f</singleton-p>
     <auto-mount>na</auto-mount>
 
-    <version name="0.4d" url="http://openacs.org/repository/download/apm/news-aggregator-0.4d.apm">
-        <owner url="http://unicast.org/">Guan Yang</owner>
+    <version name="0.6d2" url="http://openacs.org/repository/download/apm/news-aggregator-0.6d2.apm">
         <owner url="http://bcuni.net/">Simon Carstensen</owner>
+        <owner url="http://unicast.org/">Guan Yang</owner>
         <summary>Read news sources from your website.</summary>
         <release-date>2004-03-20</release-date>
         <description format="text/plain">The news aggregator periodically reads a set of news sources, in one of several XML-based formats, finds the new bits, and displays them in reverse-chronological order on a single page.</description>
 
-        <provides url="news-aggregator" version="0.4d"/>
+        <provides url="news-aggregator" version="0.6d2"/>
         <requires url="feed-parser" version="0.1d"/>
 
         <callbacks>
         </callbacks>
         <parameters>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="PerUserAggregatorsP"  default="1" description="Should registered users automatically get their own news aggregator when they visit the News Aggregator instance node the first time, or should they only be allowed to manually create an aggregator of their own if they are given 'write' privilege on the instance? 1 for the previous and 0 for the latter."/>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="blogger_url"  description="What is the URL for the lars-blogger instance we should post item content to, relative to the server root. Leave blank if no post button."/>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="max_purges"  default="5" description="The maximum number of purges per aggregator before we clear &quot;holes&quot;"/>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="number_of_items_shown"  default="100" description="The number of items displayed on the news aggregator index page."/>
