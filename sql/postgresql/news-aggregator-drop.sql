@@ -1,12 +1,12 @@
 --drop na_item functions
-drop function na_item__new (integer,varchar,varchar,varchar,timestamp,boolean);
+drop function na_item__new (integer,varchar,varchar,varchar,timestamptz,boolean);
 
 --drop na_item table
 drop table na_items;
 drop sequence na_items_item_id_seq;
 
 --drop na_source functions
-drop function na_source__new (integer,integer,integer,varchar,varchar,varchar,varchar,integer,timestamp,varchar,varchar,integer,varchar);
+drop function na_source__new (integer,integer,integer,varchar,varchar,varchar,varchar,integer,timestamptz,varchar,varchar,integer,varchar);
 drop function na_source__delete (integer);
 drop function na_source__title (integer);
 

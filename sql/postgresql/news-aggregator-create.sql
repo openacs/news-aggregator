@@ -32,7 +32,7 @@ create table na_sources (
        title                        varchar(100),
        description                  varchar(255),
        updates                      integer,
-       last_scanned                 timestamp,
+       last_scanned                 timestamptz,
        last_modified                varchar(30)
 );
 
@@ -46,7 +46,7 @@ create table na_items (
        link                         varchar(255),
        title                        varchar(255),
        description                  text,
-       creation_date                timestamp,
+       creation_date                timestamptz,
        deleted_p                    boolean
 );
 
@@ -61,7 +61,7 @@ create or replace function na_source__new (
     varchar,    -- title
     varchar,    -- description
     integer,    -- updates
-    timestamp,  -- last_scanned
+    timestamptz,  -- last_scanned
     varchar,    -- last_modified
     varchar,    -- object_type
     integer,    -- creation_user
@@ -155,7 +155,7 @@ create or replace function na_item__new (
     varchar,    -- link
     varchar,    -- title
     varchar,    -- description
-    timestamp,  -- creation_date
+    timestamptz,  -- creation_date
     boolean    -- deleted_p
 ) returns integer as '
 declare
