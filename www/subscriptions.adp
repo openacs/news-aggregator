@@ -2,7 +2,7 @@
 
 <property name="title">Subscriptions</property>
 
-<property name="context_bar">@context_bar@</property>
+<property name="context_bar">@context_bar;noquote@</property>
 
 <p>
 
