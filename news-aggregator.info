@@ -19,25 +19,6 @@
 
         <provides url="news-aggregator" version="0.2d"/>
 
-        <files>
-            <file type="package_spec" path="news-aggregator.info"/>
-            <file type="data_model_create" db_type="postgresql" path="sql/postgresql/news-aggregator-create.sql"/>
-            <file type="data_model_drop" db_type="postgresql" path="sql/postgresql/news-aggregator-drop.sql"/>
-            <file type="query_file" db_type="postgresql" path="tcl/news-aggregator-procs-postgresql.xql"/>
-            <file type="tcl_procs" path="tcl/news-aggregator-procs.tcl"/>
-            <file type="content_page" path="www/graphics/google.gif"/>
-            <file type="content_page" path="www/graphics/permalink.gif"/>
-            <file type="content_page" path="www/graphics/post.gif"/>
-            <file type="content_page" path="www/graphics/remote.gif"/>
-            <file type="content_page" path="www/graphics/xml.gif"/>
-            <file type="content_page" path="www/index.adp"/>
-            <file type="query_file" db_type="postgresql" path="www/index-postgresql.xql"/>
-            <file type="content_page" path="www/index.tcl"/>
-            <file type="content_page" path="www/subscriptions.adp"/>
-            <file type="query_file" db_type="postgresql" path="www/subscriptions-postgresql.xql"/>
-            <file type="content_page" path="www/subscriptions.tcl"/>
-            <file type="query_file" path="www/subscriptions.xql"/>
-        </files>
         <callbacks>
         </callbacks>
         <parameters>
