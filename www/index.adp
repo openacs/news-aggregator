@@ -7,9 +7,9 @@
 
 <if @write_p@ true>
   <p>
-    <b>&raquo;</b> <a href="@url@subscriptions">Manage Subscriptions</a> <br />
-    <b>&raquo;</b> <a href="@aggregator_url@">Manage This Aggregator</a> <br />
-    <b>&raquo;</b> <a href="@create_url@">Create New Aggregator</a><br />
+    <b>&raquo;</b> <a href="@url@subscriptions">#news-aggregator.Manage_Subscriptions#</a> <br />
+    <b>#news-aggregator.raquo#</b> <a href="@aggregator_url@">#news-aggregator.lt_Manage_This_Aggregato#</a> <br />
+    <b>#news-aggregator.raquo#</b> <a href="@create_url@">#news-aggregator.lt_Create_New_Aggregator#</a><br />
   <p>
     <if @aggregator_description@ not nil>
       @aggregator_description@
@@ -17,7 +17,7 @@
     <else>
       This page lists <b>the most recent items</b> from the feeds you've <a href="@url@subscriptions">subscribed</a> to.
       You can hit the <b>Purge button</b> to clean out the page. Clicking the <b>Save</b> icon <img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /> will prevent an item from being purged.
-      Click on the <b>Post</b> icon <img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /> to add the item to your weblog.
+      Click on the <b>#news-aggregator.Post#</b> icon <img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /> to add the item to your weblog.
     </else>
   </p>
 </if>
@@ -26,7 +26,7 @@
 </else>
 
 <if @items:rowcount@ false>
-  <i>No items.</i>
+  <i>#news-aggregator.No_items#</i>
 </if>
 <else>
   <table cellspacing=1 cellpadding=0 border=0>
@@ -37,8 +37,7 @@
 	    <group column="sort_date">
               <tr bgcolor="#eeeeee">
                 <td colspan=2>
-                  <b><a href="@items.link@" title="@items.description@">@items.title@</a>,
-                  updated @items.diff@</b>                   
+                  <b><a href="@items.link@" title="@items.description@">@items.title@</a>#news-aggregator.updated_x_time_ago#</b>                   
                   <a href="@items.technorati_url@"><img src="@graphics_url@technorati.png" width ="50" height="14" alt="Technorati Cosmos" border="0"></a>
                 </td>
               </tr>
@@ -80,11 +79,12 @@
     
 <if @public_p@ false and @purge_p@ true>
     <p>
-        Purges: <b>On</b> | <a href="@purge_off_url@">Off</a>
+        #news-aggregator.Purges# <b>#news-aggregator.On#</b> | <a href="@purge_off_url@">#news-aggregator.Off#</a>
     </p>
 </if>
 <if @public_p@ false and @purge_p@ false>
     <p>
-        Purges: <a href="@purge_on_url@">On</a> | <b>Off</b> 
+        #news-aggregator.Purges# <a href="@purge_on_url@">#news-aggregator.On#</a> | <b>#news-aggregator.Off#</b> 
     </p>   
 </if>
+
