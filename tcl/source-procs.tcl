@@ -24,27 +24,36 @@ ad_proc -public news_aggregator::source::new {
 } {
 
     if { [db_0or1row source {}] } {
+        ns_log Debug "news_aggregator::source::new: Source exists"
         if { [exists_and_not_null aggregator_id] } {
+            ns_log Debug "news_aggregator::source::new: Source exists, creating new subscription"
             news_aggregator::subscription::new \
                 -aggregator_id $aggregator_id \
                 -source_id $source_id
-
-	    if { $array_p } {
-		set info(source_id) $source_id
-		set info(title) $source_title
-		return [array get info]
-	    } else {
-		return $source_id
-	    }
+            if { $array_p } {
+                ns_log Debug "news_aggregator::source::new: New subscription created, returning array"
+                set info(source_id) $source_id
+                set info(title) $source_title
+                return [array get info]
+            } else {
+                ns_log Debug "news_aggregator::source::new: New subscription created, returning source_id"
+                return $source_id
+            }
         }
+        
+        ns_log Debug "news_aggregator::source::new: Source exists but no aggregator provided, returning 0"
         return 0
+    } else {
+        ns_log Debug "news_aggregator::source::new: Source doesn't exist, proceeding"
     }
 
     array set f [ad_httpget -url $feed_url -depth 4]
 
-    if { ![string equal 200 $f(status)] || [catch { array set result [news_aggregator::parse -xml $f(page)] }] } {
+    if { ![string equal 200 $f(status)] || [catch { array set result [feed_parser::parse_feed -xml $f(page)] }] } {
+        ns_log Debug "news_aggregator::source::new: Couldn't httpget, status = $f(status)"
         return 0
     }
+    ns_log Debug "news_aggregator::source::new: httpget successful, [string length $f(page)] bytes"
 
     array set channel $result(channel)
     set title [string_truncate -len 500 -- $channel(title)]
@@ -134,7 +143,7 @@ ad_proc -public news_aggregator::source::update {
     }
 
     if { [catch {
-    		set parse_result [news_aggregator::parse \
+    		set parse_result [feed_parser::parse_feed \
 					-xml $f(page)]
             	array set result $parse_result
     } err] } {
@@ -288,15 +297,22 @@ ad_proc -public news_aggregator::source::update_all {
     db_transaction {
         set source_count [db_string source_count ""]
         if { $source_count >= 1 } {
-	    if { !$all_sources_p } {
+            if { !$all_sources_p } {
                 set limit [expr int($source_count/4)]
-		if { $limit < 1 } {
-		    set limit 1
-		}
-		set limit_sql [db_map sources_limit]
-	    } else {
-		set limit_sql ""
-	    }
+                if { $limit < 1 } {
+                    set limit 1
+                }
+                set limit_sql [db_map sources_limit]
+            } else {
+                set limit_sql ""
+            }
+            
+            if { !$all_sources_p } {
+                set time_limit [db_map time_limit]
+            } else {
+                set time_limit {}
+            }
+            
             set sources [db_list_of_lists sources ""]
             foreach source $sources {
                 set source_id [lindex $source 0]

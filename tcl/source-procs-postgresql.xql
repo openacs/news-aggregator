@@ -13,13 +13,19 @@
     </querytext>
 </fullquery>
 
+<partialquery name="news_aggregator::source::update_all.time_limit">
+    <querytext>
+        where  last_scanned < (now() - '00:48:00'::time)
+</querytext>
+</partialquery>
+
 <fullquery name="news_aggregator::source::update_all.sources">
       <querytext>
         select source_id,
                feed_url,
                last_modified
         from   na_sources
-        where  last_scanned < (now() - '00:48:00'::time)
+        $time_limit
 	order  by last_scanned asc
 	$limit_sql
         </querytext>
