@@ -120,10 +120,13 @@ create table na_items (
        permalink_p		    boolean 
                                     default true,
        title                        varchar(500),
+       author                       varchar(100),
+       comment_page                 varchar(200),
        description                  text,
        content_encoded              text,
        creation_date                timestamptz
-				    default current_timestamp
+				    default current_timestamp,
+    pub_date                        timestamptz
 );
 
 create sequence na_items_item_id_seq cache 1;
@@ -175,6 +178,11 @@ create table na_subscriptions (
 	source_id		integer
                                 constraint na_subscriptions_sid_fk
                                 references na_sources(source_id),
+    source_title        varchar(100),
+    show_description_p  boolean
+                        constraint na_subscriptions_show_description_p_nn
+                        not null
+                        default true,
         creation_date		timestamptz
 				default current_timestamp,
         constraint na_subscriptions_pk primary key (aggregator_id, source_id)
