@@ -58,7 +58,7 @@ set bulk_actions {
     Unsubscribe subscriptions Unsubscribe
 }
 
-if { $aggregator_count  > 1 } {
+if { $aggregator_count > 1 } {
     # user has more than 1 aggregator, let's present our fancy move and copy features
     if { $aggregator_count > 2 } {
         set title "another aggregator"
@@ -149,12 +149,17 @@ ad_form -name add_subscription -form {
         { You must specify a URL }
     }
 } -new_data {
-    array set channel [news_aggregator::source::new \
+    set channel_array [news_aggregator::source::new \
                            -feed_url $feed_url \
                            -aggregator_id $aggregator_id \
                            -user_id $user_id \
                            -package_id $package_id \
 			   -array]
+    if { $channel_array eq "0" } {
+        ad_returnredirect -message "The feed $feed_url has an error."
+        ad_script_abort
+    }
+    array set channel $channel_array
     set title $channel(title)
     ad_returnredirect -message "You have been subscribed to $title." subscriptions
     ad_script_abort
