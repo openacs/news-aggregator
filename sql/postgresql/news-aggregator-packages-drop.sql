@@ -24,8 +24,10 @@ drop function na_item__new (
     varchar,      -- original_guid 
     boolean,      -- permalink_p
     varchar,      -- title
-    varchar,       -- description,
-    varchar      -- content_encoded
+    varchar,       -- description
+    varchar,      -- content_encoded
+    varchar,      -- author
+    timestamptz     -- pub_date
 );
 
 --drop na_source functions

@@ -9,7 +9,7 @@ ad_page_contract {
 	purge_bottom:naturalnum,notnull
 }
 
-set user_id [ad_maybe_redirect_for_registration]
+set user_id [auth::require_login]
 
 db_1row aggregator_info ""
 

@@ -14,41 +14,60 @@ ad_proc -public news_aggregator::source::new {
     -user_id:required
     -package_id:required
     {-aggregator_id ""}
+    -array:boolean
 } {
     @author Simon Carstensen
 
-    Parse feed_url for link, title, and description. Then insert the source if it does not excist already.
+    Parse feed_url for link, title, and description. Then insert the source if it does not excist already. Subscribe the specified aggregator to the source.
+
+    @param array Return more into in an array
 } {
 
-    set source_id [db_string source {} -default ""]
-
-    if { [exists_and_not_null source_id] } {
+    if { [db_0or1row source {}] } {
+        ns_log Debug "news_aggregator::source::new: Source exists"
         if { [exists_and_not_null aggregator_id] } {
+            ns_log Debug "news_aggregator::source::new: Source exists, creating new subscription"
             news_aggregator::subscription::new \
                 -aggregator_id $aggregator_id \
                 -source_id $source_id
-
-            return $source_id
+            if { $array_p } {
+                ns_log Debug "news_aggregator::source::new: New subscription created, returning array"
+                set info(source_id) $source_id
+                set info(title) $source_title
+                return [array get info]
+            } else {
+                ns_log Debug "news_aggregator::source::new: New subscription created, returning source_id"
+                return $source_id
+            }
         }
+        
+        ns_log Debug "news_aggregator::source::new: Source exists but no aggregator provided, returning 0"
         return 0
+    } else {
+        ns_log Debug "news_aggregator::source::new: Source doesn't exist, proceeding"
     }
 
     array set f [ad_httpget -url $feed_url -depth 4]
 
-    if { ![string equal 200 $f(status)] || [catch { array set result [news_aggregator::parse -xml $f(page)] }] } {
+    if { ![string equal 200 $f(status)] || [catch { array set result [feed_parser::parse_feed -xml $f(page)] }] } {
+        ns_log Debug "news_aggregator::source::new: Couldn't httpget, status = $f(status)"
         return 0
     }
+    ns_log Debug "news_aggregator::source::new: httpget successful, [string length $f(page)] bytes"
 
     array set channel $result(channel)
-    set title [string_truncate -len 500 -no_format -- $channel(title)]
-    set link [string_truncate -len 500 -no_format -- $channel(link)]
-    set description [string_truncate -len 500 -no_format -- $channel(description)]
+    set title [string_truncate -len 500 -- $channel(title)]
+    set channel_title $title
+    set link [string_truncate -len 500 -- $channel(link)]
+    set description [string_truncate -len 500 -- $channel(description)]
     
     set source_id [db_nextval "acs_object_id_seq"]
     set creation_ip [ad_conn peeraddr]
     set last_modified $f(modified)
     
     db_exec_plsql add_source {}
+
+    update -source_id $source_id -feed_url $feed_url -modified ""
     
     if { [exists_and_not_null aggregator_id] } {
         news_aggregator::subscription::new \
@@ -60,15 +79,21 @@ ad_proc -public news_aggregator::source::new {
 
     foreach array $items {
         array set item $array
-        set title [string_truncate -len 500 -no_format -- $item(title)]
-        set link [string_truncate -len 500 -no_format -- $item(link)]
-        set guid [string_truncate -len 500 -no_format -- $item(guid)]
+        set title [string_truncate -len 500 -- $item(title)]
+        set link [string_truncate -len 500 -- $item(link)]
+        set guid [string_truncate -len 500 -- $item(guid)]
         set permalink_p $item(permalink_p)
         set description $item(description)
         set content_encoded $item(content_encoded)
     }
 
-    return $source_id
+    if { $array_p } {
+        set info(source_id) $source_id
+        set info(title) $channel_title
+        return [array get info]
+    } else {
+        return $source_id
+    }
 }
 
 
@@ -118,7 +143,7 @@ ad_proc -public news_aggregator::source::update {
     }
 
     if { [catch {
-    		set parse_result [news_aggregator::parse \
+    		set parse_result [feed_parser::parse_feed \
 					-xml $f(page)]
             	array set result $parse_result
     } err] } {
@@ -168,12 +193,14 @@ ad_proc -public news_aggregator::source::update {
     foreach array $items {
         array set item $array
                 
-        set title [string_truncate -len 500 -format html -no_format -- $item(title)]
-        set link [string_truncate -len 500 -no_format -- $item(link)]
-        set original_guid [string_truncate -len 500 -no_format -- $item(guid)]
+        set title [string_truncate -len 500 -- $item(title)]
+        set link [string_truncate -len 500 -- $item(link)]
+        set original_guid [string_truncate -len 500 -- $item(guid)]
         set permalink_p $item(permalink_p)
         set content_encoded $item(content_encoded)
         set description $item(description)
+        set author $item(author)
+        set pub_date $item(pub_date)
         
         set guid [news_aggregator::source::generate_guid \
                         -link $item(link) \
@@ -214,6 +241,15 @@ ad_proc -public news_aggregator::source::update {
 #	    set permalink_p $item(permalink_p)
 #	    set link $item(link)
 
+            # pub_date_sql
+            if { $pub_date eq "" } {
+                set pub_date_sql "now()"
+            } else {
+                # massage pub_date
+                set pub_date [clock format $pub_date -format "%Y-%m-%d %T UTC"]
+                set pub_date_sql ":pub_date"
+            }
+            
             db_exec_plsql add_item {}
             incr no_items
         } else {
@@ -255,17 +291,39 @@ ad_proc -public news_aggregator::source::delete {
     db_exec_plsql delete_source {}
 }
 
-ad_proc -public news_aggregator::source::update_all {} {
-    @author Simon Carstensen
+ad_proc -public news_aggregator::source::update_all {
+    -all_sources:boolean
+} {
+    @author Simon Carstensen (simon@bcuni.net)
+    @author Guan Yang (guan@unicast.org)
 
     Update sources by a one hour interval.
+
+    @param all_sources Update every source. Normally this proc
+    will only update the 25% of the existing sources.
 } {
     ns_log Notice "Updating news aggregator sources"
     
+    ds_comment "test"
     db_transaction {
         set source_count [db_string source_count ""]
         if { $source_count >= 1 } {
-            set limit [expr int($source_count/4)]
+            if { !$all_sources_p } {
+                set limit [expr int($source_count/4)]
+                if { $limit < 1 } {
+                    set limit 1
+                }
+                set limit_sql [db_map sources_limit]
+            } else {
+                set limit_sql ""
+            }
+            
+            if { !$all_sources_p } {
+                set time_limit [db_map time_limit]
+            } else {
+                set time_limit {}
+            }
+            
             set sources [db_list_of_lists sources ""]
             foreach source $sources {
                 set source_id [lindex $source 0]

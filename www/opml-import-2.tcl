@@ -17,7 +17,7 @@ ad_page_contract {
 
 set opml_url $url
 
-set user_id [ad_maybe_redirect_for_registration]
+set user_id [auth::require_login]
 permission::require_permission \
     -object_id $aggregator_id \
     -party_id $user_id \
