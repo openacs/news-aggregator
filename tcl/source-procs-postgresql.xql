@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
 <queryset>
-   <rdbms><type>postgresql</type><version>7.1</version></rdbms>
 
 <fullquery name="news_aggregator::source::update.update_source_no_new">
     <querytext>
@@ -11,13 +10,6 @@
 	    link = :link,
 	    description = :description
 	where source_id = :source_id
-    </querytext>
-</fullquery>
-
-<fullquery name="news_aggregator::source::update_all.source_count">
-    <querytext>
-        select count(*)
-        from na_sources
     </querytext>
 </fullquery>
 
@@ -39,17 +31,6 @@
     </querytext>
 </partialquery>
 
-
-<fullquery name="news_aggregator::source::update.items">
-    <querytext>
-        select  guid, original_guid, i.title, i.description
-        from    na_items i join
-                na_sources s on (i.source_id = s.source_id)
-        where   s.feed_url = :feed_url
-        and     guid in ($guids)   
-	order by i.item_id asc
-    </querytext>
-</fullquery>
 
 <fullquery name="news_aggregator::source::new.add_source">
         <querytext>
