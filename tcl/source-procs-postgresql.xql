@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 
 <queryset>
-   <rdbms><type>postgresql</type><version>7.1</version></rdbms>
+
+<rdbms><type>postgresql</type><version>7.2</version></rdbms>
 
 <fullquery name="news_aggregator::source::update.update_source_no_new">
     <querytext>
@@ -14,12 +15,11 @@
     </querytext>
 </fullquery>
 
-<fullquery name="news_aggregator::source::update_all.source_count">
+<partialquery name="news_aggregator::source::update_all.time_limit">
     <querytext>
-        select count(*)
-        from na_sources
-    </querytext>
-</fullquery>
+        where  last_scanned < (now() - '00:48:00'::time)
+</querytext>
+</partialquery>
 
 <fullquery name="news_aggregator::source::update_all.sources">
       <querytext>
@@ -27,23 +27,18 @@
                feed_url,
                last_modified
         from   na_sources
-        where  last_scanned < (now() - '00:48:00'::time)
+        $time_limit
 	order  by last_scanned asc
-        limit  $limit
+	$limit_sql
         </querytext>
     </fullquery>
 
-
-<fullquery name="news_aggregator::source::update.items">
+<partialquery name="news_aggregator::source::update_all.sources_limit">
     <querytext>
-        select  guid, original_guid, i.title, i.description
-        from    na_items i join
-                na_sources s on (i.source_id = s.source_id)
-        where   s.feed_url = :feed_url
-        and     guid in ($guids)   
-	order by i.item_id asc
+	limit $limit
     </querytext>
-</fullquery>
+</partialquery>
+
 
 <fullquery name="news_aggregator::source::new.add_source">
         <querytext>
@@ -61,6 +56,18 @@
             )
         </querytext>
     </fullquery>
+    
+<fullquery name="news_aggregator::source::new.add_item_pub_date_now">
+    <querytext>
+        now()
+    </querytext>
+</fullquery>
+
+<partialquery name="news_aggregator::source::new.add_item_pub_date">
+    <querytext>
+        :pub_date
+    </querytext>
+</partialquery>
 
 <fullquery name="news_aggregator::source::new.add_item">
       <querytext>
@@ -100,7 +107,9 @@
         boolean :permalink_p,
                 :title,
                 :description,
-                :content_encoded
+                :content_encoded,
+                :author,
+                $pub_date_sql
         );
         </querytext>
     </fullquery>

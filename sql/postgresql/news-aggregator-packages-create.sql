@@ -257,8 +257,10 @@ create or replace function na_item__new (
     varchar,      -- original_guid
     boolean,      -- permalink_p
     varchar,      -- title
-    varchar,      -- description,
-    varchar       -- content_encoded
+    varchar,      -- description
+    varchar,      -- content_encoded
+    varchar,      -- author
+    timestamptz   -- pub_date
 ) returns integer as '
 declare
     p_source_id                 alias for $1;
@@ -269,6 +271,8 @@ declare
     p_title                     alias for $6;
     p_description               alias for $7;
     p_content_encoded           alias for $8;
+    p_author                    alias for $9;
+    p_pub_date                  alias for $10;
 begin
 
         insert into na_items (
@@ -279,7 +283,9 @@ begin
            permalink_p,
            title, 
            description,
-           content_encoded, 
+           content_encoded,
+           author,
+           pub_date, 
            creation_date
         ) values (
            p_source_id,
@@ -290,6 +296,8 @@ begin
            p_title, 
            p_description,
            p_content_encoded,
+           p_author,
+           p_pub_date,
            current_timestamp
         );
 
