@@ -82,48 +82,6 @@ ad_proc -public na_last_scanned {
     }
     return $to_return
 }
-# Don't get the idea of the following proc.
-# It doesn't return any rows and has been left out for the moment. (Hakan)
-proc ns_xml_getChildrenTrim node {
-
-    set children_list [xml_node_get_children $node]
-    
-    set new_children {}
-    foreach child $children_list {
-	
-	
-	if {[$child nodeType] == "cdata_section" && ![string length [string trim [xml_node_get_content $child]]]} {
-	    
-
-	} else {
-	    lappend new_children $child
-	}
-    }
-	
-    return $new_children
-}
-# This proc is not used either (Hakan)
-proc ns_xml_firstChild node {
-    return [lindex [ns_xml_getChildrenTrim $node] 0 ]
-}
-
-ad_proc -public na_get_elements {
-    nodes
-    match
-} {
-    set matches [list]
-    foreach node_id $nodes {
-        if { [string equal $match [xml_node_get_name $node_id]] } {
-	    lappend matches $node_id
-        } else {
-	    set children [xml_node_get_children $node_id]
-	    if { [llength $children] > 0 } {
-		set matches [concat $matches [na_get_elements $children $match]]
-	    }
-	}
-    }
-    return $matches
-}
 
 ad_proc -public na_get_nodes {
     nodes
