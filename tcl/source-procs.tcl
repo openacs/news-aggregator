@@ -49,6 +49,8 @@ ad_proc -public news_aggregator::source::new {
     set last_modified $f(modified)
     
     db_exec_plsql add_source {}
+
+    update -source_id $source_id -feed_url $feed_url -modified ""
     
     if { [exists_and_not_null aggregator_id] } {
         news_aggregator::subscription::new \
