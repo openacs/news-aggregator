@@ -3,6 +3,10 @@
   <property name="context">@context@</property>
 
   <p>
+    <a href="./">Back to news aggregator</a>
+  </p>
+
+  <p>
     Enter the URL of an XML news feed you want to subscribe to, then click on the Add button.
   </p>
 

@@ -30,6 +30,8 @@
                i.guid as item_guid,
                i.original_guid as item_original_guid,
                i.permalink_p as item_permalink_p,
+               i.author as item_author,
+               to_char(i.pub_date at time zone 'UTC', 'YYYY-MM-DD HH24:MI:SS') as item_pub_date,
                s.last_modified
         from   (
                    na_aggregators a join

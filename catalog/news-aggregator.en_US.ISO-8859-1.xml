@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="news-aggregator" package_version="0.8d" locale="en_US" charset="ISO-8859-1">
+
+  <msg key="lt_Create_New_Aggregator">Create New Aggregator</msg>
+  <msg key="lt_Manage_This_Aggregato">Manage This Aggregator</msg>
+  <msg key="Manage_Subscriptions">Manage Subscriptions</msg>
+  <msg key="No_items">No items.</msg>
+  <msg key="Off">Off</msg>
+  <msg key="On">On</msg>
+  <msg key="Post">Post</msg>
+  <msg key="Purges">Purges:</msg>
+  <msg key="raquo">&amp;raquo;</msg>
+  <msg key="updated_x_time_ago">,
+                  updated %items.diff%</msg>
+</message_catalog>
