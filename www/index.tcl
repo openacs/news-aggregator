@@ -11,7 +11,7 @@ ad_page_contract {
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
 set package_url [ad_conn package_url]
-set per_user_aggregators_p [parameter::get -package_id -$package_id -parameter PerUserAggregatorsP -default 0]
+set per_user_aggregators_p [parameter::get -package_id $package_id -parameter PerUserAggregatorsP -default 0]
 
 if { ![info exists aggregator_id] } {
     # Check whether the user has an aggregator

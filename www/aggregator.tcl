@@ -9,7 +9,7 @@ ad_page_contract {
 
 set package_id [ad_conn package_id]
 
-if { ![parameter::get -package_id -$package_id -parameter PerUserAggregatorsP -default 0] } {
+if { ![parameter::get -package_id $package_id -parameter PerUserAggregatorsP -default 0] } {
     # May this user create her own aggregator?
     permission::require_permission \
 	-object_id $package_id \
