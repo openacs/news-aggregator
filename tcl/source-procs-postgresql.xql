@@ -29,9 +29,15 @@
         from   na_sources
         where  last_scanned < (now() - '00:48:00'::time)
 	order  by last_scanned asc
-        limit  $limit
+	$limit_sql
         </querytext>
     </fullquery>
+
+<partialquery name="news_aggregator::source::update_all.sources_limit">
+    <querytext>
+	limit $limit
+    </querytext>
+</partialquery>
 
 
 <fullquery name="news_aggregator::source::update.items">

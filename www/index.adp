@@ -41,7 +41,7 @@
 	      <group column="source_id">
                 <tr bgcolor="#ffffff" id="@items.item_id@">
                   <td>
-		    @items.content@
+		    @items.content;noquote@
 		    <if @items.item_link@ not nil and @items.item_guid_link@ not nil>
                       <a href="@items.item_guid_link@" title="Permanent URL for this entry">#</a>
 		    </if>
