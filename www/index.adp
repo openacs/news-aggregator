@@ -6,6 +6,7 @@
   <p>
     <b>&raquo;</b> <a href="@url@subscriptions">Manage Subscriptions</a> <br />
     <b>&raquo;</b> <a href="@aggregator_url@">Manage This Aggregator</a> <br />
+    <b>&raquo;</b> <a href="@create_url@">Create New Aggregator</a><br />
   <p>
     <if @aggregator_description@ not nil>
       @aggregator_description@
@@ -41,7 +42,7 @@
 	      <group column="source_id">
                 <tr bgcolor="#ffffff" id="@items.item_id@">
                   <td>
-		    @items.content@
+		    @items.content;noquote@
 		    <if @items.item_link@ not nil and @items.item_guid_link@ not nil>
                       <a href="@items.item_guid_link@" title="Permanent URL for this entry">#</a>
 		    </if>

@@ -11,17 +11,21 @@ ad_page_contract {
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
 set package_url [ad_conn package_url]
+set per_user_aggregators_p [parameter::get -package_id -$package_id -parameter PerUserAggregatorsP -default 0]
 
 if { ![info exists aggregator_id] } {
     # Check whether the user has an aggregator
     if { !$user_id } {
+	if { !$per_user_aggregators_p } {
+	    ad_returnredirect "public-aggregators"
+	}
 	ad_redirect_for_registration
 	ad_script_abort
     }
 
     set aggregator_id [news_aggregator::aggregator::user_default -user_id $user_id]
 
-    if { !$aggregator_id } {
+    if { !$aggregator_id && $per_user_aggregators_p } {
         
         set user_name [db_string select_user_name {}]
         set aggregator_name "${user_name}'s News Aggregator"
@@ -40,6 +44,17 @@ if { ![info exists aggregator_id] } {
     }
 
     ad_returnredirect "$aggregator_id"
+}
+
+if { $aggregator_id == 0 } {
+    # May this user create her own aggregator?
+    set write_p [permission::permission_p \
+		     -object_id $package_id \
+		     -privilege write]
+    if { $write_p } {
+	ad_returnredirect "settings"
+    }
+    ad_returnredirect "public-aggregators"
 }
 
 set write_p [permission::permission_p \
@@ -62,6 +77,8 @@ set url "$package_url$aggregator_id/"
 set graphics_url "${package_url}graphics/"
 set return_url [ad_conn url]
 set aggregator_url [export_vars -base aggregator { return_url aggregator_id }]
+
+set create_url "${package_url}/aggregator"
 
 set limit [ad_parameter "number_of_items_shown"]
 set sql_limit [expr 7*$limit]
