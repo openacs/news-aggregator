@@ -23,7 +23,7 @@
 
 <fullquery name="news_aggregator::source::new.source">
       <querytext>
-        select source_id
+        select source_id, title as source_title
         from   na_sources 
         where  feed_url = :feed_url
         </querytext>

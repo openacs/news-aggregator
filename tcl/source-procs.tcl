@@ -14,21 +14,28 @@ ad_proc -public news_aggregator::source::new {
     -user_id:required
     -package_id:required
     {-aggregator_id ""}
+    -array:boolean
 } {
     @author Simon Carstensen
 
-    Parse feed_url for link, title, and description. Then insert the source if it does not excist already.
+    Parse feed_url for link, title, and description. Then insert the source if it does not excist already. Subscribe the specified aggregator to the source.
+
+    @param array Return more into in an array
 } {
 
-    set source_id [db_string source {} -default ""]
-
-    if { [exists_and_not_null source_id] } {
+    if { [db_0or1row source {}] } {
         if { [exists_and_not_null aggregator_id] } {
             news_aggregator::subscription::new \
                 -aggregator_id $aggregator_id \
                 -source_id $source_id
 
-            return $source_id
+	    if { $array_p } {
+		set info(source_id) $source_id
+		set info(title) $source_title
+		return [array get info]
+	    } else {
+		return $source_id
+	    }
         }
         return 0
     }
@@ -41,6 +48,7 @@ ad_proc -public news_aggregator::source::new {
 
     array set channel $result(channel)
     set title [string_truncate -len 500 -- $channel(title)]
+    set channel_title $title
     set link [string_truncate -len 500 -- $channel(link)]
     set description [string_truncate -len 500 -- $channel(description)]
     
@@ -70,7 +78,13 @@ ad_proc -public news_aggregator::source::new {
         set content_encoded $item(content_encoded)
     }
 
-    return $source_id
+    if { $array_p } {
+	set info(source_id) $source_id
+	set info(title) $channel_title
+	return [array get info]
+    } else {
+	return $source_id
+    }
 }
 
 

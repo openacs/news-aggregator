@@ -6,6 +6,7 @@
   <p>
     <b>&raquo;</b> <a href="@url@subscriptions">Manage Subscriptions</a> <br />
     <b>&raquo;</b> <a href="@aggregator_url@">Manage This Aggregator</a> <br />
+    <b>&raquo;</b> <a href="@create_url@">Create New Aggregator</a><br />
   <p>
     <if @aggregator_description@ not nil>
       @aggregator_description@

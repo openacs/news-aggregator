@@ -121,9 +121,6 @@ list::create \
 set package_url [ad_conn package_url]
 
 db_multirow -extend {xml_graphics_url} sources sources {} {
-    if { [exists_and_not_null new_source_id] && $source_id == $new_source_id } {
-        set new_source_title $title
-    }
     set xml_graphics_url "${package_url}graphics/xml.gif"
 }
 
@@ -143,13 +140,13 @@ ad_form -name add_subscription -form {
         { You must specify a URL }
     }
 } -new_data {
-    set new_source_id [news_aggregator::source::new \
+    array set channel [news_aggregator::source::new \
                            -feed_url $feed_url \
                            -aggregator_id $aggregator_id \
                            -user_id $user_id \
-                           -package_id $package_id]
-
- 
-    ad_returnredirect [export_vars -base subscriptions {new_source_id}]
+                           -package_id $package_id \
+			   -array]
+    set title $channel(title)
+    ad_returnredirect -message "You have been subscribed to $title." subscriptions
     ad_script_abort
 }
