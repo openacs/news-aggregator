@@ -82,26 +82,27 @@ ad_proc -public na_last_scanned {
     }
     return $to_return
 }
-
+# Don't get the idea of the following proc.
+# It doesn't return any rows and has been left out for the moment. (Hakan)
 proc ns_xml_getChildrenTrim node {
 
-    set children_list [ns_xml node children $node]
+    set children_list [xml_node_get_children $node]
     
     set new_children {}
     foreach child $children_list {
 	
 	
-	if {[ns_xml node type $child] == "cdata_section" && ![string length [string trim [ns_xml node getcontent $child]]]} {
+	if {[$child nodeType] == "cdata_section" && ![string length [string trim [xml_node_get_content $child]]]} {
 	    
 
 	} else {
 	    lappend new_children $child
 	}
     }
-    
+	
     return $new_children
 }
-
+# This proc is not used either (Hakan)
 proc ns_xml_firstChild node {
     return [lindex [ns_xml_getChildrenTrim $node] 0 ]
 }
@@ -112,10 +113,10 @@ ad_proc -public na_get_elements {
 } {
     set matches [list]
     foreach node_id $nodes {
-        if { [string equal $match [ns_xml node name $node_id]] } {
+        if { [string equal $match [xml_node_get_name $node_id]] } {
 	    lappend matches $node_id
         } else {
-	    set children [ns_xml node children $node_id]
+	    set children [xml_node_get_children $node_id]
 	    if { [llength $children] > 0 } {
 		set matches [concat $matches [na_get_elements $children $match]]
 	    }
@@ -128,21 +129,20 @@ ad_proc -public na_get_nodes {
     nodes
 } {
     foreach node_id $nodes {
-        switch -- [ns_xml node name $node_id] {
+        switch -- [xml_node_get_name $node_id] {
             title {
-		catch {set title [ns_xml node getcontent [ns_xml_firstChild $node_id]]}
+		catch {set title [xml_node_get_content $node_id]}
 	    }
-            link {
-                catch {set link [ns_xml node getcontent [ns_xml_firstChild $node_id]]}
+            "link" {
+                catch {set link [xml_node_get_content $node_id]}
 	    }
-	    guid {
-                catch {set guid [ns_xml node getcontent [ns_xml_firstChild $node_id]]}
+	    "guid" {
+                catch {set guid [xml_node_get_content $node_id]}
             }
-            description {
-                catch {set description [ns_xml node getcontent [ns_xml_firstChild $node_id]]}
+            "description" {
+                catch {set description [xml_node_get_content $node_id]}
             }
 	}
-	
     }
 
     if { ![exists_and_not_null title] } {
@@ -176,16 +176,17 @@ ad_proc -public na_parse {
     xml
 } {
     if { [catch {
-	set doc_id [ns_xml parse $xml]
-	set nodes [ns_xml node children [ns_xml doc root $doc_id]]
+	set doc_id [xml_parse -persist $xml]
+	set nodes [xml_node_get_children [xml_doc_get_first_node $doc_id]]
 	set channel [na_get_elements $nodes "channel"]
-	set result [list [na_get_nodes [ns_xml node children $channel]]]
+	set result [list [na_get_nodes [xml_node_get_children $channel]]]
 
 	set items [na_get_elements $nodes "item"]
 	set items_sorted [na_sort_result $items]
 	foreach item $items_sorted {
-	    lappend result [na_get_nodes [ns_xml node children $item]]
+	    lappend result [na_get_nodes [xml_node_get_children $item]]
 	}
+	
 
     } err] } {
 	ns_log Notice "Error parsing RSS feed: $err"
