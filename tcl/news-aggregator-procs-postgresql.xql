@@ -54,4 +54,30 @@
         </querytext>
     </fullquery>
 
+<fullquery name="na_update_source.update_source">
+      <querytext>
+        update na_sources
+        set link = :link,
+            title = :title,
+            description = :description,
+ 	    updates = (updates + 1),
+	    last_scanned = now(),
+	    last_modified = :last_modified
+        where source_id = :source_id
+        </querytext>
+    </fullquery>
+
+    <fullquery name="na_update_source.item">
+      <querytext>
+        select deleted_p, item_id, i.title as item_title, i.description as item_description
+        from na_sources s, na_items i 
+        where owner_id = :owner_id 
+        and s.source_id = i.source_id
+	and i.$identifier = :$identifier
+	and feed_url = :feed_url
+	order by item_id
+        limit 1
+      </querytext>
+    </fullquery>
+
 </queryset>
