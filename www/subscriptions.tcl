@@ -78,7 +78,6 @@ list::create \
     -row_pretty_plural "subscriptions" \
     -actions {
        "Export Subscriptions" "opml" "Export your subscriptions as an OPML file"
-       "Import Subscriptions" "opml-import" "Import your subscriptions from an OPML file"
     } -bulk_actions $bulk_actions -elements {
         title {
             label "Name"

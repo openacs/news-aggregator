@@ -13,6 +13,9 @@ set package_id [ad_conn package_id]
 set package_url [ad_conn package_url]
 set per_user_aggregators_p [parameter::get -package_id $package_id -parameter PerUserAggregatorsP -default 0]
 set enable_purge_p [parameter::get -package_id $package_id -parameter EnablePurgeP -default 1]
+set multiple_aggregators_p [parameter::get -package_id $package_id -parameter MultipleAggregatorsP -default 1]
+set allow_aggregator_edit_p [parameter::get -package_id $package_id -parameter AllowAggregatorEditP -default 1]
+
 
 if { ![info exists aggregator_id] } {
     # Check whether the user has an aggregator
