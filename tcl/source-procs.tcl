@@ -88,11 +88,11 @@ ad_proc -public news_aggregator::source::new {
     }
 
     if { $array_p } {
-	set info(source_id) $source_id
-	set info(title) $channel_title
-	return [array get info]
+        set info(source_id) $source_id
+        set info(title) $channel_title
+        return [array get info]
     } else {
-	return $source_id
+        return $source_id
     }
 }
 
@@ -199,6 +199,8 @@ ad_proc -public news_aggregator::source::update {
         set permalink_p $item(permalink_p)
         set content_encoded $item(content_encoded)
         set description $item(description)
+        set author $item(author)
+        set pub_date $item(pub_date)
         
         set guid [news_aggregator::source::generate_guid \
                         -link $item(link) \
@@ -239,6 +241,15 @@ ad_proc -public news_aggregator::source::update {
 #	    set permalink_p $item(permalink_p)
 #	    set link $item(link)
 
+            # pub_date_sql
+            if { $pub_date eq "" } {
+                set pub_date_sql "now()"
+            } else {
+                # massage pub_date
+                set pub_date [clock format $pub_date -format "%Y-%m-%d %T UTC"]
+                set pub_date_sql ":pub_date"
+            }
+            
             db_exec_plsql add_item {}
             incr no_items
         } else {

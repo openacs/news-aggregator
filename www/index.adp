@@ -1,6 +1,9 @@
 <master>
   <property name="title">@page_title@</property>
   <property name="context">@context@</property>
+  <property name="header_stuff"><style type="text/css"><!-- .item_pub_date, .item_author { color: #777; padding-right: 1em; }
+.item_pub_date { font-size: 10px; }  
+ --></style></property>
 
 <if @write_p@ true>
   <p>
@@ -57,6 +60,8 @@
 		      </if>
                       <a href="@items.item_blog_url@"><img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /></a>
                     </if>
+                    
+                    <span class="item_pub_date">@items.pub_date@</span>
 		  </td>
                 </tr>
               </group>

@@ -54,6 +54,18 @@
             )
         </querytext>
     </fullquery>
+    
+<fullquery name="news_aggregator::source::new.add_item_pub_date_now">
+    <querytext>
+        now()
+    </querytext>
+</fullquery>
+
+<partialquery name="news_aggregator::source::new.add_item_pub_date">
+    <querytext>
+        :pub_date
+    </querytext>
+</partialquery>
 
 <fullquery name="news_aggregator::source::new.add_item">
       <querytext>
@@ -93,7 +105,9 @@
         boolean :permalink_p,
                 :title,
                 :description,
-                :content_encoded
+                :content_encoded,
+                :author,
+                $pub_date_sql
         );
         </querytext>
     </fullquery>

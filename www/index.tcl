@@ -122,13 +122,14 @@ if { $purge_p } {
 
 db_multirow -extend { 
     content 
-    diff 
+    diff
     source_url 
     save_url 
     unsave_url 
     item_blog_url 
     technorati_url
     item_guid_link
+    pub_date
 } items items $items_query {
     # Top is the first item
     if { $item_id > $top } {
@@ -157,7 +158,8 @@ db_multirow -extend {
         set text_only [util_remove_html_tags $item_description]
 
         if { [exists_and_not_null item_title] } {
-            set content "<a href=\"$item_link\">$item_title</a>. $item_description"
+            set content "<a href=\"$item_link\">$item_title</a>. 		    <span class=\"item_author\">$item_author</span>
+$item_description"
         } else {
             set content $item_description
         }
@@ -172,6 +174,14 @@ db_multirow -extend {
     set diff [news_aggregator::last_scanned -diff [expr [expr [clock seconds] - [clock scan $last_scanned]] / 60]]
     set source_url [export_vars -base source {source_id}]
     set technorati_url "http://www.technorati.com/cosmos/links.html?url=$link&sub=Get+Link+Cosmos"
+
+    set localtime [clock scan [lc_time_utc_to_local $item_pub_date] -gmt 1]
+    set utctime [clock scan $item_pub_date -gmt 1]
+    if { $utctime > [clock scan "1 week ago"] } {
+        set pub_date [clock format $localtime -format "%a %H:%M"]
+    } else {
+        set pub_date [clock format $localtime -format "%m-%d %H:%M"]
+    }
 
     if { [string equal $write_p "1"] } {
 	if { [lsearch $saved_items $item_id] == -1 } {
@@ -211,6 +221,7 @@ if { [exists_and_not_null top] && [exists_and_not_null bottom] &&
         }
     }
     set purge 1
+    
 } else {
     set purge 0
 }
