@@ -218,6 +218,7 @@ ad_proc -public na_update_source {
 } {
     set header [ns_set create]
     ns_set put $header "If-Modified-Since" $last_modified
+
     if { [catch { 
         set f [util_httpget_full $feed_url $header] }]
     } {
@@ -279,7 +280,7 @@ ad_proc -public na_update_sources { } {
 } {
     ns_log Debug "na_update_sources: updating news-aggregator sources"
     
-    db_foreach sources { *SQL* } {
+    db_foreach sources {} {
         na_update_source $owner_id $source_id $feed_url $last_modified
     }
 
