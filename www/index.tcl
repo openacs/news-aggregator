@@ -11,17 +11,25 @@ ad_page_contract {
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
 set package_url [ad_conn package_url]
+set per_user_aggregators_p [parameter::get -package_id $package_id -parameter PerUserAggregatorsP -default 0]
+set enable_purge_p [parameter::get -package_id $package_id -parameter EnablePurgeP -default 1]
+set multiple_aggregators_p [parameter::get -package_id $package_id -parameter MultipleAggregatorsP -default 1]
+set allow_aggregator_edit_p [parameter::get -package_id $package_id -parameter AllowAggregatorEditP -default 1]
+
 
 if { ![info exists aggregator_id] } {
     # Check whether the user has an aggregator
     if { !$user_id } {
+	if { !$per_user_aggregators_p } {
+	    ad_returnredirect "public-aggregators"
+	}
 	ad_redirect_for_registration
 	ad_script_abort
     }
 
     set aggregator_id [news_aggregator::aggregator::user_default -user_id $user_id]
 
-    if { !$aggregator_id } {
+    if { !$aggregator_id && $per_user_aggregators_p } {
         
         set user_name [db_string select_user_name {}]
         set aggregator_name "${user_name}'s News Aggregator"
@@ -40,6 +48,17 @@ if { ![info exists aggregator_id] } {
     }
 
     ad_returnredirect "$aggregator_id"
+}
+
+if { $aggregator_id == 0 } {
+    # May this user create her own aggregator?
+    set write_p [permission::permission_p \
+		     -object_id $package_id \
+		     -privilege write]
+    if { $write_p } {
+	ad_returnredirect "settings"
+    }
+    ad_returnredirect "public-aggregators"
 }
 
 set write_p [permission::permission_p \
@@ -63,6 +82,8 @@ set graphics_url "${package_url}graphics/"
 set return_url [ad_conn url]
 set aggregator_url [export_vars -base aggregator { return_url aggregator_id }]
 
+set create_url "${package_url}/aggregator"
+
 set limit [ad_parameter "number_of_items_shown"]
 set sql_limit [expr 7*$limit]
 
@@ -74,6 +95,8 @@ set counter 0
 if { [info exists purge_p] && $public_p == "f" && $purge_p == "f" } {
     set purge_p 0
 } elseif { $public_p == "t" } {
+    set purge_p 0
+} elseif { !$enable_purge_p } {
     set purge_p 0
 } else {
     set purge_p 1
@@ -105,29 +128,32 @@ if { $purge_p } {
 
 db_multirow -extend { 
     content 
-    diff 
+    diff
     source_url 
     save_url 
     unsave_url 
     item_blog_url 
     technorati_url
     item_guid_link
+    pub_date
 } items items $items_query {
-    # Top is the first item
-    if { $item_id > $top } {
-    	set top $item_id
-    }
-    
-    set purged_p 0
-    # Handle purged items
-    foreach purge $purges {
-    	if { $item_id <= [lindex $purge 0] && $item_id >= [lindex $purge 1] &&
-	     [lsearch $saved_items $item_id] == -1 } {
-	    set purged_p 1
-	}
-    }
-    if { $purged_p } {
-        continue
+    if { $enable_purge_p } {
+        # Top is the first item
+        if { $item_id > $top } {
+            set top $item_id
+        }
+        
+        set purged_p 0
+        # Handle purged items
+        foreach purge $purges {
+            if { $item_id <= [lindex $purge 0] && $item_id >= [lindex $purge 1] &&
+             [lsearch $saved_items $item_id] == -1 } {
+            set purged_p 1
+        }
+        }
+        if { $purged_p } {
+            continue
+        }
     }
 
     if { [exists_and_not_null content_encoded] } {
@@ -140,7 +166,8 @@ db_multirow -extend {
         set text_only [util_remove_html_tags $item_description]
 
         if { [exists_and_not_null item_title] } {
-            set content "<a href=\"$item_link\">$item_title</a>. $item_description"
+            set content "<a href=\"$item_link\">$item_title</a>. 		    <span class=\"item_author\">$item_author</span>
+$item_description"
         } else {
             set content $item_description
         }
@@ -155,6 +182,14 @@ db_multirow -extend {
     set diff [news_aggregator::last_scanned -diff [expr [expr [clock seconds] - [clock scan $last_scanned]] / 60]]
     set source_url [export_vars -base source {source_id}]
     set technorati_url "http://www.technorati.com/cosmos/links.html?url=$link&sub=Get+Link+Cosmos"
+
+    set localtime [clock scan [lc_time_utc_to_local $item_pub_date] -gmt 1]
+    set utctime [clock scan $item_pub_date -gmt 1]
+    if { $utctime > [clock scan "1 week ago"] } {
+        set pub_date [clock format $localtime -format "%a %H:%M"]
+    } else {
+        set pub_date [clock format $localtime -format "%m-%d %H:%M"]
+    }
 
     if { [string equal $write_p "1"] } {
 	if { [lsearch $saved_items $item_id] == -1 } {
@@ -177,7 +212,8 @@ db_multirow -extend {
     }
 }
 
-if { [exists_and_not_null top] && [exists_and_not_null bottom] &&
+if { $enable_purge_p &&
+     [exists_and_not_null top] && [exists_and_not_null bottom] &&
      $top >= $bottom && $public_p == "f" &&
      [permission::permission_p -party_id $user_id -object_id $aggregator_id -privilege write] } {
     
@@ -194,6 +230,7 @@ if { [exists_and_not_null top] && [exists_and_not_null bottom] &&
         }
     }
     set purge 1
+    
 } else {
     set purge 0
 }
