@@ -12,6 +12,7 @@ set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
 set package_url [ad_conn package_url]
 set per_user_aggregators_p [parameter::get -package_id $package_id -parameter PerUserAggregatorsP -default 0]
+set enable_purge_p [parameter::get -package_id $package_id -parameter EnablePurgeP -default 1]
 
 if { ![info exists aggregator_id] } {
     # Check whether the user has an aggregator
@@ -92,6 +93,8 @@ if { [info exists purge_p] && $public_p == "f" && $purge_p == "f" } {
     set purge_p 0
 } elseif { $public_p == "t" } {
     set purge_p 0
+} elseif { !$enable_purge_p } {
+    set purge_p 0
 } else {
     set purge_p 1
 }
@@ -131,21 +134,23 @@ db_multirow -extend {
     item_guid_link
     pub_date
 } items items $items_query {
-    # Top is the first item
-    if { $item_id > $top } {
-    	set top $item_id
-    }
-    
-    set purged_p 0
-    # Handle purged items
-    foreach purge $purges {
-    	if { $item_id <= [lindex $purge 0] && $item_id >= [lindex $purge 1] &&
-	     [lsearch $saved_items $item_id] == -1 } {
-	    set purged_p 1
-	}
-    }
-    if { $purged_p } {
-        continue
+    if { $enable_purge_p } {
+        # Top is the first item
+        if { $item_id > $top } {
+            set top $item_id
+        }
+        
+        set purged_p 0
+        # Handle purged items
+        foreach purge $purges {
+            if { $item_id <= [lindex $purge 0] && $item_id >= [lindex $purge 1] &&
+             [lsearch $saved_items $item_id] == -1 } {
+            set purged_p 1
+        }
+        }
+        if { $purged_p } {
+            continue
+        }
     }
 
     if { [exists_and_not_null content_encoded] } {
@@ -204,7 +209,8 @@ $item_description"
     }
 }
 
-if { [exists_and_not_null top] && [exists_and_not_null bottom] &&
+if { $enable_purge_p &&
+     [exists_and_not_null top] && [exists_and_not_null bottom] &&
      $top >= $bottom && $public_p == "f" &&
      [permission::permission_p -party_id $user_id -object_id $aggregator_id -privilege write] } {
     

@@ -72,17 +72,17 @@
   </table>
 </else>
 
-<if @public_p@ false and @purge@ true and @purge_p@ true>
+<if @enable_purge_p@ true and @public_p@ false and @purge@ true and @purge_p@ true>
   <formtemplate id="purge"></formtemplate>
 </if>
 
     
-<if @public_p@ false and @purge_p@ true>
+<if @enable_purge_p@ true and @public_p@ false and @purge_p@ true>
     <p>
         #news-aggregator.Purges# <b>#news-aggregator.On#</b> | <a href="@purge_off_url@">#news-aggregator.Off#</a>
     </p>
 </if>
-<if @public_p@ false and @purge_p@ false>
+<if @enable_purge_p@ true and @public_p@ false and @purge_p@ false>
     <p>
         #news-aggregator.Purges# <a href="@purge_on_url@">#news-aggregator.On#</a> | <b>#news-aggregator.Off#</b> 
     </p>   
