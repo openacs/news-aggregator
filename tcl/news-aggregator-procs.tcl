@@ -13,7 +13,7 @@ ad_proc -public util_httpget_full {
     if {[incr depth] > 10} {
         return -code error "util_httpget:  Recursive redirection:  $url"
     }
-    ns_log "Notice" "Getting {$url} {$headers} {$timeout} {$depth}"
+    ns_log Debug "Getting {$url} {$headers} {$timeout} {$depth}"
     set http [ns_httpopen GET $url $headers $timeout]
     set rfd [lindex $http 0]
     close [lindex $http 1]
@@ -188,7 +188,7 @@ ad_proc -public na_parse {
 	}
 
     } err] } {
-	ns_log "Notice" "Error parsing RSS feed: $err"
+	ns_log Notice "Error parsing RSS feed: $err"
         return 0
     } else {
 	return $result
@@ -299,7 +299,7 @@ ad_proc -public na_update_source {
 ad_proc -public na_update_sources { } {
     Update sources by a one hour interval.
 } {
-    ns_log "Notice" "Updating na_sources"
+    ns_log Debug "na_update_sources: updating news-aggregator sources"
     
     db_foreach sources { *SQL* } {
 	na_update_source $owner_id $source_id $feed_url $last_modified
