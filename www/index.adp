@@ -50,7 +50,7 @@
                       <a href="@items.item_guid_link@" title="Permanent URL for this entry">#</a>
 		    </if>
 		  </td>
-                  <td valign="top" width="40" align="center">
+                  <td valign="top" width="40" align="left">
                     <if @public_p@ false and @write_p@ true>
        		      <if @items.save_url@ not nil>
 		        <a href="@items.save_url@"><img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /></a>
