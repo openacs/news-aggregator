@@ -19,7 +19,7 @@ if { ![parameter::get -package_id $package_id -parameter PerUserAggregatorsP -de
 set page_title "Create aggregator"
 set context [list $page_title]
 
-set user_id [ad_maybe_redirect_for_registration]
+set user_id [auth::require_login]
 
 ad_form -name aggregator -select_query_name select_aggregator -form {
     {aggregator_id:integer(hidden),key}
