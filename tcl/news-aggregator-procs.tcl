@@ -208,9 +208,9 @@ ad_proc -public na_add_source {
 	if { ![string equal 0 $result] } {
 
 	    set channel [lindex $result 0]
-	    set title [string_truncate -len 245 -no_format [lindex $channel 0]]
-	    set link [string_truncate -len 245 -no_format [lindex $channel 1]]
-	    set description [string_truncate -len 245 -no_format [lindex $channel 2]]
+	    set title [string_truncate -len 245 -no_format -- [lindex $channel 0]]
+	    set link [string_truncate -len 245 -no_format -- [lindex $channel 1]]
+	    set description [string_truncate -len 245 -no_format -- [lindex $channel 2]]
 	    set source_id [db_nextval "acs_object_id_seq"]
 	    set creation_ip [ns_conn peeraddr]
 	    set last_modified [lindex $f 2]
@@ -220,8 +220,8 @@ ad_proc -public na_add_source {
 		db_exec_plsql add_source { *SQL* }
 		set items [lrange $result 1 end]
 		foreach item $items {
-		    set title [string_truncate -len 245 -no_format [lindex $item 0]]
-		    set link [string_truncate -len 245 -no_format [lindex $item 1]]
+		    set title [string_truncate -len 245 -no_format -- [lindex $item 0]]
+		    set link [string_truncate -len 245 -no_format -- [lindex $item 1]]
 		    set description [lindex $item 2]
 		    db_exec_plsql add_item { *SQL* }
 		}
@@ -252,8 +252,8 @@ ad_proc -public na_update_source {
 	set host [lindex [lindex $result 0] 1]
         set items [lrange $result 1 end]
         foreach item $items {
-            set title [string_truncate -len 245 -no_format [lindex $item 0]]
-            set link [string_truncate -len 245 -no_format [lindex $item 1]]
+            set title [string_truncate -len 245 -no_format -- [lindex $item 0]]
+            set link [string_truncate -len 245 -no_format -- [lindex $item 1]]
 	    set description [lindex $item 2]
 
 	    # check whether link and description have been set as we
@@ -287,9 +287,9 @@ ad_proc -public na_update_source {
 	    # let's update the rss metadata as well
 	    set channel [lindex $result 0]
 	    set last_modified [lindex $f 2]
-	    set title [string_truncate -len 245 -no_format [lindex $channel 0]]
-	    set link [string_truncate -len 245 -no_format [lindex $channel 1]]
-	    set description [string_truncate -len 245 -no_format [lindex $channel 2]]
+	    set title [string_truncate -len 245 -no_format -- [lindex $channel 0]]
+	    set link [string_truncate -len 245 -no_format -- [lindex $channel 1]]
+	    set description [string_truncate -len 245 -no_format -- [lindex $channel 2]]
 	    
 	    db_dml update_source { *SQL* }
 	}
