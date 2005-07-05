@@ -8,6 +8,7 @@
     <singleton-p>f</singleton-p>
     
     <version name="0.5d2" url="http://openacs.org/repository/download/apm/news-aggregator-0.5d2.apm">
+
         <owner url="http://bcuni.net">Simon Carstensen</owner>
         <summary>Read news sources from your website.</summary>
         <release-date>2003-11-10</release-date>
