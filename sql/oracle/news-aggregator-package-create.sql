@@ -92,8 +92,13 @@ as
     is
     begin
 
-        delete
-        from na_sources
+        delete from na_items
+                   where source_id = na_source.del.source_id;
+
+        delete from acs_permissions
+                   where object_id = na_source.del.source_id;
+
+        delete from na_sources
         where source_id = na_source.del.source_id;
 
         acs_object.del(na_source.del.source_id);
@@ -119,3 +124,58 @@ as
 end na_source;
 /
 show errors
+
+-- Package na_item
+create or replace package na_item
+as
+
+    function new (
+        source_id in na_items.source_id%TYPE default null,
+        link in na_items.link%TYPE default null,
+	title in na_items.title%TYPE default null,
+	description in varchar default null,
+        creation_date in na_items.creation_date%TYPE default sysdate,
+        deleted_p in na_items.deleted_p%TYPE default '0'
+    ) return integer;
+
+
+end na_item;
+/
+show errors
+
+create or replace package body na_item
+as
+
+    function new (
+        source_id in na_items.source_id%TYPE default null,
+        link in na_items.link%TYPE default null,
+	title in na_items.title%TYPE default null,
+	description in varchar default null,
+        creation_date in na_items.creation_date%TYPE default sysdate,
+        deleted_p in na_items.deleted_p%TYPE default '0'
+    ) return integer
+    is
+        v_resultado integer;
+	v_item_id na_items.item_id%TYPE;
+    begin
+
+	select na_items_seq.nextval into v_item_id from dual;
+
+        insert into na_items
+          (item_id, source_id, link, title, description, creation_date, deleted_p)
+        values
+          (v_item_id, 
+	   na_item.new.source_id, 
+	   na_item.new.link, 
+	   na_item.new.title, 
+	   na_item.new.description, 
+	   na_item.new.creation_date, 
+	   na_item.new.deleted_p);
+
+	select 1 into v_resultado from dual;
+	return v_resultado;
+	end new;
+end na_item;
+/
+show errors
+

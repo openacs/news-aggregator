@@ -23,33 +23,30 @@
 <fullquery name="na_add_source.add_item">
       <querytext>
 	     begin
-             :1 := na_source.new (
+             :1 := na_item.new (
                  source_id => :source_id,
-            	 package_id => :package_id,
-            	 feed_url => :feed_url,
             	 link => :link,
              	 title => :title,
 		 description => :description,
-		 creation_user => :owner_id,
-            	 creation_ip => :creation_ip
+		 creation_date => sysdate,
+            	 deleted_p => '0'
              );
-        </querytext>
+	     end;
+	     </querytext>
     </fullquery>
 
 <fullquery name="na_update_source.add_item">
       <querytext>
 	     begin
-             :1 := na_source.new (
+             :1 := na_item.new (
                  source_id => :source_id,
-            	 package_id => :package_id,
-            	 feed_url => :feed_url,
             	 link => :link,
              	 title => :title,
 		 description => :description,
-		 creation_user => :owner_id,
-            	 creation_ip => :creation_ip
+		 creation_date => sysdate,
+            	 deleted_p => '0'
              );
-             end
+             end;
         </querytext>
     </fullquery>
 

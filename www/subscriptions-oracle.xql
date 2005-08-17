@@ -6,7 +6,7 @@
 <fullquery name="delete_source">
       <querytext>
              begin
-	     :1 := na_source.del(
+	     na_source.del(
                 source_id => :delete_id
              );
              end;
