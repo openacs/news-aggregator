@@ -16,17 +16,6 @@ alter table na_items add author varchar(100);
 alter table na_items add comment_page varchar(200);
 alter table na_items add pub_date timestamptz;
 
-drop function na_item__new (
-    integer,      -- source_id
-    varchar,      -- link
-    varchar,      -- guid
-    varchar,      -- original_guid 
-    boolean,      -- permalink_p
-    varchar,      -- title
-    varchar,       -- description,
-    varchar      -- content_encoded
-);
-
 create or replace function na_item__new (
     integer,      -- source_id
     varchar,      -- link
