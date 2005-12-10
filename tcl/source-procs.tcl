@@ -246,7 +246,7 @@ ad_proc -public news_aggregator::source::update {
                 set pub_date_sql "now()"
             } else {
                 # massage pub_date
-                set pub_date [clock format $pub_date -format "%Y-%m-%d %T UTC"]
+                set pub_date [clock format $pub_date -format "%Y-%m-%d %T %Z"]
                 set pub_date_sql ":pub_date"
             }
             
