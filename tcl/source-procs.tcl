@@ -304,7 +304,6 @@ ad_proc -public news_aggregator::source::update_all {
 } {
     ns_log Notice "Updating news aggregator sources"
     
-    ds_comment "test"
     db_transaction {
         set source_count [db_string source_count ""]
         if { $source_count >= 1 } {
