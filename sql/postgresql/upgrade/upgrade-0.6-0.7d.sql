@@ -48,14 +48,18 @@ select acs_object_type__create_type (
 -- alter table na_sources drop column package_id;
 -- alter table na_sources drop column owner_id;
 alter table na_sources add column  last_modified_stamp timestamptz;
-alter table na_sources add column  last_scan_ok_p boolean default true;
+alter table na_sources add column  last_scan_ok_p boolean;
+alter table na_sources alter column last_scan_ok_p set default true;
 alter table na_sources add column  stacktrace text;
 alter table na_sources add column  rss_source text;
-alter table na_sources add column  listed_p  boolean default true;
+alter table na_sources add column  listed_p  boolean;
+alter table na_sources alter column listed_p set default true;
 
 alter table na_items add column       guid			    varchar(500);
 alter table na_items add column       original_guid    varchar(500);
-alter table na_items add column       permalink_p boolean default true;
+alter table na_items add column       permalink_p boolean;
+alter table na_items alter column permalink_p set default true;
+
 alter table na_items add column content_encoded text;
 
 create index na_items_guid_idx on na_items(guid);
