@@ -7,7 +7,7 @@
 </p>
 
 <p>
-  @content@
+  @content;noquote@
 </p>
 
 <formtemplate id="blog_item"></formtemplate>
