@@ -1,5 +1,5 @@
 ad_page_contract {
-    Create a new aggregator.
+    Include to create a new aggregator.
 
     @author Simon Carstensen
 } {
@@ -8,6 +8,7 @@ ad_page_contract {
 }
 
 set package_id [ad_conn package_id]
+set user_id [auth::require_login]
 
 if { ![parameter::get -package_id $package_id -parameter PerUserAggregatorsP -default 0] } {
     # May this user create her own aggregator?
@@ -16,15 +17,19 @@ if { ![parameter::get -package_id $package_id -parameter PerUserAggregatorsP -de
 	-privilege write
 }
 
-set page_title "Create aggregator"
-set context [list $page_title]
+set page_title "Edit Aggregator Info"
 
-set user_id [auth::require_login]
+if { [exists_and_not_null context] } {
+    lappend context "$page_title"
+} else {
+    set context [list $page_title]
+}
 
-ad_form -name aggregator -select_query_name select_aggregator -form {
+ad_form -name aggregator -action aggregator -select_query_name select_aggregator -form {
     {aggregator_id:integer(hidden),key}
     {aggregator_name:text
         {label "Name"}
+        {html {size 50}}
     }
     {description:text(textarea),optional
         {label "Description"}
@@ -48,7 +53,7 @@ ad_form -name aggregator -select_query_name select_aggregator -form {
     if { [exists_and_not_null return_url] } {
         ad_returnredirect $return_url
     } else {
-        ad_returnredirect settings
+	ad_returnredirect "[ad_conn package_url]$aggregator_id"
     }
     ad_script_abort
 

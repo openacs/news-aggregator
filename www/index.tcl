@@ -4,34 +4,35 @@ ad_page_contract {
     @author Simon Carstensen simon@bcuni.net
     @creation-date 28-06-2003
 } {
-    aggregator_id:integer,optional
-    purge_p:boolean,optional
+    { aggregator_id:integer,optional "0" }
+    { purge_p:boolean,optional }
 }
 
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
+set instance_name [apm_instance_name_from_id $package_id]
 set package_url [ad_conn package_url]
 set per_user_aggregators_p [parameter::get -package_id $package_id -parameter PerUserAggregatorsP -default 0]
 set enable_purge_p [parameter::get -package_id $package_id -parameter EnablePurgeP -default 1]
 set multiple_aggregators_p [parameter::get -package_id $package_id -parameter MultipleAggregatorsP -default 1]
 set allow_aggregator_edit_p [parameter::get -package_id $package_id -parameter AllowAggregatorEditP -default 1]
 
-
-if { ![info exists aggregator_id] } {
+if { !$aggregator_id } {
     # Check whether the user has an aggregator
     if { !$user_id } {
 	if { !$per_user_aggregators_p } {
 	    ad_returnredirect "public-aggregators"
 	}
-	ad_redirect_for_registration
+	auth::require_login
 	ad_script_abort
     }
 
-    set aggregator_id [news_aggregator::aggregator::user_default -user_id $user_id]
+    set aggregator_id [news_aggregator::aggregator::user_default \
+			   -user_id $user_id -package_id $package_id]
 
     if { !$aggregator_id && $per_user_aggregators_p } {
         
-        set user_name [db_string select_user_name {}]
+        set user_name [person::name -person_id $user_id]
         set aggregator_name "${user_name}'s News Aggregator"
 
 	set aggregator_id [news_aggregator::aggregator::new \
@@ -40,22 +41,29 @@ if { ![info exists aggregator_id] } {
 				-public_p 0 \
 				-creation_user $user_id \
 				-creation_ip [ad_conn peeraddr]]
+	news_aggregator::aggregator::set_user_default -user_id $user_id \
+	    -package_id $package_id -aggregator_id $aggregator_id
 
         #load preinstalled subscriptions into aggregator
         news_aggregator::aggregator::load_preinstalled_subscriptions \
             -aggregator_id $aggregator_id \
             -package_id $package_id
+
+    } elseif { !$aggregator_id } {
+	# No default aggregator and no per-user aggregator
+	# Try to default to a public aggregator
+	set aggregator_id [news_aggregator::aggregator::instance_default \
+			       -package_id $package_id]
     }
 
-    ad_returnredirect "$aggregator_id"
 }
 
-if { $aggregator_id == 0 } {
-    # May this user create her own aggregator?
-    set write_p [permission::permission_p \
-		     -object_id $package_id \
-		     -privilege write]
-    if { $write_p } {
+# Have we found an aggregator yet?
+if { !$aggregator_id } {
+    # May this user create an aggregator?
+    if { [permission::permission_p \
+	     -object_id $package_id \
+	      -privilege write] eq "1" } {
 	ad_returnredirect "settings"
     }
     ad_returnredirect "public-aggregators"
@@ -66,6 +74,27 @@ set write_p [permission::permission_p \
                  -privilege write]
 
 db_1row aggregator_info {}
+
+# Get options for "other aggregators" form widget
+set other_aggregators [list [list "  --- select ---  " "\#"]]
+db_foreach other_aggregators {} {
+     if { [permission::permission_p \
+ 	      -object_id $other_id \
+ 	      -privilege read] eq "1" } {
+	 lappend other_aggregators [list $name $other_id]
+    }
+}
+set num_options [llength $other_aggregators]
+
+ad_form -name aggregators -form {
+    {aggregator:integer(select)
+        {options $other_aggregators}
+	{html {onchange "javascript:this.form.submit();"}}
+    }
+} -on_submit {
+    ad_returnredirect "[ad_conn package_url]$aggregator"
+    ad_script_abort
+}
 
 #if { $public_p == "f" } {
 #    permission::require_permission \
@@ -82,7 +111,7 @@ set graphics_url "${package_url}graphics/"
 set return_url [ad_conn url]
 set aggregator_url [export_vars -base aggregator { return_url aggregator_id }]
 
-set create_url "${package_url}/aggregator"
+set create_url "${package_url}aggregator-add"
 
 set limit [ad_parameter "number_of_items_shown"]
 set sql_limit [expr 7*$limit]

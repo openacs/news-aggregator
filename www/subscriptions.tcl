@@ -1,5 +1,5 @@
 ad_page_contract {
-  The News Aggregator subscription page.
+  The News Aggregator subscription page (included by manage.adp).
 
   @author Simon Carstensen (simon@bcuni.net)
   @creation-date Jan 2003
@@ -15,8 +15,14 @@ permission::require_permission \
     -object_id $aggregator_id \
     -privilege write
 
-set page_title "Subscriptions"
-set context [list $page_title]
+array set ag_info [news_aggregator::aggregator::aggregator_info -aggregator_id $aggregator_id]
+set page_title "Manage Subscriptions"
+
+if { [exists_and_not_null context] } {
+    lappend context "$page_title"
+} else {
+    set context [list $page_title]
+}
 
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
@@ -132,7 +138,7 @@ db_multirow -extend {xml_graphics_url} sources sources {} {
     set xml_graphics_url "${package_url}graphics/xml.gif"
 }
 
-ad_form -name add_subscription -form {
+ad_form -name add_subscription -action subscriptions -form {
     {subscription_id:integer(hidden),key}
     {feed_url:text(text) 
         {value $feed_url_val} 
@@ -160,6 +166,6 @@ ad_form -name add_subscription -form {
     }
     array set channel $channel_array
     set title $channel(title)
-    ad_returnredirect -message "You have been subscribed to $title." subscriptions
+    ad_returnredirect -message "You have been subscribed to $title." "manage?tab=subscriptions"
     ad_script_abort
 }

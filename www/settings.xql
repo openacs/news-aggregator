@@ -4,16 +4,22 @@
 
     <fullquery name="select_aggregators">
           <querytext>
-           select a.aggregator_id,
-                  a.aggregator_name,
-                  a.public_p,
-                  u.default_aggregator
-           from   na_aggregators a join
-                  acs_objects o on (o.object_id = a.aggregator_id) join
-                  na_user_preferences u on (o.creation_user = u.user_id)
-           where  a.package_id = :package_id
-           and    u.user_id = :user_id
-           order  by a.aggregator_name
+          select a.aggregator_id,
+                 a.aggregator_name,
+                 a.public_p,
+                 acs_permission__permission_p(a.aggregator_id,:user_id,'write') as write_p
+           from  na_aggregators a
+           where a.package_id = :package_id
+             and acs_permission__permission_p(a.aggregator_id,:user_id,'read')
+           order by a.aggregator_name;
+          </querytext>
+    </fullquery>
+
+    <fullquery name="aggregator_exists">
+          <querytext>
+          select 1
+           from  na_aggregators a
+           where aggregator_id = :aggregator_id
           </querytext>
     </fullquery>
 

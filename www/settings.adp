@@ -2,25 +2,20 @@
   <property name="title">@page_title@</property>
   <property name="context">@context@</property>
 
+<h2>@page_title@</h2>
 <p>
-  <h3>Your News Aggregators</h3>
+You have the ability to view the following aggregators in @instance_name@. If You select a default aggregator,  
+you will automatically be directed there when visiting @instance_name@. If you have write privileges on 
+a particular aggregator, you will have the option to edit or delete it as well.
   <listtemplate name="aggregators"></listtemplate>
 </p>
 <p>
   <b>&raquo;</b> <a href="@aggregator_link@">Create new aggregator</a>
 </p>
 
-<if @aggregators:rowcount@ gt 1>
-  <h3>Default News Aggregator</h3>
-  <formtemplate id="aggregators">
-    Select default aggregator: <br />
-    <formwidget id="default_aggregator_id">
-    <formwidget id="submit">
-  </formtemplate>
-</if>
-
+<p>&nbsp;</p>
 <p>
-  <h3>Your Weblogs</h3>
+The weblogs below will show up as options when you choose to blog about a news item.
   <listtemplate name="weblogs"></listtemplate>
 </p>
 <p>

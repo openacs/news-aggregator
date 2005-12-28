@@ -5,27 +5,45 @@
 .item_pub_date { font-size: 10px; }  
  --></style></property>
 
-<if @write_p@ true>
-  <p>
-    <b>&raquo;</b> <a href="@url@subscriptions">#news-aggregator.Manage_Subscriptions#</a> <br />
-    <if @allow_aggregator_edit_p@ true>
-        <b>#news-aggregator.raquo#</b> <a href="@aggregator_url@">#news-aggregator.lt_Manage_This_Aggregato#</a> <br />
-    </if>
-    <if @multiple_aggregators_p@ true>
-        <b>#news-aggregator.raquo#</b> <a href="@create_url@">#news-aggregator.lt_Create_New_Aggregator#</a><br />
-    </if>
-  <p>
+<!-- MS: would like to lay this out without tables -->
+<table border="0">
+  <tr>
+   <td width="100%">
+    <h2>@aggregator_name@</h2>
     <if @aggregator_description@ not nil>
       @aggregator_description@
     </if>
     <else>
-      This page lists <b>the most recent items</b> from the feeds you've <a href="@url@subscriptions">subscribed</a> to.
-      <if @enable_purge_p@ true>
-          You can hit the <b>Purge button</b> to clean out the page. Clicking the <b>Save</b> icon <img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /> will prevent an item from being purged.
-          Click on the <b>#news-aggregator.Post#</b> icon <img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /> to add the item to your weblog.
-      </if>
+      This page lists <b>the most recent items</b> from the feeds you've <a href="@url@manage?tab=subscriptions">subscribed</a> to.
     </else>
-  </p>
+    <p>   
+    <if @public_p@ eq "t"><if @enable_purge_p@ true>
+        You can hit the <b>Purge button</b> to clean out the page. Clicking the <b>Save</b> icon <img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /> will prevent an item from being purged.
+        Click on the <b>#news-aggregator.Post#</b> icon <img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /> to add the item to your weblog.
+    </if></if>
+   </td>
+   <td valign="top" align="right">
+    <if @num_options@ gt 1>
+     <nobr><ul class="action-links">
+      <li><formtemplate id="aggregators">
+      Visit another aggregator <formwidget id=aggregator>
+      </formtemplate></li>
+     </ul></nobr>
+    </if> 
+   </td>
+  </tr>
+<table>
+
+<if @write_p@ true>
+  <div class="list-button-bar">
+  <p>
+    <if @allow_aggregator_edit_p@ true>
+     <a href="@url@manage" class="button">Manage @aggregator_name@</a>
+    </if>
+    <a href="@create_url@" class="button">#news-aggregator.lt_Create_New_Aggregator#</a>
+    <a href="@url@settings" class="button">@instance_name@ Settings</a>
+  </div>
+  <p>
 </if>
 <else>
   <p>

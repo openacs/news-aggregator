@@ -20,6 +20,16 @@
 	</querytext>
 </fullquery>
 
+<fullquery name="other_aggregators">
+	<querytext>
+         select aggregator_id as other_id, aggregator_name as name, 
+                description as description, public_p
+           from na_aggregators
+          where aggregator_id <> :aggregator_id
+            and package_id = :package_id
+	</querytext>
+</fullquery>
+
 <fullquery name="purges">
     <querytext>
         select

@@ -198,13 +198,17 @@ create index na_subscriptions_aid_idx on na_subscriptions(aggregator_id);
 
 create table na_user_preferences (
 	user_id			integer
-				constraint na_user_prefs_uid_pk
-				primary key
 				constraint na_user_prefs_uid_fk
 				references users(user_id),
 	default_aggregator	integer
 				constraint na_user_prefs_default_fk
-				references na_aggregators(aggregator_id)
+				references na_aggregators(aggregator_id),
+        package_id              integer
+                                constraint na_user_preferences_pid_fk
+                                references apm_packages(package_id)
+                                constraint na_user_preferences_pid_nn
+                                not null,
+	constraint na_user_prefs_pk primary key (user_id, package_id)
 );
 
 

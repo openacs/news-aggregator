@@ -133,9 +133,9 @@
     <fullquery name="news_aggregator::aggregator::set_user_default.create_pref">
     	<querytext>
 		insert into na_user_preferences
-			(user_id, default_aggregator)
+			(user_id, package_id, default_aggregator)
 		values
-			(:user_id, :aggregator_id)
+			(:user_id, :package_id, :aggregator_id)
 	</querytext>
     </fullquery>
 
@@ -144,17 +144,31 @@
 		update na_user_preferences
 		set default_aggregator = :aggregator_id
 		where user_id = :user_id
+                and package_id = :package_id
 	</querytext>
     </fullquery>
 
-    <fullquery name="news_aggregator::aggregator::user_default.find_default">
+    <fullquery name="news_aggregator::aggregator::user_default.select_user_default">
     	<querytext>
 	    select
 	        default_aggregator
 	    from
-	    	na_user_preferences
+	    	na_user_preferences up, na_aggregators a
 	    where
-	    	user_id = :user_id
+                up.default_aggregator = a.aggregator_id
+            and
+	    	up.user_id = :user_id
+            and
+                a.package_id = :package_id
+	</querytext>
+    </fullquery>
+
+    <fullquery name="news_aggregator::aggregator::instance_default.select_instance_default">
+    	<querytext>
+                select min(object_id) as aggregator_id
+                from   acs_objects
+                where  object_type = 'na_aggregator'
+                and    context_id = :package_id
 	</querytext>
     </fullquery>
 
@@ -171,8 +185,7 @@
           <querytext>
                 select na_aggregator__delete (
                         :aggregator_id
-                );
-
+                )
           </querytext>
     </fullquery>
 

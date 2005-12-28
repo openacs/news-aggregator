@@ -7,58 +7,44 @@ ad_page_contract {
     aggregator_id:integer,optional
 }
 
-set page_title "Your Settings"
-set context [list $page_title]
-
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
 set package_url [ad_conn package_url]
+set instance_name [apm_instance_name_from_id $package_id]
+set page_title "$instance_name Settings"
+set default_aggregator_id [news_aggregator::aggregator::user_default -user_id $user_id -package_id $package_id]
 
-set aggregator_options [news_aggregator::aggregator::options -user_id $user_id]
-set default_aggregator_id [news_aggregator::aggregator::user_default -user_id $user_id]
-
-ad_form -name aggregators -form {
-    {default_aggregator_id:integer(select)
-        {options $aggregator_options}
-        {value $default_aggregator_id}
-    }
-    {submit:text(submit)
-        {label "Go"}
-    }
-} -on_submit {
-    news_aggregator::aggregator::set_user_default \
-        -user_id $user_id \
-        -aggregator_id $default_aggregator_id
-
-    ad_returnredirect settings
-    ad_script_abort   
+# Check to make sure the aggregator exists (user may have deleted and redirected)
+if { [exists_and_not_null aggregator_id] && [db_string aggregator_exists {} -default 0] } {
+    array set ag_info [news_aggregator::aggregator::aggregator_info -aggregator_id $aggregator_id]    
+    set context [list [list "." $ag_info(aggregator_name)] "$page_title"]
+} else {
+    set context [list $page_title]
 }
 
 set return_url settings
-set aggregator_link [export_vars -base "${package_url}aggregator" {return_url}]
+set aggregator_link [export_vars -base "${package_url}aggregator-add" {return_url}]
 
 template::list::create \
     -name "aggregators" \
     -multirow "aggregators" \
     -key aggregator_id \
+    -no_data "There are no aggregators in the system yet." \
     -row_pretty_plural "aggregators" \
     -elements {
         edit {
             label {}
             display_template {
-                <a href="@aggregators.edit_url@" title="Edit this aggregator"
+                <if @aggregators.write_p@><a href="@aggregators.edit_url@" title="Edit this aggregator"
                 ><img src="@aggregators.url@graphics/edit.gif" height="16" width="16" 
-                alt="Edit this aggregator" border="0"></a>
+                alt="Edit this aggregator" border="0"></a></if>
             }
         }            
         aggregator_name {
-            label "Name"
+            label "Aggregator Name"
             display_template {
                 <a href="@aggregators.url@@aggregators.aggregator_id@/" title="View this aggregator"
                 >@aggregators.aggregator_name@</a>
-                <if @aggregators.default_p@ eq 1>
-                (default)
-                </if>        
             }
             link_url_eval {}
             link_html { title "" }
@@ -66,12 +52,17 @@ template::list::create \
         public_p {
             label "Public?"
         }
+        default_p {
+            display_template {
+                <if @aggregators.default_p@>default</if><else><a href="@aggregators.set_default_url@">set as default</a></else>
+            }
+        }
         delete {
             label {}
             display_template {
-                <a href="@aggregators.delete_url@" onclick="@aggregators.delete_onclick@" title="Delete this aggregator"
+                <if @aggregators.write_p@><a href="@aggregators.delete_url@" onclick="@aggregators.delete_onclick@" title="Delete this aggregator"
                 ><img src="@aggregators.url@graphics/delete.gif" height="16" width="16" 
-                alt="Delete this aggregator" border="0"></a>
+                alt="Delete this aggregator" border="0"></a></if>
             }
         }
     }
@@ -82,6 +73,7 @@ db_multirow -extend {
     delete_url 
     delete_onclick 
     default_p
+    set_default_url
 } aggregators select_aggregators {} {
     if { [string equal $public_p t] } {
         set public_p "Yes"
@@ -90,14 +82,15 @@ db_multirow -extend {
     }
 
     set url $package_url
-    set edit_url [export_vars -base "${url}aggregator" {aggregator_id}]
+    set edit_url "${url}${aggregator_id}/manage?tab=general"
     set delete_url [export_vars -base aggregator-delete {{delete_aggregator_id $aggregator_id}}]
     set delete_onclick "return confirm('Are you sure you want to delete this news aggregator?');"
 
-    if { [string equal $aggregator_id $default_aggregator] } {
+    if { [string equal $aggregator_id $default_aggregator_id] } {
         set default_p 1
     } else {
         set default_p 0
+	set set_default_url [export_vars -base set-default {user_id aggregator_id}]
     }
 }
 
@@ -105,6 +98,7 @@ template::list::create \
     -name "weblogs" \
     -multirow "weblogs" \
     -key weblog_id \
+    -no_data "No weblogs have been added yet." \
     -row_pretty_plural "weblogs" \
     -elements {
         edit {

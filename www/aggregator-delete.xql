@@ -2,14 +2,6 @@
 
 <queryset>
 
-    <fullquery name="find_default">
-    	<querytext>
-	    select default_aggregator
-	    from   na_user_preferences
-	    where  user_id = :user_id
-	</querytext>
-    </fullquery>
-
     <fullquery name="select_oldest_aggregator">
     	<querytext>
 	    select aggregator_id
@@ -18,6 +10,7 @@
 	    where  a.aggregator_id = o.object_id
             and    creation_user = :user_id
             and    aggregator_id != :delete_aggregator_id
+            and    a.package_id = :package_id
             order  by creation_date
             limit  1
 	</querytext>
