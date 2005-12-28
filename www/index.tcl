@@ -67,6 +67,7 @@ if { !$aggregator_id } {
 	ad_returnredirect "settings"
     }
     ad_returnredirect "public-aggregators"
+    ad_script_abort
 }
 
 set write_p [permission::permission_p \
