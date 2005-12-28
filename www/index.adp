@@ -17,10 +17,10 @@
       This page lists <b>the most recent items</b> from the feeds you've <a href="@url@manage?tab=subscriptions">subscribed</a> to.
     </else>
     <p>   
-    <if @public_p@ eq "t"><if @enable_purge_p@ true>
+    <if @public_p@ false and @enable_purge_p@ true>
         You can hit the <b>Purge button</b> to clean out the page. Clicking the <b>Save</b> icon <img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /> will prevent an item from being purged.
         Click on the <b>#news-aggregator.Post#</b> icon <img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /> to add the item to your weblog.
-    </if></if>
+    </if>
    </td>
    <td valign="top" align="right">
     <if @num_options@ gt 1>
