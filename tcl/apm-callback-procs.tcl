@@ -41,8 +41,8 @@ ad_proc -private news_aggregator::apm::after_upgrade {
 		} {
 		    db_dml set_package_id {
 			update na_user_preferences
-                           set package_id = $package_id
-                         where default_aggregator = $default_aggregator
+                           set package_id = :package_id
+                         where default_aggregator = :default_aggregator
 		    }
 		}
             }
