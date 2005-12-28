@@ -215,10 +215,14 @@ $item_description"
 
     set localtime [clock scan [lc_time_utc_to_local $item_pub_date] -gmt 1]
     set utctime [clock scan $item_pub_date -gmt 1]
-    if { $utctime > [clock scan "1 week ago"] } {
-        set pub_date [clock format $localtime -format "%a %H:%M"]
+    if { $utctime > [clock scan "1 day ago" -gmt 1] } {
+        set pub_date [clock format $utctime -format "%I:%M %p"]
+    } elseif { $utctime > [clock scan "1 week ago" -gmt 1] } {
+        set pub_date [clock format $utctime -format "%a %I:%M %p"]
+    } elseif { $utctime > [clock scan "2 weeks ago" -gmt 1] } {
+        set pub_date [clock format $utctime -format "%a %m/%d"]
     } else {
-        set pub_date [clock format $localtime -format "%m-%d %H:%M"]
+        set pub_date [clock format $utctime -format "%D"]
     }
 
     if { [string equal $write_p "1"] } {
