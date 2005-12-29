@@ -10,6 +10,5 @@
   <msg key="Post">Post</msg>
   <msg key="Purges">Purges:</msg>
   <msg key="raquo">&amp;raquo;</msg>
-  <msg key="updated_x_time_ago">,
-                  updated %items.diff%</msg>
+  <msg key="updated_x_time_ago">updated %items.diff%</msg>
 </message_catalog>

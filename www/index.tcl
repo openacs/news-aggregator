@@ -77,7 +77,7 @@ set write_p [permission::permission_p \
 db_1row aggregator_info {}
 
 # Get options for "other aggregators" form widget
-set other_aggregators [list [list "  --- select ---  " "\#"]]
+set other_aggregators [list [list "Other News Aggregators" "\#"]]
 db_foreach other_aggregators {} {
      if { [permission::permission_p \
  	      -object_id $other_id \
@@ -187,20 +187,20 @@ db_multirow -extend {
     }
 
     if { [exists_and_not_null content_encoded] } {
-	if { [exists_and_not_null item_title] } {
-	    set content "<a href=\"$item_link\">$item_title</a>. $content_encoded"
-	} else {
+# 	if { [exists_and_not_null item_title] } {
+# 	    set content "<a href=\"$item_link\">$item_title</a>. $content_encoded"
+# 	} else {
             set content $content_encoded
-	}
+#	}
     } else {
         set text_only [util_remove_html_tags $item_description]
 
-        if { [exists_and_not_null item_title] } {
-            set content "<a href=\"$item_link\">$item_title</a>. 		    <span class=\"item_author\">$item_author</span>
-$item_description"
-        } else {
+#         if { [exists_and_not_null item_title] } {
+#             set content "<a href=\"$item_link\">$item_title</a>. 		    <span class=\"item_author\">$item_author</span>
+# $item_description"
+#         } else {
             set content $item_description
-        }
+#        }
     }
     
     if { $item_permalink_p == "t" } {
@@ -217,13 +217,9 @@ $item_description"
     set utctime [clock scan $item_pub_date -gmt 1]
     if { $utctime > [clock scan "1 day ago" -gmt 1] } {
         set pub_date [clock format $utctime -format "%I:%M %p"]
-    } elseif { $utctime > [clock scan "1 week ago" -gmt 1] } {
-        set pub_date [clock format $utctime -format "%a %I:%M %p"]
-    } elseif { $utctime > [clock scan "2 weeks ago" -gmt 1] } {
-        set pub_date [clock format $utctime -format "%a %m/%d"]
     } else {
-        set pub_date [clock format $utctime -format "%D"]
-    }
+        set pub_date [clock format $utctime -format "%d %b %Y %I:%M %p"]
+    } 
 
     if { [string equal $write_p "1"] } {
 	if { [lsearch $saved_items $item_id] == -1 } {

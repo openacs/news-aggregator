@@ -8,7 +8,7 @@
 <!-- MS: would like to lay this out without tables -->
 <table border="0">
   <tr>
-   <td width="100%">
+   <td width="100%" valign="top">
     <h2>@aggregator_name@</h2>
     <if @aggregator_description@ not nil>
       @aggregator_description@
@@ -24,11 +24,9 @@
    </td>
    <td valign="top" align="right">
     <if @num_options@ gt 1>
-     <nobr><ul class="action-links">
-      <li><formtemplate id="aggregators">
-      Visit another aggregator <formwidget id=aggregator>
-      </formtemplate></li>
-     </ul></nobr>
+     <formtemplate id="aggregators">
+      <formwidget id=aggregator>
+     </formtemplate>     
     </if> 
    </td>
   </tr>
@@ -40,7 +38,6 @@
     <if @allow_aggregator_edit_p@ true>
      <a href="@url@manage" class="button">Manage @aggregator_name@</a>
     </if>
-    <a href="@create_url@" class="button">#news-aggregator.lt_Create_New_Aggregator#</a>
     <a href="@url@settings" class="button">@instance_name@ Settings</a>
   </div>
   <p>
@@ -53,47 +50,38 @@
   <i>#news-aggregator.No_items#</i>
 </if>
 <else>
-  <table cellspacing=1 cellpadding=0 border=0>
-    <tr>
-      <td bgcolor="#c0c0c0">
-        <table cellspacing=1 cellpadding=8 border=0 width="100%">
-          <multiple name="items">
-	    <group column="sort_date">
-              <tr bgcolor="#eeeeee">
-                <td colspan=2>
-                  <b><a href="@items.link@" title="@items.description@">@items.title@</a>#news-aggregator.updated_x_time_ago#</b>                   
-                  <a href="@items.technorati_url@"><img src="@graphics_url@technorati.png" width ="50" height="14" alt="Technorati Cosmos" border="0"></a>
-                </td>
-              </tr>
-	      <group column="source_id">
-                <tr bgcolor="#ffffff" id="@items.item_id@">
-                  <td>
-		    @items.content;noquote@
-		    <if @items.item_link@ not nil and @items.item_guid_link@ not nil>
-                      <a href="@items.item_guid_link@" title="Permanent URL for this entry">#</a>
-		    </if>
-		  </td>
-                  <td valign="top" width="40" align="left">
-                    <if @public_p@ false and @write_p@ true>
-       		      <if @items.save_url@ not nil>
-		        <a href="@items.save_url@"><img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /></a>
-		      </if>
-		      <if @items.unsave_url@ not nil>
-		        <a href="@items.unsave_url@"><img border="0" src="@graphics_url@delete.gif" width="16" height="16" alt="Unsave" /></a>
-		      </if>
-                      <a href="@items.item_blog_url@"><img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /></a>
-                    </if>
-                    
-                    <span class="item_pub_date">@items.pub_date@</span>
-		  </td>
-                </tr>
-              </group>
-	    </group>
-          </multiple>
-        </table>
-      </td>
-    </tr>
-  </table>
+ <multiple name="items">
+   <group column="sort_date"> 
+      <div style="background-color: #eeeeee; padding-top: 10px; padding-bottom: 10px; padding-left: 5px;">
+       <span style="font-size: 125%; font-weight: bold;"><a href="@items.link@" title="@items.description@">@items.title@</a></span>#news-aggregator.updated_x_time_ago#
+      </div>
+       <group column="source_id">
+          <p>
+          <div style="margin-left: 10px; margin-bottom: 30px;">
+          <a name="@items.item_id@">
+          <div style="font-size: 115%; font-weight: bold; margin-bottom: 5px;">
+           <if @items.item_title@ not nil>
+            <a href="@items.item_link@">@items.item_title@</a>
+           </if>
+          </div>
+         <div class="item_pub_date" style="margin-bottom: 5px;">Posted: @items.pub_date@</div>
+           @items.content;noquote@
+	  <if @items.item_link@ not nil and @items.item_guid_link@ not nil>
+            <a href="@items.item_guid_link@" title="Permanent URL for this entry">#</a>
+	  </if>
+          <if @public_p@ false and @write_p@ true>
+           <if @items.save_url@ not nil>
+            <a href="@items.save_url@"><img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /></a>
+	   </if>
+	   <if @items.unsave_url@ not nil>
+	       <a href="@items.unsave_url@"><img border="0" src="@graphics_url@delete.gif" width="16" height="16" alt="Unsave" /></a>
+	   </if>
+           <a href="@items.item_blog_url@"><img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /></a>
+          </if>
+          </div>
+       </group>
+    </group>
+  </multiple>
 </else>
 
 <if @enable_purge_p@ true and @public_p@ false and @purge@ true and @purge_p@ true>
