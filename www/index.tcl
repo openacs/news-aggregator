@@ -3,6 +3,7 @@ ad_page_contract {
 
     @author Simon Carstensen simon@bcuni.net
     @creation-date 28-06-2003
+    @cvs-id $Id$
 } {
     { aggregator_id:integer,optional "0" }
     { purge_p:boolean,optional }
@@ -73,6 +74,8 @@ if { !$aggregator_id } {
 set write_p [permission::permission_p \
                  -object_id $aggregator_id \
                  -privilege write]
+set blog_p [expr [llength [news_aggregator::weblog::options \
+			       -user_id $user_id]] > 0]
 
 db_1row aggregator_info {}
 
@@ -199,7 +202,7 @@ db_multirow -extend {
 #             set content "<a href=\"$item_link\">$item_title</a>. 		    <span class=\"item_author\">$item_author</span>
 # $item_description"
 #         } else {
-            set content $item_description
+	set content $item_description
 #        }
     }
     

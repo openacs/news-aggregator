@@ -50,7 +50,7 @@ available on the <a href="./settings">settings</a> page.
 
   <if @tab@ eq "permissions">
      <p>
-     Manage permissions for this aggregator. You may allow other users to view your personal feeds.
+     Manage detailed permissions for this aggregator. You can use this form to allow other users to view your personal feeds.
      <p>
      <include src="/packages/acs-subsite/www/permissions/perm-include" object_id="@aggregator_id@">
   </if>

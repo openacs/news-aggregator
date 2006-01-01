@@ -2,6 +2,16 @@
 
 <queryset>
 
+<fullquery name="news_aggregator::weblog::options.select_larsblogger_options">
+      <querytext>
+        select package_id
+          from site_nodes s, apm_packages p 
+         where s.object_id = p.package_id 
+           and s.parent_id = :subsite_node
+           and p.package_key = 'lars-blogger'
+        </querytext>
+    </fullquery>
+
 <fullquery name="news_aggregator::weblog::options.select_weblog_options">
       <querytext>
         select weblog_name,

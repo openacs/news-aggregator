@@ -17,9 +17,11 @@
       This page lists <b>the most recent items</b> from the feeds you've <a href="@url@manage?tab=subscriptions">subscribed</a> to.
     </else>
     <p>   
-    <if @public_p@ false and @enable_purge_p@ true>
-        You can hit the <b>Purge button</b> to clean out the page. Clicking the <b>Save</b> icon <img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /> will prevent an item from being purged.
-        Click on the <b>#news-aggregator.Post#</b> icon <img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /> to add the item to your weblog.
+    <if @enable_purge_p@ true>
+        You can hit the Purge button to clean out the page. Clicking the Save button will prevent an item from being purged.
+    </if>
+    <if @write_p@ true>
+        Click the Blog button to post the item to a weblog (you will have a choice of weblogs to post to).
     </if>
    </td>
    <td valign="top" align="right">
@@ -56,29 +58,33 @@
        <span style="font-size: 125%; font-weight: bold;"><a href="@items.link@" title="@items.description@">@items.title@</a></span>#news-aggregator.updated_x_time_ago#
       </div>
        <group column="source_id">
-          <p>
-          <div style="margin-left: 10px; margin-bottom: 30px;">
+         <div style="margin-left: 10px; margin-top: 15px; margin-bottom: 15px;">
           <a name="@items.item_id@">
           <div style="font-size: 115%; font-weight: bold; margin-bottom: 5px;">
            <if @items.item_title@ not nil>
             <a href="@items.item_link@">@items.item_title@</a>
            </if>
           </div>
-         <div class="item_pub_date" style="margin-bottom: 5px;">Posted: @items.pub_date@</div>
-           @items.content;noquote@
-	  <if @items.item_link@ not nil and @items.item_guid_link@ not nil>
+          <div class="item_pub_date" style="margin-bottom: 5px;">Posted: @items.pub_date@
+           <if @items.item_link@ not nil and @items.item_guid_link@ not nil>
             <a href="@items.item_guid_link@" title="Permanent URL for this entry">#</a>
-	  </if>
-          <if @public_p@ false and @write_p@ true>
-           <if @items.save_url@ not nil>
-            <a href="@items.save_url@"><img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /></a>
-	   </if>
-	   <if @items.unsave_url@ not nil>
-	       <a href="@items.unsave_url@"><img border="0" src="@graphics_url@delete.gif" width="16" height="16" alt="Unsave" /></a>
-	   </if>
-           <a href="@items.item_blog_url@"><img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /></a>
-          </if>
+           </if>        
           </div>
+          @items.content;noquote@
+          <div style="margin-top: 10px; margin-bottom: 10px;" class="list-button-bar">
+           <if @write_p@ true>
+            <if @items.save_url@ not nil>
+              <a href="@items.save_url@" alt="Save" class="button">Save</a>
+            </if>
+            <if @items.unsave_url@ not nil>
+             <a href="@items.unsave_url@" alt="Unsave" class="button">Unsave</a>
+            </if>
+           </if>
+           <if @blog_p@ true>
+            <a href="@items.item_blog_url@" alt="Post this item to your Weblog" class="button">Blog</a>
+           </if>
+          </div>
+         </div>
        </group>
     </group>
   </multiple>

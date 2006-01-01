@@ -4,6 +4,7 @@ ad_library {
     @author Simon Carstensen (simon@bcuni.net)
     @author Guan Yang (guan@unicast.org)
     @creation-date 2003-06-28
+    @cvs-id $Id$
 }
 
 namespace eval news_aggregator {}
@@ -338,6 +339,24 @@ ad_proc -public news_aggregator::aggregator::edit {
     @author Guan Yang
     @creation-date 2003-06-29
 } {
+    # find app group and assign correct privileges 
+    # (public = viewable by subsite members)
+    set app_group [application_group::group_id_from_package_id \
+		       -package_id [ad_conn subsite_id]]
+    if { !$public_p && [permission::inherit_p -object_id $aggregator_id] } {
+	permission::toggle_inherit -object_id $aggregator_id
+	foreach priv {read write create} {
+	    permission::revoke -party_id $app_group \
+		-object_id $aggregator_id -privilege $priv
+	}
+    } elseif { ![permission::inherit_p -object_id $aggregator_id] } {
+	permission::toggle_inherit -object_id $aggregator_id
+	foreach priv {read write create} {
+	    permission::grant -party_id $app_group \
+		-object_id $aggregator_id -privilege $priv
+	}
+    }
+
     db_dml edit_aggregator {}
 
     if { [db_resultrows] } {
@@ -351,10 +370,10 @@ ad_proc -public news_aggregator::aggregator::edit {
 ad_proc -public news_aggregator::aggregator::new {
     {-aggregator_name:required}
     {-description ""}
-    {-package_id ""}
+    {-package_id [ad_conn package_id]}
     {-public_p t}
-    {-creation_user ""}
-    {-creation_ip ""}
+    {-creation_user [ad_conn user_id]}
+    {-creation_ip [ad_conn peeraddr]}
 } {
     Create a new news aggregator.
 
@@ -362,19 +381,24 @@ ad_proc -public news_aggregator::aggregator::new {
     @creation-date 2003-06-29
 } {
 
-    if { ![exists_and_not_null creation_user] } {
-        set creation_user [ad_conn user_id]
-    }
+    set aggregator_id [db_exec_plsql new_aggregator {}]
 
-    if { ![exists_and_not_null creation_ip] } {
-        set creation_ip [ad_conn peeraddr]
+    # find app group and assign correct privileges 
+    # (public = viewable by subsite members)
+    set app_group [application_group::group_id_from_package_id \
+		       -package_id [ad_conn subsite_id]
+    if { !$public_p } {
+	permission::toggle_inherit -object_id $aggregator_id
+	foreach priv {read write create} {
+	    permission::revoke -party_id $app_group \
+		-object_id $aggregator_id -privilege $priv
+	}
+    } else {
+	foreach priv {read write create} {
+	    permission::grant -party_id $app_group \
+		-object_id $aggregator_id -privilege $priv
+	}
     }
-
-    if { ![exists_and_not_null package_id] } {
-        set package_id [ad_conn package_id]
-    }
-
-    return [db_exec_plsql new_aggregator {}]
 }
 
 ad_proc -public news_aggregator::aggregator::delete {

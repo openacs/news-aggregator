@@ -2,6 +2,7 @@ ad_page_contract {
     Include to create a new aggregator.
 
     @author Simon Carstensen
+    @cvs-id $Id$
 } {
     aggregator_id:integer,notnull,optional
     {return_url ""}
@@ -38,7 +39,7 @@ ad_form -name aggregator -action aggregator -select_query_name select_aggregator
     {public_p:text(radio)
         {label "Public?"}
         {options {{"Yes" t} {"No" f}}}
-	{help_text "A public aggregator is intended to be used by a group of people and will not have a Purge button. Instead, the most recent 100 items will be displayed."}
+	{help_text "A public aggregator is intended to be used by a group of people and will not have a Purge button. Instead, the most recent 100 items will be displayed. Private aggregators will, by default, only be viewable by the creator."}
     }
     {return_url:text(hidden)
         {value $return_url}

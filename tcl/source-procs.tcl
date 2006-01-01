@@ -4,6 +4,7 @@ ad_library {
     @author Simon Carstensen (simon@bcuni.net)
     @author Guan Yang (guan@unicast.org)
     @creation-date 2003-06-28
+    @cvs-id $Id$
 }
 
 namespace eval news_aggregator {}

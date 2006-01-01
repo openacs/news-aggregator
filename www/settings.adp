@@ -15,7 +15,8 @@ a particular aggregator, you will have the option to edit or delete it as well.
 
 <p>&nbsp;</p>
 <p>
-The weblogs below will show up as options when you choose to blog about a news item.
+The weblogs below will show up as options (in addition to any blogger instances you can post to on your subsite) 
+when you choose to blog about a news item. 
   <listtemplate name="weblogs"></listtemplate>
 </p>
 <p>

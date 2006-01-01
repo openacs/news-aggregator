@@ -1,9 +1,10 @@
 ad_library {
-     Procs used by the News Aggregator application.
-
-     @author Simon Carstensen (simon@bcuni.net)
-     @author Guan Yang (guan@unicast.org)
-     @creation-date 2003-06-28
+    Procs used by the News Aggregator application.
+    
+    @author Simon Carstensen (simon@bcuni.net)
+    @author Guan Yang (guan@unicast.org)
+    @creation-date 2003-06-28
+    @cvs-id $Id$
 }
 
 
@@ -34,10 +35,18 @@ ad_proc -public news_aggregator::last_scanned {
     } elseif {$diff >= 60 && $diff < 1440} {
         set to_return "[expr $diff / 60] hours and "
     } else {
-	if {$diff >= 1440 && $diff <2880} {
-	    set to_return "1 day, [expr $diff / 60] hours and "
+	set days [expr $diff / 1440]
+	if {$days eq "1"} {
+	    set to_return "1 day, "
 	} else {
-	    set to_return "[expr $diff / 1440] days, [expr [expr $diff % 1440]  / 60] hours and "
+	    set to_return "$days days, "
+	}
+	if { [expr $diff % 1440] < 60 } {
+	    append to_return "and "
+	} elseif { [expr $diff % 1440] < 120 } {
+	    append to_return "1 hour and "
+	} else {
+	    append to_return "[expr [expr $diff % 1440]  / 60] hours and "
 	}
     }
 

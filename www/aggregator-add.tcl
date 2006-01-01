@@ -2,6 +2,7 @@ ad_page_contract {
     Create a new aggregator.
 
     @author Simon Carstensen
+    @cvs-id $Id$
 } {
     aggregator_id:integer,notnull,optional
     {return_url ""}

@@ -3,6 +3,7 @@ ad_page_contract {
 
     @author Simon Carstensen
     @creation-date 2003-07-08
+    @cvs-id $Id$
 } {
     item_id:integer
 }
@@ -27,6 +28,7 @@ if { [exists_and_not_null content_encoded] } {
 set user_id [ad_conn user_id]
 set weblog_options [news_aggregator::weblog::options \
                         -user_id $user_id]
+set weblog_p [expr [llength $weblog_options] > 0]
 
 ad_form -name blog_item -form {
     {item_id:integer(hidden)
@@ -60,7 +62,7 @@ ad_form -name blog_item -form {
                     -base_url $base_url \
                     -title $item_title \
                     -text $text \
-                    -link $link]
+                    -link $item_link]
                     
     ad_returnredirect $post_url
     ad_script_abort

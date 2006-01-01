@@ -9,8 +9,7 @@
                        i.content_encoded,
                        i.link as item_link,
                        s.title,
-                       s.link,
-                       to_char(s.last_scanned, 'YYYY-MM-DD; HH24:MI:SS') as last_scanned
+                       s.link
                 from   na_items i join
                        na_sources s on (i.source_id = s.source_id)
                 where  item_id = :item_id
@@ -19,13 +18,16 @@
     
     <fullquery name="select_weblog">
         <querytext>
-            select
-                blog_type,
-                base_url
-            from
-                na_weblogs
-            where
-                weblog_id = :weblog_id
+            select blog_type,
+                   base_url
+              from na_weblogs
+             where weblog_id = :weblog_id
+             union 
+            select 'larsblogger'as blog_type,
+                   site_node__url(s.node_id) || 'entry-edit' as base_url
+              from site_nodes s, apm_packages p 
+             where s.object_id = p.package_id 
+               and p.package_id = :weblog_id
         </querytext>
     </fullquery>
 

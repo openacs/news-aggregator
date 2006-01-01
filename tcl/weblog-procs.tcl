@@ -133,6 +133,23 @@ ad_proc -private news_aggregator::weblog::impl::movabletype_get_post_url {
     return $post_url
 }
 
+ad_proc -private news_aggregator::weblog::impl::larsblogger_get_post_url {
+    -base_url:required
+    -title:required
+    -link:required
+    -text:required
+} {
+    Returns the post URL for a Weblog (Lars Blogger) weblog.
+    
+    @author Michael Steigman (michael@steigman.net)
+    @creation-date 2005-12-31
+    @cvs-id $Id$
+} {
+    set title_url $link
+    set content $text
+    return [export_vars -base $base_url {title title_url content}]
+}
+
 ad_proc -public news_aggregator::weblog::get_post_url {
     -blog_type:required
     -base_url:required
@@ -161,11 +178,24 @@ ad_proc -public news_aggregator::weblog::options {
 
     @author Simon Carstensen
 } {
-    return [db_list_of_lists select_weblog_options {}]
+    set weblogs [list]
+    set subsite_node [site_node::get_node_id_from_object_id -object_id [ad_conn subsite_id]]
+    db_foreach select_larsblogger_options {} {
+	if { [permission::permission_p \
+              -object_id $package_id \
+		  -privilege read] eq "1" } {
+	    lappend weblogs [list "[apm_instance_name_from_id $package_id]" $package_id]
+	}
+    }
+    set ext_weblogs [db_list_of_lists select_weblog_options {}]
+    if { [llength $ext_weblogs] > 0 } {
+	lappend weblogs $ext_weblogs
+    }
+    return $weblogs
 }
 
 ad_proc -public news_aggregator::weblog::blog_type_options {} {
-    Returns options (value label pairs) for building the blog type HTML select box.
+    Returns type options (value label pairs) for building the blog type HTML select box.
 
     @author Simon Carstensen
 } {
