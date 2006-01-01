@@ -55,7 +55,7 @@
  <multiple name="items">
    <group column="sort_date"> 
       <div style="background-color: #eeeeee; padding-top: 10px; padding-bottom: 10px; padding-left: 5px;">
-       <span style="font-size: 125%; font-weight: bold;"><a href="@items.link@" title="@items.description@">@items.title@</a></span>#news-aggregator.updated_x_time_ago#
+       <span style="font-size: 125%; font-weight: bold;"><a href="@items.link@" title="@items.description@">@items.title@</a></span> #news-aggregator.updated_x_time_ago#
       </div>
        <group column="source_id">
          <div style="margin-left: 10px; margin-top: 15px; margin-bottom: 15px;">
