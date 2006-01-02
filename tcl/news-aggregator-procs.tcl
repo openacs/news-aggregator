@@ -30,18 +30,26 @@ ad_proc -public news_aggregator::last_scanned {
 
     @author Simon Carstensen    
 } {
-    if {$diff < 120 && $diff > 60} {
+    set days [expr $diff / 1440]
+    if { $diff < 120 && $diff > 60 } {
         set to_return "1 hour and "
-    } elseif {$diff >= 60 && $diff < 1440} {
+    } elseif { $diff >= 60 && $days == 0 } {
         set to_return "[expr $diff / 60] hours and "
     } else {
-	set days [expr $diff / 1440]
-	if {$days eq "1"} {
-	    set to_return "1 day, "
-	} else {
-	    set to_return "$days days, "
+	switch $days {
+	    "0" {
+		set to_return ""
+	    }
+	    "1" {
+		set to_return "1 day, "
+	    }
+	    default {
+		set to_return "$days days, "
+	    }
 	}
-	if { [expr $diff % 1440] < 60 } {
+	if { [expr $diff % 1440] < 60 && $days == 0 } {
+	    append to_return ""
+	} elseif { [expr $diff % 1440] < 60 } {
 	    append to_return "and "
 	} elseif { [expr $diff % 1440] < 120 } {
 	    append to_return "1 hour and "
