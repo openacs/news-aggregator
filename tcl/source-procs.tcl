@@ -202,7 +202,15 @@ ad_proc -public news_aggregator::source::update {
         set description $item(description)
         set author $item(author)
         set pub_date $item(pub_date)
-        
+
+	# Prepare pub_date_sql for insertion
+	if { $pub_date eq "" } {
+	    set pub_date_sql "current_timestamp"
+	} else {
+	    # massage pub_date
+	    set pub_date [clock format $pub_date -format "%Y-%m-%d %T %Z"]
+	    set pub_date_sql ":pub_date"
+	}                
         set guid [news_aggregator::source::generate_guid \
                         -link $item(link) \
                         -feed_url $feed_url \
@@ -220,19 +228,15 @@ ad_proc -public news_aggregator::source::update {
 
 	    ns_log Debug "source::update: guid $guid marked as existing\ttitle = $db_title\tdescription = $db_description"
         }
-        
-        if { (!$new_p
-          && (![string equal $db_title $title] ||
-              ![string equal $db_description $description]))
-                        ||
-                    $new_p } {
-            set updated_p 1
-	    ns_log Debug "source::update: guid $guid marked as existing but updated; title=!$title! description=!$description!"
+
+        if { (!$new_p && (![string equal $db_title $title] ||
+			  ![string equal $db_description $description])) } {
+	    # An item in the feed has been updated
+	    set updated_p 1
+	    ns_log Debug "source::update: guid $guid marked as existing but updated MS; title=!$title! description=!$description!"
 	    if { [info exists db_title] && [info exists db_description] } {
 	        ns_log Debug "source::update:\tdb_title=!$db_title! db_description=!$db_description!"
 		ns_log Debug "source::update:\tfirst_equal=[string equal $db_title $title] second_equal=[string equal $db_description $description] new_p=$new_p item_title=[string length $title] chars db_title=[string length $db_title] chars"
-	    } elseif { $new_p } {
-		ns_log Debug "source::update: guid $guid is new and will be inserted; title=$title description=$description"
 	    }
 
 #	    set title $item(title)
@@ -241,21 +245,15 @@ ad_proc -public news_aggregator::source::update {
 #	    set original_guid $item(guid)
 #	    set permalink_p $item(permalink_p)
 #	    set link $item(link)
-
-            # pub_date_sql
-            if { $pub_date eq "" } {
-                set pub_date_sql "now()"
-            } else {
-                # massage pub_date
-                set pub_date [clock format $pub_date -format "%Y-%m-%d %T %Z"]
-                set pub_date_sql ":pub_date"
-            }
-            
+            db_dml update_item {}
+        } elseif { $new_p } {
             db_exec_plsql add_item {}
+	    set updated_p 1
             incr no_items
+	    ns_log Debug "source::update: guid $guid is new and will be inserted; title=$title description=$description"
         } else {
 	    ns_log Debug "source::update: guid $guid marked as existing and not updated"
-        }
+	}
     }
     
     set link $channel(link)
