@@ -7,7 +7,7 @@
 <fullquery name="news_aggregator::source::update.update_source_no_new">
     <querytext>
         update na_sources
-	set last_scanned = now(),
+	set last_scanned = current_timestamp,
 	    title = :title,
 	    link = :link,
 	    description = :description
@@ -90,9 +90,9 @@
                title = :title,
                description = :description,
  	       updates = (updates + 1),
-	       last_scanned = now(),
-	       last_modified = now(),
-	       last_modified_stamp = now()
+	       last_scanned = current_timestamp,
+	       last_modified = current_timestamp,
+	       last_modified_stamp = current_timestamp
         where  source_id = :source_id
         </querytext>
     </fullquery>
@@ -111,6 +111,17 @@
                 :author,
                 $pub_date_sql
         );
+        </querytext>
+    </fullquery>
+
+<fullquery name="news_aggregator::source::update.update_item">
+      <querytext>
+        update na_items
+           set title = :title,
+               description = :description,
+               content_encoded = :content_encoded,
+               link = :link
+         where guid = :guid
         </querytext>
     </fullquery>
 

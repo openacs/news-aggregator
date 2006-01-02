@@ -370,16 +370,26 @@ ad_proc -public news_aggregator::aggregator::edit {
 ad_proc -public news_aggregator::aggregator::new {
     {-aggregator_name:required}
     {-description ""}
-    {-package_id [ad_conn package_id]}
+    {-package_id ""}
     {-public_p t}
-    {-creation_user [ad_conn user_id]}
-    {-creation_ip [ad_conn peeraddr]}
+    {-creation_user ""}
+    {-creation_ip ""}
 } {
     Create a new news aggregator.
 
     @author Guan Yang (guan@unicast.org)
     @creation-date 2003-06-29
 } {
+
+    if { [string equal $package_id ""] } {
+	set package_id [ad_conn package_id]
+    }
+    if { [string equal $user_id ""] } {
+	set user_id [ad_conn user_id]
+    }
+    if { [string equal $creation_ip ""] } {
+	set creation_ip [ad_conn peeraddr]
+    }
 
     set aggregator_id [db_exec_plsql new_aggregator {}]
 
