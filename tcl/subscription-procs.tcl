@@ -23,6 +23,9 @@ ad_proc -public news_aggregator::subscription::delete {
     {-aggregator_id:required}
 } {
     db_dml delete_subscription {}
+    if { [db_string source_use_count {}] eq "0" } {
+	news_aggregator::source::delete -source_id $source_id
+    }
 }
 
 ad_proc -public news_aggregator::subscription::move {

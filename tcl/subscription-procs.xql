@@ -20,6 +20,13 @@
           </querytext>
     </fullquery>
 
+    <fullquery name="news_aggregator::subscription::delete.source_use_count">
+          <querytext>
+           select count(*) from na_subscriptions
+            where source_id = :source_id
+          </querytext>
+    </fullquery>
+
     <fullquery name="news_aggregator::subscription::move.move_subscription">
           <querytext>
             update na_subscriptions
