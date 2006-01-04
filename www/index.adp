@@ -38,7 +38,7 @@
   <div class="list-button-bar">
   <p>
     <if @allow_aggregator_edit_p@ true>
-     <a href="@url@manage" class="button">Manage @aggregator_name@</a>
+     <a href="@url@aggregator" class="button">Manage @aggregator_name@</a>
     </if>
     <a href="@url@settings" class="button">@instance_name@ Settings</a>
   </div>
