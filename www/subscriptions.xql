@@ -4,11 +4,8 @@
 
     <fullquery name="count_aggregators">
           <querytext>
-            select count(*) 
-            from   na_aggregators a,
-                   acs_objects o
-            where  a.aggregator_id = o.object_id
-            and    o.creation_user = :user_id
+            select acs_permission__permission_p(aggregator_id,:user_id,'write') as write_p
+            from   na_aggregators
           </querytext>
     </fullquery>
 

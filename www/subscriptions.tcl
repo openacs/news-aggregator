@@ -53,7 +53,11 @@ if { [exists_and_not_null source_id] } {
     ad_script_abort
 }
 
-set aggregator_count [db_string count_aggregators {}]
+# find aggregators user has write privs on
+set aggregator_count 0
+db_foreach count_aggregators {} {
+    if { $write_p eq "t" } { incr aggregator_count }	
+}
 
 set bulk_actions {
     Unsubscribe subscriptions Unsubscribe

@@ -18,6 +18,10 @@ set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
 set package_url [ad_conn package_url]
 
+set page_title "Copy subscription"
+array set ag_info [news_aggregator::aggregator::aggregator_info -aggregator_id $aggregator_id]
+set context [list [list "." "$ag_info(aggregator_name)"] "$page_title"]
+
 if { [exists_and_not_null copy_to] } {
 
     foreach source_id $source_ids {
@@ -45,11 +49,18 @@ if { [string equal $aggregator_count "2"] } {
     ad_script_abort
 }
 
-set page_title "Copy subscription"
-set context [list $page_title]
+set sources [list]
+foreach source $source_id {
+	lappend sources '$source'
+}
+set sources [join $sources ","]
 
-set package_id [ad_conn package_id]
-set list_of_aggregators [db_list_of_lists select_aggregators {}]
+set list_of_aggregators [list]
+db_foreach select_aggregators {} {
+    if { $write_p eq "t" } { 
+	lappend list_of_aggregators [list $move_to_name $move_to_id]
+    }
+}
 
 ad_form -name copy_subscription -form {
     {aggregator_id:integer(hidden)
