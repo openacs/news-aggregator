@@ -1,12 +1,13 @@
 ad_page_contract {
-    Manage an aggregator
+    Aggregator mgmt tabs
 
     @author Michael Steigman (michael@steigman.net)
     @creation-date 12-27-2005
 } {
     { aggregator_id:integer,optional "0" }
-    { tab:optional "general" }
 }
+
+# expects tab to be passed in as well
 
 array set ag_info [news_aggregator::aggregator::aggregator_info -aggregator_id $aggregator_id]
 set instance_name [apm_instance_name_from_id [ad_conn package_id]]
