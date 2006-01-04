@@ -1,11 +1,11 @@
 ad_page_contract {
-  The News Aggregator subscription page (included by manage.adp).
+  The News Aggregator subscription page.
 
   @author Simon Carstensen (simon@bcuni.net)
   @creation-date Jan 2003
 } {
     aggregator_id:integer
-    new_source_id:integer,optional
+    {new_source_id:integer,optional ""}
     {source_id:integer,multiple ""}
     {feed_url ""}
     {orderby ""}
@@ -15,14 +15,9 @@ permission::require_permission \
     -object_id $aggregator_id \
     -privilege write
 
-array set ag_info [news_aggregator::aggregator::aggregator_info -aggregator_id $aggregator_id]
 set page_title "Manage Subscriptions"
-
-if { [exists_and_not_null context] } {
-    lappend context "$page_title"
-} else {
-    set context [list $page_title]
-}
+array set ag_info [news_aggregator::aggregator::aggregator_info -aggregator_id $aggregator_id]
+set context [list [list "." "$ag_info(aggregator_name)"] "$page_title"]
 
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
@@ -54,7 +49,7 @@ if { [exists_and_not_null source_id] } {
     } else {
 	set message "You have been unsubscribed from one source."
     }
-    ad_returnredirect -message $message "${package_url}$aggregator_id"
+    ad_returnredirect -message $message subscriptions
     ad_script_abort
 }
 
@@ -138,22 +133,37 @@ db_multirow -extend {xml_graphics_url} sources sources {} {
     set xml_graphics_url "${package_url}graphics/xml.gif"
 }
 
+set other_feeds [list [list "Select Feed" ""]]
+db_foreach select_other_feeds {} {
+    lappend other_feeds [list $title $source_id]
+}
+
 ad_form -name add_subscription -action subscriptions -form {
     {subscription_id:integer(hidden),key}
-    {feed_url:text(text) 
+    {feed_url:text(text),optional
         {value $feed_url_val} 
-        {label "URL:"} 
+        {label "URL"}
+	{value "http://"}
         {html {size 55}}
     }
-    {add_submit:text(submit) 
+    {new_source_id:integer(select),optional
+	{label "Feed"}
+	{options $other_feeds}
+    }
+    {add_submit:text(submit),optional
         {label "Add"}
     }
 } -validate {
     {feed_url
-	{ [exists_and_not_null feed_url] && ![string equal "http://" $feed_url] } 
-        { You must specify a URL }
+	{ ![string equal "http://" $feed_url] || ![string equal $new_source_id ""] } 
+        { You must specify a URL or select a feed }
     }
 } -new_data {
+    if { [exists_and_not_null new_source_id] } {
+	news_aggregator::subscription::new -aggregator_id $aggregator_id -source_id $new_source_id
+	ad_returnredirect subscriptions
+	ad_script_abort
+    }
     set channel_array [news_aggregator::source::new \
                            -feed_url $feed_url \
                            -aggregator_id $aggregator_id \
@@ -166,6 +176,6 @@ ad_form -name add_subscription -action subscriptions -form {
     }
     array set channel $channel_array
     set title $channel(title)
-    ad_returnredirect -message "You have been subscribed to $title." "manage?tab=subscriptions"
+    ad_returnredirect -message "You have been subscribed to $title." subscriptions
     ad_script_abort
 }
