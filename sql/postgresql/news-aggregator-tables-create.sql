@@ -37,6 +37,7 @@ create table na_aggregators (
         aggregator_bottom       integer
 );
 
+create index na_aggregators_package_id_idx on na_aggregators(package_id);
 
 select acs_object_type__create_type (
     'na_aggregator',                  -- object_type
@@ -143,6 +144,8 @@ create table na_saved_items (
        constraint na_saved_items_pk primary key(item_id, aggregator_id)
 );
 
+create index na_saved_items_aggregator_id_idx on na_saved_items(aggregator_id);
+
 create table na_purges (
        purge_id	       integer
 		       constraint na_purges_pk
@@ -163,7 +166,7 @@ create table na_purges (
 );
 
 create sequence na_purges_seq;
-
+create index na_purges_aggregator_id_idx on na_purges(aggregator_id);
 
 ----------------
 --
