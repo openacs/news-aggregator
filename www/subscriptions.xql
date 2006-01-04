@@ -23,4 +23,14 @@
           </querytext>
     </fullquery>
 
+    <fullquery name="select_other_feeds">
+          <querytext>
+            select s.title, s.source_id 
+              from na_sources s 
+             where source_id not in (select source_id 
+                                       from na_subscriptions 
+                                      where aggregator_id = :aggregator_id)
+          </querytext>
+    </fullquery>
+
 </queryset>
