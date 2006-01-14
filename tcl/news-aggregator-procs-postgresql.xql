@@ -50,9 +50,16 @@
         </querytext>
     </fullquery>
 
-<fullquery name="na_cleanup_items.deleted_items">
+<fullquery name="news_aggregator::items_cleanup.vacuum">
       <querytext>
-        delete from na_items where date + interval '2 month' < now()
+	delete
+	from na_items
+	where item_id not in (select item_id
+			      from na_saved_items)
+	and item_id < (select min(aggregator_bottom)
+		       from na_aggregators)
+	and creation_date < current_timestamp - '180 days' :: interval
+--        delete from na_items where date + interval '2 month' < now()
         </querytext>
     </fullquery>
 

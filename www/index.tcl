@@ -42,6 +42,7 @@ if { !$aggregator_id } {
 				-public_p 0 \
 				-creation_user $user_id \
 				-creation_ip [ad_conn peeraddr]]
+
 	news_aggregator::aggregator::set_user_default -user_id $user_id \
 	    -package_id $package_id -aggregator_id $aggregator_id
 
@@ -168,7 +169,10 @@ db_multirow -extend {
     item_blog_url 
     technorati_url
     item_guid_link
+    pub_sort_date
+    chunk_updated
     pub_date
+    pub_time
 } items items $items_query {
     if { $enable_purge_p } {
         # Top is the first item
@@ -211,17 +215,18 @@ db_multirow -extend {
     } else {
         set item_guid_link $item_link
     }
-
-    set diff [news_aggregator::last_scanned -diff [expr [expr [clock seconds] - [clock scan $last_scanned]] / 60]]
+    set multiple_sources [expr [db_string count "select count(*) from na_subscriptions where aggregator_id = :aggregator_id"] > 1]
+    #set diff [news_aggregator::last_scanned -diff [expr [expr [clock seconds] - [clock scan $last_scanned]] / 60]]
     set source_url [export_vars -base source {source_id}]
     set technorati_url "http://www.technorati.com/cosmos/links.html?url=$link&sub=Get+Link+Cosmos"
 
-    set localtime [clock scan [lc_time_utc_to_local $item_pub_date] -gmt 1]
-    set utctime [clock scan $item_pub_date -gmt 1]
-    if { $utctime > [clock scan "1 day ago" -gmt 1] } {
-        set pub_date [clock format $utctime -format "%I:%M %p"]
+    set localtime [clock scan [lc_time_utc_to_local $item_pub_date]]
+    set pub_date [clock scan [clock format $localtime -format "%Y-%m-%d 00:00:00"]]
+    set chunk_updated [news_aggregator::chunk_updated [expr [expr [clock seconds] - $pub_date] / 60]]
+    if { $pub_date > [clock scan "2 days ago" -gmt 1] } {
+        set pub_time [clock format $localtime -format "%I:%M %p"]
     } else {
-        set pub_date [clock format $utctime -format "%d %b %Y %I:%M %p"]
+        set pub_time [clock format $localtime -format "%d %b %Y %I:%M %p"]
     } 
 
     if { [string equal $write_p "1"] } {

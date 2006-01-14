@@ -1,0 +1,17 @@
+MS: some thoughts for improvements; should also mine bloglines, newsgator and yahoo (et. al) for more ideas
+
+version 0.9.8
+ - change sort date to "Today", "Yesterday", "x days ago"
+ - html for aggregator description
+version 0.9.9
+ - notifications (convert multiple rss feeds to email. cool?!?)
+version 1
+ - add to del.ici.us button?
+ - pagination for display? or another means of tidying up display page (anchors between feeds?)
+ - style items (both w and w/o description) entirely via css
+version 1.2
+ - search
+ - per subscription keywords
+version 1.2+
+ - edit subscription title
+ - separate css with per package param for location

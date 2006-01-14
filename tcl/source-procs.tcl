@@ -13,7 +13,6 @@ namespace eval news_aggregator::source {}
 ad_proc -public news_aggregator::source::new {
     -feed_url:required
     -user_id:required
-    -package_id:required
     {-aggregator_id ""}
     -array:boolean
 } {

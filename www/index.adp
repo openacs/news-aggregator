@@ -1,8 +1,8 @@
 <master>
   <property name="title">@page_title@</property>
   <property name="context">@context@</property>
-  <property name="header_stuff"><style type="text/css"><!-- .item_pub_date, .item_author { color: #777; padding-right: 1em; }
-.item_pub_date { font-size: 10px; }  
+  <property name="header_stuff"><style type="text/css"><!-- .item_pub_time, .item_author { color: #777; padding-right: 1em; }
+.item_pub_time { font-size: 10px; }  
  --></style></property>
 
 <!-- MS: would like to lay this out without tables -->
@@ -18,10 +18,10 @@
     </else>
     <p>   
     <if @enable_purge_p@ true>
-        You can hit the Purge button to clean out the page. Clicking the Save button will prevent an item from being purged.
+        You can hit the Purge button to clean out the page. Clicking the <a href="#" class="button">Save</a> button will prevent an item from being purged.
     </if>
     <if @write_p@ true>
-        Click the Blog button to post the item to a weblog (you will have a choice of weblogs to post to).
+        Click the <a href="#" class="button">Blog</a> button to post the item to a weblog (you will have a choice of weblogs to post to).
     </if>
    </td>
    <td valign="top" align="right">
@@ -38,9 +38,9 @@
   <div class="list-button-bar">
   <p>
     <if @allow_aggregator_edit_p@ true>
-     <a href="@url@aggregator" class="button">Manage @aggregator_name@</a>
+     <a href="@url@aggregator-edit" class="button">Manage Reader</a>
     </if>
-    <a href="@url@settings" class="button">@instance_name@ Settings</a>
+    <a href="@url@settings" class="button">Manage @instance_name@</a>
   </div>
   <p>
 </if>
@@ -53,38 +53,60 @@
 </if>
 <else>
  <multiple name="items">
-   <group column="sort_date"> 
-      <div style="background-color: #eeeeee; padding-top: 10px; padding-bottom: 10px; padding-left: 5px;">
-       <span style="font-size: 125%; font-weight: bold;"><a href="@items.link@" title="@items.description@">@items.title@</a></span> #news-aggregator.updated_x_time_ago#
+   <group column="pub_date"> 
+      <div style="background-color: #eeeeee; padding-top: 6px; padding-bottom: 6px; padding-left: 4px; margin-top: 10px; margin-bottom: 10px;">
+       <span style="font-size: 125%; font-weight: bold;"><a href="@items.link@" title="@items.description@">@items.title;noquote@</a></span>, from @items.chunk_updated@ @items.pub_date@
       </div>
        <group column="source_id">
-         <div style="margin-left: 10px; margin-top: 15px; margin-bottom: 15px;">
+        <if @items.show_description_p@ true>
+          <div style="margin-left: 10px; margin-top: 15px; margin-bottom: 15px;">
+           <a name="@items.item_id@">
+           <div style="font-size: 115%; font-weight: bold; margin-bottom: 5px;">
+            <if @items.item_title@ not nil>
+             <a href="@items.item_link@">@items.item_title;noquote@</a> @items.pub_date@
+            </if>
+           </div>
+           <div class="item_pub_time" style="margin-bottom: 5px;">Posted: @items.pub_time@
+            <if @items.item_link@ not nil and @items.item_guid_link@ not nil>
+             <a href="@items.item_guid_link@" title="Permanent URL for this entry">#</a>
+            </if>        
+           </div>
+           @items.content;noquote@
+           <div style="margin-top: 10px; margin-bottom: 10px;" class="list-button-bar">
+            <if @write_p@ true>
+             <if @items.save_url@ not nil>
+               <a href="@items.save_url@" alt="Save" class="button">Save</a>
+             </if>
+             <if @items.unsave_url@ not nil>
+              <a href="@items.unsave_url@" alt="Unsave" class="button">Unsave</a>
+             </if>
+            </if>
+            <if @blog_p@ true>
+             <a href="@items.item_blog_url@" alt="Post this item to your Weblog" class="button">Blog</a>
+            </if>
+           </div>
+          </div>
+        </if>
+        <else>
+          <div style="margin-left: 10px; margin-top:5px; margin-bottom: 5px;">
           <a name="@items.item_id@">
-          <div style="font-size: 115%; font-weight: bold; margin-bottom: 5px;">
-           <if @items.item_title@ not nil>
-            <a href="@items.item_link@">@items.item_title@</a>
-           </if>
-          </div>
-          <div class="item_pub_date" style="margin-bottom: 5px;">Posted: @items.pub_date@
-           <if @items.item_link@ not nil and @items.item_guid_link@ not nil>
-            <a href="@items.item_guid_link@" title="Permanent URL for this entry">#</a>
-           </if>        
-          </div>
-          @items.content;noquote@
-          <div style="margin-top: 10px; margin-bottom: 10px;" class="list-button-bar">
-           <if @write_p@ true>
+            <span style="font-size: 110%;"><a href="@items.item_link@">@items.item_title;noquote@</a></span>
+            Posted: @items.pub_time@&nbsp;
+            <if @items.item_link@ not nil and @items.item_guid_link@ not nil>
+             <a href="@items.item_guid_link@" title="Permanent URL for this entry">#</a>
+            </if>&nbsp;
+            <if @write_p@ true>
             <if @items.save_url@ not nil>
               <a href="@items.save_url@" alt="Save" class="button">Save</a>
             </if>
             <if @items.unsave_url@ not nil>
              <a href="@items.unsave_url@" alt="Unsave" class="button">Unsave</a>
             </if>
-           </if>
-           <if @blog_p@ true>
-            <a href="@items.item_blog_url@" alt="Post this item to your Weblog" class="button">Blog</a>
-           </if>
-          </div>
-         </div>
+            </if>
+            <if @blog_p@ true>
+              <a href="@items.item_blog_url@" alt="Post this item to your Weblog" class="button">Blog</a>
+            </if></div>
+        </else>
        </group>
     </group>
   </multiple>

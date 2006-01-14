@@ -18,11 +18,7 @@ if { ![parameter::get -package_id $package_id -parameter PerUserAggregatorsP -de
 	-privilege write
 }
 
-set page_title "Edit Aggregator Info"
-array set ag_info [news_aggregator::aggregator::aggregator_info -aggregator_id $aggregator_id]
-set context [list [list "." "$ag_info(aggregator_name)"] "$page_title"]
-
-ad_form -name aggregator -select_query_name select_aggregator -form {
+ad_form -name aggregator -action aggregator -select_query_name select_aggregator -form {
     {aggregator_id:integer(hidden),key}
     {aggregator_name:text
         {label "Name"}

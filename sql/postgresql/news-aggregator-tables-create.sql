@@ -209,6 +209,7 @@ create table na_user_preferences (
         package_id              integer
                                 constraint na_user_preferences_pid_fk
                                 references apm_packages(package_id)
+                                on delete cascade
                                 constraint na_user_preferences_pid_nn
                                 not null,
 	constraint na_user_prefs_pk primary key (user_id, package_id)

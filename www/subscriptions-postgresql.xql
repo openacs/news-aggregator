@@ -11,6 +11,8 @@
 			   s.link,
 			   s.description,
 			   s.updates,
+                           su.aggregator_id,
+                           su.show_description_p,
                            to_char(s.last_scanned, 'YYYY-MM-DD HH24:MI') as last_scanned,
                            to_char(s.last_modified_stamp, 'YYYY-MM-DD HH24:MI') as last_modified
                     from   na_sources s join (

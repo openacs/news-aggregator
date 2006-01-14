@@ -4,7 +4,6 @@ ad_page_contract {
     @author Simon Carstensen
     @cvs-id $Id$
 } {
-    aggregator_id:integer,notnull,optional
     {return_url ""}
 }
 

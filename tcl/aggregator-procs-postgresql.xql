@@ -17,10 +17,10 @@
       <querytext>
 	select s.source_id,
                s.link,
+               su.show_description_p,
                s.description,
                s.title,
                to_char(i.creation_date, 'YYYY-MM-DD HH24:MI:SS') as last_scanned,
-               to_char(i.creation_date, 'YYYY-MM-DD HH24') as sort_date,
 	       s.feed_url,
 	       i.item_id,
                i.title as item_title,
@@ -31,6 +31,7 @@
                i.original_guid as item_original_guid,
                i.permalink_p as item_permalink_p,
                i.author as item_author,
+               to_char(i.pub_date at time zone 'UTC', 'YYYY-MM-DD') as sort_date,
                to_char(i.pub_date at time zone 'UTC', 'YYYY-MM-DD HH24:MI:SS') as item_pub_date,
                s.last_modified
         from   (
@@ -42,7 +43,7 @@
 	where  a.package_id = :package_id
         and    a.aggregator_id = :aggregator_id
             $items_purges
-	order  by i.item_id desc
+	order  by item_pub_date desc
 	limit  $sql_limit
 </querytext>
 </fullquery>

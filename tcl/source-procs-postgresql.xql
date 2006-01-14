@@ -45,12 +45,11 @@
             select na_source__new (
                 :source_id,
                 :feed_url,
-		        :link,
+	        :link,
                 :title,
                 :description,
-		        :last_modified,
+	        :last_modified,
                 '1',
-                :package_id,
                 :user_id,
                 :creation_ip
             )

@@ -384,8 +384,8 @@ ad_proc -public news_aggregator::aggregator::new {
     if { [string equal $package_id ""] } {
 	set package_id [ad_conn package_id]
     }
-    if { [string equal $user_id ""] } {
-	set user_id [ad_conn user_id]
+    if { [string equal $creation_user ""] } {
+	set creation_user [ad_conn user_id]
     }
     if { [string equal $creation_ip ""] } {
 	set creation_ip [ad_conn peeraddr]
@@ -396,7 +396,7 @@ ad_proc -public news_aggregator::aggregator::new {
     # find app group and assign correct privileges 
     # (public = viewable by subsite members)
     set app_group [application_group::group_id_from_package_id \
-		       -package_id [ad_conn subsite_id]
+		       -package_id [ad_conn subsite_id]]
     if { !$public_p } {
 	permission::toggle_inherit -object_id $aggregator_id
 	foreach priv {read write create} {
@@ -409,6 +409,7 @@ ad_proc -public news_aggregator::aggregator::new {
 		-object_id $aggregator_id -privilege $priv
 	}
     }
+    return $aggregator_id
 }
 
 ad_proc -public news_aggregator::aggregator::delete {

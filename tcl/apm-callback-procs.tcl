@@ -16,7 +16,8 @@ ad_proc -private news_aggregator::apm::before_uninstantiate {
 	news_aggregator::aggregator::delete -aggregator_id $aggregator_id
     }
 
-    db_foreach select_instance_sources {} {
+    # delete any dangling sources
+    db_foreach select_unused_sources {} {
 	news_aggregator::source::delete -source_id $source_id
     }
 }
@@ -46,5 +47,24 @@ ad_proc -private news_aggregator::apm::after_upgrade {
 		    }
 		}
             }
+            0.9.7 0.9.8 {
+		db_foreach get_sources {
+		    select source_id
+		      from na_sources
+		} {
+
+		    db_dml clear_context_id {
+			update acs_objects
+			   set context_id = null
+			 where object_id = :source_id
+		    }
+		    
+		    db_dml clear_perms {
+			delete from acs_permissions
+			 where object_id = :source_id
+		    }
+		    
+		}
+	    }
         }
 }

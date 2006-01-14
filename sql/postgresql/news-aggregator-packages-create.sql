@@ -136,7 +136,6 @@ create or replace function na_source__new (
     varchar,      -- description
     varchar,      -- last_modified
     boolean,      -- listed_p
-    integer,      -- package_id
     integer,      -- creation_user
     varchar       -- creation_ip
 ) returns integer as '
@@ -148,9 +147,8 @@ declare
     p_description       alias for $5;
     p_last_modified     alias for $6;
     p_listed_p          alias for $7;
-    p_package_id        alias for $8;
-    p_creation_user     alias for $9;
-    p_creation_ip       alias for $10;
+    p_creation_user     alias for $8;
+    p_creation_ip       alias for $9;
     v_source_id         integer;
 begin
         v_source_id := acs_object__new (
@@ -159,7 +157,7 @@ begin
                              current_timestamp,
                              p_creation_user,
                              p_creation_ip,
-                             p_package_id
+                             null
         );
 
         insert into na_sources (
@@ -181,12 +179,6 @@ begin
                 p_last_modified,
                 p_listed_p
         );
-
-          PERFORM acs_permission__grant_permission(
-                    v_source_id,
-                    p_creation_user,
-                    ''admin''
-          );
 
         return v_source_id;
 

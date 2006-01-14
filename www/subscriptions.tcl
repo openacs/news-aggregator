@@ -94,10 +94,12 @@ list::create \
 	last_modified {
 	    label "Last Update"
 	}
-        updates {
-            label "Updates"
-            html {align center}
-        }
+	show_description_p {
+	    label "Titles Only?"
+	    display_template {
+		<center><if @sources.show_description_p@ true>No</if><else>Yes</else> <a href="@sources.toggle_show_desc_url@" title="toggle" class="button">toggle</a></center>
+	    }
+	}
         feed_url {
             label "Source"
             display_template {
@@ -133,8 +135,9 @@ list::create \
 
 set package_url [ad_conn package_url]
 
-db_multirow -extend {xml_graphics_url} sources sources {} {
+db_multirow -extend { xml_graphics_url toggle_show_desc_url } sources sources {} {
     set xml_graphics_url "${package_url}graphics/xml.gif"
+    set toggle_show_desc_url [export_vars -base toggle-show-description { aggregator_id source_id }]
 }
 
 set other_feeds [list [list "Select Feed" ""]]
@@ -172,7 +175,6 @@ ad_form -name add_subscription -action subscriptions -form {
                            -feed_url $feed_url \
                            -aggregator_id $aggregator_id \
                            -user_id $user_id \
-                           -package_id $package_id \
 			   -array]
     if { $channel_array eq "0" } {
         ad_returnredirect -message "The feed $feed_url has an error."

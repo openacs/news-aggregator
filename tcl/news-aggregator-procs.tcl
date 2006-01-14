@@ -67,3 +67,25 @@ ad_proc -public news_aggregator::last_scanned {
     return $to_return
 }
 
+ad_proc -private news_aggregator::items_cleanup {} {
+    Clean out old items
+} {
+    db_dml vacuum {}
+}
+
+ad_proc -private news_aggregator::chunk_updated { updated_day } {
+    Clean out old items
+} {
+    set days [expr $updated_day / 1440]
+    switch $days {
+	0 {
+	    return "Today"
+	}
+	1 {
+	    return "Yesterday"
+	}
+	default {
+	    return "$days Days Ago"
+	}
+    }
+}
