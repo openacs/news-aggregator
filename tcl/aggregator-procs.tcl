@@ -381,6 +381,7 @@ ad_proc -public news_aggregator::aggregator::new {
     @creation-date 2003-06-29
 } {
 
+    # MS: should really check for connection here (for 0.9.9)
     if { [string equal $package_id ""] } {
 	set package_id [ad_conn package_id]
     }
@@ -394,7 +395,9 @@ ad_proc -public news_aggregator::aggregator::new {
     set aggregator_id [db_exec_plsql new_aggregator {}]
 
     # find app group and assign correct privileges 
-    # (public = viewable by subsite members)
+    # (public = viewable by subsite members); this will be better in 5.2 with
+    # group::get_rel_segment (acording to daveb) as we'll be able to assign privs
+    # using the subsite member rel segment (rather than the entire app group)
     set app_group [application_group::group_id_from_package_id \
 		       -package_id [ad_conn subsite_id]]
     if { !$public_p } {

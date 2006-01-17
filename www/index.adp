@@ -55,7 +55,7 @@
  <multiple name="items">
    <group column="pub_date"> 
       <div style="background-color: #eeeeee; padding-top: 6px; padding-bottom: 6px; padding-left: 4px; margin-top: 10px; margin-bottom: 10px;">
-       <span style="font-size: 125%; font-weight: bold;"><a href="@items.link@" title="@items.description@">@items.title;noquote@</a></span>, from @items.chunk_updated@ @items.pub_date@
+       <span style="font-size: 125%; font-weight: bold;"><a href="@items.link@" title="@items.description@">@items.title;noquote@</a></span>, from @items.chunk_updated@
       </div>
        <group column="source_id">
         <if @items.show_description_p@ true>
@@ -63,7 +63,7 @@
            <a name="@items.item_id@">
            <div style="font-size: 115%; font-weight: bold; margin-bottom: 5px;">
             <if @items.item_title@ not nil>
-             <a href="@items.item_link@">@items.item_title;noquote@</a> @items.pub_date@
+             <a href="@items.item_link@">@items.item_title;noquote@</a>
             </if>
            </div>
            <div class="item_pub_time" style="margin-bottom: 5px;">Posted: @items.pub_time@

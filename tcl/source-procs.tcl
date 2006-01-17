@@ -12,8 +12,8 @@ namespace eval news_aggregator::source {}
 
 ad_proc -public news_aggregator::source::new {
     -feed_url:required
-    -user_id:required
     {-aggregator_id ""}
+    {-user_id ""}
     -array:boolean
 } {
     @author Simon Carstensen
