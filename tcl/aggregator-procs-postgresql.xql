@@ -20,7 +20,6 @@
                su.show_description_p,
                s.description,
                s.title,
-               to_char(i.creation_date, 'YYYY-MM-DD HH24:MI:SS') as last_scanned,
 	       s.feed_url,
 	       i.item_id,
                i.title as item_title,

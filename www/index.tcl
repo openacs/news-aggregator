@@ -110,7 +110,6 @@ ad_form -name aggregators -form {
 set page_title $aggregator_name
 set context [list $page_title]
 
-set package_url [ad_conn package_url]
 set url "$package_url$aggregator_id/"
 set graphics_url "${package_url}graphics/"
 set return_url [ad_conn url]
@@ -120,6 +119,11 @@ set create_url "${package_url}aggregator-add"
 
 set limit [ad_parameter "number_of_items_shown"]
 set sql_limit [expr 7*$limit]
+set multiple_sources_p [expr [db_string count {
+    select count(*) 
+    from na_subscriptions 
+    where aggregator_id = :aggregator_id
+} -default 0] > 1]
 
 set top 0
 set bottom 1073741824
@@ -215,7 +219,7 @@ db_multirow -extend {
     } else {
         set item_guid_link $item_link
     }
-    set multiple_sources [expr [db_string count "select count(*) from na_subscriptions where aggregator_id = :aggregator_id"] > 1]
+
     #set diff [news_aggregator::last_scanned -diff [expr [expr [clock seconds] - [clock scan $last_scanned]] / 60]]
     set source_url [export_vars -base source {source_id}]
     set technorati_url "http://www.technorati.com/cosmos/links.html?url=$link&sub=Get+Link+Cosmos"
