@@ -58,9 +58,12 @@ end;' language 'plpgsql';
 -- no real feed owner at this point, with feeds being shared among packages
 alter table na_sources 
     drop column owner_id;
+
 -- this was not used and is available in acs_objects beginnning with 5.2 in any case
-alter table na_sources 
-    drop column package_id;
+-- THIS IS DEADLY. DONT DO THIS. WRITE A PLSQL FUNCTION TO UPDATE THE PACKAGE_ID FIRST !!!!
+--
+-- alter table na_sources 
+--    drop column package_id;
 
 -- add on delete cascade so packages can uninstall cleanly
 -- doing this for now, may eventually move this data to the user preferences package
