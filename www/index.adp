@@ -22,10 +22,10 @@
  </else>
 
 <div>
- <if @enable_purge_p@ true>
+ <if @enable_purge_p@ true and @public_p@ false>
    You can hit the Purge button to clean out the page. Clicking the <a href="#" class="button">Save</a> button will prevent an item from being purged.
  </if>
- <if @write_p@ true>
+ <if @write_p@ true and @blog_p@ true>
    Click the <a href="#" class="button">Blog</a> button to post the item to a weblog (you will have a choice of weblogs to post to).
  </if>
 </div>
