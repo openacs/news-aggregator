@@ -1,19 +1,21 @@
 MS: some thoughts for improvements; should also mine bloglines, newsgator and yahoo (et. al) for more ideas
 
-version 0.9.9
- - html for aggregator description
- - parameterize the query limit for items (hard coded to 600)
 version 1
+ - fix portlet
+ - parameterize the query limit for items (hard coded to 600)
+  - ok, this is actually handled on index page with parameter but we should only get what we want to display
  - code cleanup and complete tests
- - update data model for 5.2
 version 1.1
+ - update data model for 5.2
+ - richtext widget for aggregator description?
  - add to del.ici.us button?
  - edit subscription title
 version 1.2
  - notifications (convert multiple rss feeds to email. cool?!?)
+ - rework index page query to convert time in DB (sort is by date, source, time)
 version 1.3
  - search
 version 1.4+
  - per subscription keywords
  - other display options?
- - style items (both w and w/o description) entirely via css (per package param for location)
+ - clean up styled items (both w and w/o description) entirely via css

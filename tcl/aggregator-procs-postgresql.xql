@@ -42,7 +42,7 @@
 	where  a.package_id = :package_id
         and    a.aggregator_id = :aggregator_id
             $items_purges
-	order  by item_pub_date desc
+	order  by sort_date desc
 	limit  $sql_limit
 </querytext>
 </fullquery>

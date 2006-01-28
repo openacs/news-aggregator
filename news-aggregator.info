@@ -19,8 +19,8 @@
         <requires url="feed-parser" version="0.3d"/>
 
         <callbacks>
-            <callback type="after-upgrade"  proc="news_aggregator::apm::after_upgrade"/>
             <callback type="before-uninstantiate"  proc="news_aggregator::apm::before_uninstantiate"/>
+            <callback type="after-upgrade"  proc="news_aggregator::apm::after_upgrade"/>
         </callbacks>
         <parameters>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="AllowAggregatorEditP"  default="1" description="Should user be allowed to edit aggregator properties?"/>
@@ -31,6 +31,7 @@
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="PerUserAggregatorsP"  default="1" description="Should registered users automatically get their own news aggregator when they visit the News Aggregator instance node the first time, or should they only be allowed to manually create an aggregator of their own if they are given 'write' privilege on the instance? 1 for the previous and 0 for the latter."/>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="purge_time"  default="259200" description="Number of seconds that items are kept in individual non-public aggregators"/>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="referer"  default="http://www.lucmo.com/" description="The HTTP referer header when we fetch RSS feeds"/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="StylesheetURL"  default="/resources/news-aggregator/news-aggregator.css" description="The url to the stylesheet used in conjunction with the news-aggregator instance."/>
         </parameters>
 
     </version>

@@ -13,7 +13,7 @@ available on the <a href="./settings">settings</a> page.
       <div class="tab" id="subnavbar-here">General</div>
      </if>
      <else>
-      <div class="tab"><a href="aggregator">General</a></div>
+      <div class="tab"><a href="aggregator-edit">General</a></div>
      </else
 
      <if @tab@ eq "subscriptions">

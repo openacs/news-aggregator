@@ -1,24 +1,24 @@
  <multiple name="items">
-   <group column="pub_date"> 
-      <div style="background-color: #eeeeee; padding-top: 6px; padding-bottom: 6px; padding-left: 4px; margin-top: 10px; margin-bottom: 10px;">
-       <span style="font-size: 125%; font-weight: bold;"><a href="@items.link@" title="@items.description@">@items.title;noquote@</a></span>, from @items.chunk_updated@
+   <group column="pub_datestamp"> 
+      <div class="na-item-source-title na-item">
+       <span class="na-item-source-title-text"><a href="@items.link@" title="@items.description@">@items.title;noquote@</a></span>, from @items.chunk_updated@
       </div>
-       <group column="source_id">
+       <group column="inner_sort_col">
         <if @items.show_description_p@ true>
-          <div style="margin-left: 10px; margin-top: 15px; margin-bottom: 15px;">
+          <div class="na-item-with-desc na-item">
            <a name="@items.item_id@">
-           <div style="font-size: 115%; font-weight: bold; margin-bottom: 5px;">
+           <div class="na-item-with-desc-title na-item">
             <if @items.item_title@ not nil>
-             <a href="@items.item_link@">@items.item_title;noquote@</a>
+             <a href="@items.item_link@" class="na-item">@items.item_title;noquote@</a>
             </if>
            </div>
-           <div class="item_pub_time" style="margin-bottom: 5px;">Posted: @items.pub_time@
+           <div class="na-item-pub-time">Posted: @items.pub_time_pretty@
             <if @items.item_link@ not nil and @items.item_guid_link@ not nil>
-             <a href="@items.item_guid_link@" title="Permanent URL for this entry">#</a>
+             <a href="@items.item_guid_link@" title="Permanent URL for this entry" class="na-item">#</a>
             </if>        
            </div>
            @items.content;noquote@
-           <div style="margin-top: 10px; margin-bottom: 10px;" class="list-button-bar">
+           <div class="na-item-button-bar">
             <if @write_p@ true>
              <if @items.save_url@ not nil>
                <a href="@items.save_url@" alt="Save" class="button">Save</a>
@@ -34,10 +34,10 @@
           </div>
         </if>
         <else>
-          <div style="margin-left: 10px; margin-top:5px; margin-bottom: 5px;">
+          <div class="na-item-title-only na-item">
           <a name="@items.item_id@">
-            <span style="font-size: 110%;"><a href="@items.item_link@">@items.item_title;noquote@</a></span>
-            Posted: @items.pub_time@&nbsp;
+            <a href="@items.item_link@" class="na-item-title-only-title">@items.item_title;noquote@</a>
+            <span class="na-item-pub-time">Posted: @items.pub_time_pretty@</span>
             <if @items.item_link@ not nil and @items.item_guid_link@ not nil>
              <a href="@items.item_guid_link@" title="Permanent URL for this entry">#</a>
             </if>&nbsp;
@@ -51,7 +51,8 @@
             </if>
             <if @blog_p@ true>
               <a href="@items.item_blog_url@" alt="Post this item to your Weblog" class="button">Blog</a>
-            </if></div>
+            </if>
+          </div>
         </else>
        </group>
     </group>
