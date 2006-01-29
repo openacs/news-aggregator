@@ -64,7 +64,7 @@ set bulk_actions {
 }
 
 if { $aggregator_count > 1 } {
-    # user has more than 1 aggregator, let's present our fancy move and copy features
+    # user has write privs on more than 1 aggregator, let's present our fancy move and copy features
     if { $aggregator_count > 2 } {
         set title "another aggregator"
     } else {

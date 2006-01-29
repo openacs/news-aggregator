@@ -18,7 +18,7 @@
 
  <else>
   </div>
-   This page lists <b>the most recent items</b> from the feeds you've <a href="@url@manage?tab=subscriptions">subscribed</a> to.
+   This page lists <b>the most recent items</b> from the feeds you've <a href="@url@subscriptions">subscribed</a> to.
  </else>
 
 <div>

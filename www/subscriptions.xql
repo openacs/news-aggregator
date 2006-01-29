@@ -12,11 +12,8 @@
     <fullquery name="select_name">
           <querytext>
             select a.aggregator_name 
-            from   na_aggregators a, 
-                   acs_objects o 
-            where  o.object_id = a.aggregator_id
-            and    a.aggregator_id != :aggregator_id 
-            and    o.creation_user = :user_id
+            from   na_aggregators a
+            where a.aggregator_id != :aggregator_id 
           </querytext>
     </fullquery>
 
