@@ -1,7 +1,14 @@
  <multiple name="items">
    <group column="pub_datestamp"> 
       <div class="na-item-source-title na-item">
-       <span class="na-item-source-title-text"><a href="@items.link@" title="@items.description@">@items.title;noquote@</a></span>, from @items.chunk_updated@
+       <span class="na-item-source-title-text">
+         <if @items.link@ not nil>
+           <a href="@items.link@" title="@items.description@">@items.title;noquote@</a>
+         </if>
+         <else>
+           @items.title;noquote@
+         </else>
+       </span>, from @items.chunk_updated@
       </div>
        <group column="inner_sort_col">
         <if @items.show_description_p@ true>
@@ -21,14 +28,14 @@
            <div class="na-item-button-bar">
             <if @write_p@ true>
              <if @items.save_url@ not nil>
-               <a href="@items.save_url@" alt="Save" class="button">Save</a>
+               <a href="@items.save_url@" alt="Mark this item as saved" class="button">Save</a>
              </if>
              <if @items.unsave_url@ not nil>
-              <a href="@items.unsave_url@" alt="Unsave" class="button">Unsave</a>
+              <a href="@items.unsave_url@" alt="Unmark this item as saved" class="button">Unsave</a>
              </if>
             </if>
             <if @blog_p@ true>
-             <a href="@items.item_blog_url@" alt="Post this item to your Weblog" class="button">Blog</a>
+             <a href="@items.item_blog_url@" alt="Post this item to a Weblog" class="button">Blog</a>
             </if>
            </div>
           </div>

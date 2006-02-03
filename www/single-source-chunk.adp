@@ -1,6 +1,13 @@
  <multiple name="items">
       <div class="na-item-source-title na-item">
-       <span class="na-item-source-title-text"><a href="@items.link@" title="@items.description@">@items.title;noquote@</a></span>, from @items.chunk_updated@
+       <span class="na-item-source-title-text">
+         <if @items.link@ not nil>
+           <a href="@items.link@" title="@items.description@">@items.title;noquote@</a>
+         </if>
+         <else>
+           @items.title;noquote@
+         </else>
+       </span>, from @items.chunk_updated@
       </div>
        <group column="pub_datestamp"> 
         <if @items.show_description_p@ true>
