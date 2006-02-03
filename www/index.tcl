@@ -75,8 +75,10 @@ if { !$aggregator_id } {
 }
 
 set write_p [permission::permission_p \
+		 -party_id $user_id \
                  -object_id $aggregator_id \
                  -privilege write]
+
 set blog_p [expr [llength [news_aggregator::weblog::options \
 			       -user_id $user_id]] > 0]
 
@@ -85,9 +87,10 @@ db_1row aggregator_info {}
 # Get options for "other aggregators" form widget
 set other_aggregators [list [list "Other News Aggregators" "\#"]]
 db_foreach other_aggregators {} {
-     if { [permission::permission_p \
- 	      -object_id $other_id \
- 	      -privilege read] eq "1" } {
+    if { [permission::permission_p \
+	      -object_id $other_id \
+	      -party_id $user_id \
+	      -privilege read] eq "1" } {
 	 lappend other_aggregators [list $name $other_id]
     }
 }
@@ -222,7 +225,7 @@ db_multirow -extend {
     } else {
         set item_guid_link $item_link
     }
-    set item_title [string_truncate -len 80 $item_title]
+    set item_title [string_truncate -len 80 -- $item_title]
     #set diff [news_aggregator::last_scanned -diff [expr [expr [clock seconds] - [clock scan $last_scanned]] / 60]]
     set source_url [export_vars -base source {source_id}]
     set technorati_url "http://www.technorati.com/cosmos/links.html?url=$link&sub=Get+Link+Cosmos"
@@ -238,16 +241,14 @@ db_multirow -extend {
         set pub_time_pretty [clock format $pub_timestamp -format "%d %b %Y %I:%M %p"]
     } 
         
-    if { [string equal $write_p "1"] } {
-	if { [lsearch $saved_items $item_id] == -1 } {
-            set save_url [export_vars -base "${url}item-save" {item_id}]
-	    set unsave_url ""
-	} else {
-	    set unsave_url [export_vars -base "${url}item-unsave" {item_id}]
-	    set save_url ""
-	}
-        set item_blog_url [export_vars -base "${url}item-blog" {item_id}]
+    if { [lsearch $saved_items $item_id] == -1 } {
+	set save_url [export_vars -base "${url}item-save" {item_id}]
+	set unsave_url ""
+    } else {
+	set unsave_url [export_vars -base "${url}item-unsave" {item_id}]
+	set save_url ""
     }
+    set item_blog_url [export_vars -base "${url}item-blog" {item_id}]
 
     if { $item_id < $bottom } {
 	set bottom $item_id
