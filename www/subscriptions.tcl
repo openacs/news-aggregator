@@ -177,7 +177,7 @@ ad_form -name add_subscription -action subscriptions -form {
                            -user_id $user_id \
 			   -array]
     if { $channel_array eq "0" } {
-        ad_returnredirect -message "The feed $feed_url has an error."
+        ad_returnredirect -message "The feed $feed_url has an error." subscriptions
         ad_script_abort
     }
     array set channel $channel_array
