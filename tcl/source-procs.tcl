@@ -16,11 +16,11 @@ ad_proc -public news_aggregator::source::new {
     {-user_id ""}
     -array:boolean
 } {
+    Parse feed_url for link, title, and description, then insert the source if it does not exist already. Lastly, subscribe aggregator (if specified) to the source.
+
     @author Simon Carstensen
-
-    Parse feed_url for link, title, and description. Then insert the source if it does not excist already. Subscribe the specified aggregator to the source.
-
     @param array Return more into in an array
+    @return array or new source_id (or 0 if source could not be added)
 } {
 
     if { [db_0or1row source {}] } {
@@ -47,12 +47,23 @@ ad_proc -public news_aggregator::source::new {
         ns_log Debug "news_aggregator::source::new: Source doesn't exist, proceeding"
     }
 
-    array set f [ad_httpget -url $feed_url -depth 4]
+    if { [catch { array set f [ad_httpget -url $feed_url -depth 4] } error] } {
+        ns_log Debug "news_aggregator::source::new: Couldn't retrieve $feed_url, error = $error"
+	return 0
+    }
 
-    if { ![string equal 200 $f(status)] || [catch { array set result [feed_parser::parse_feed -xml $f(page)] }] } {
+    if { ![string equal 200 $f(status)] } {
         ns_log Debug "news_aggregator::source::new: Couldn't httpget, status = $f(status)"
         return 0
     }
+
+    array set result [feed_parser::parse_feed -xml $f(page)]
+
+    if { $result(status) eq "error" } {
+        ns_log Debug "news_aggregator::source::new: Couldn't parse feed, error = $result(error)"
+	return 0
+    }
+
     ns_log Debug "news_aggregator::source::new: httpget successful, [string length $f(page)] bytes"
 
     array set channel $result(channel)
@@ -67,35 +78,38 @@ ad_proc -public news_aggregator::source::new {
     
     db_exec_plsql add_source {}
 
-    update -source_id $source_id -feed_url $feed_url -modified ""
+    if { ![update -source_id $source_id -feed_url $feed_url -modified ""] } {
+	ns_log Debug "news_aggregator::source::new: Couldn't update $feed_url, error = $error"
+	return $source_id
+    } else {
     
-    if { [exists_and_not_null aggregator_id] } {
-        news_aggregator::subscription::new \
-            -aggregator_id $aggregator_id \
-            -source_id $source_id
-    }
+	if { [exists_and_not_null aggregator_id] } {
+	    news_aggregator::subscription::new \
+		-aggregator_id $aggregator_id \
+		-source_id $source_id
+	}
 
-    set items $result(items)
-
-    foreach array $items {
-        array set item $array
-        set title [string_truncate -len 500 -- $item(title)]
-        set link [string_truncate -len 500 -- $item(link)]
-        set guid [string_truncate -len 500 -- $item(guid)]
-        set permalink_p $item(permalink_p)
-        set description $item(description)
-        set content_encoded $item(content_encoded)
+	set items $result(items)
+	
+	foreach array $items {
+	    array set item $array
+	    set title [string_truncate -len 500 -- $item(title)]
+	    set link [string_truncate -len 500 -- $item(link)]
+	    set guid [string_truncate -len 500 -- $item(guid)]
+	    set permalink_p $item(permalink_p)
+	    set description $item(description)
+	    set content_encoded $item(content_encoded)
+	}
     }
 
     if { $array_p } {
-        set info(source_id) $source_id
-        set info(title) $channel_title
-        return [array get info]
+	set info(source_id) $source_id
+	set info(title) $channel_title
+	return [array get info]
     } else {
-        return $source_id
+	return $source_id
     }
 }
-
 
 ad_proc -public news_aggregator::source::get_identifier {
     {-guid:required}
@@ -123,6 +137,7 @@ ad_proc -public news_aggregator::source::update {
 
     @author Simon Carstensen
     @author Guan Yang (guan@unicast.org)
+    @return 1 if successfully updated
 } {
     ns_log Debug "source::update: updating $feed_url (source_id=$source_id)"
     
@@ -130,25 +145,21 @@ ad_proc -public news_aggregator::source::update {
     ns_set put $headers "If-Modified-Since" $modified
     ns_set put $headers "Referer" [ad_parameter "referer"]
 
-    if { [catch { array set f [ad_httpget \
-                                    -url $feed_url \
-                                    -headers $headers] }] } {
-        ns_log Debug "source::update: httpget failed"
-        return
+    if { [catch { array set f [ad_httpget -url $feed_url -headers $headers] } error ] } {
+        ns_log Debug "source::update: Couldn't retrieve $feed_url, error = $error"
+        return 0
     }
 
     if { ![string equal 200 $f(status)] } {
 	ns_log Debug "source::update: httpget didn't return 200 but $f(status)"
-	return
+	return 0
     }
 
-    if { [catch {
-    		set parse_result [feed_parser::parse_feed \
-					-xml $f(page)]
-            	array set result $parse_result
-    } err] } {
-        ns_log Debug "source::update: parse failed, error = $err"
-	    return
+    array set result [feed_parser::parse_feed -xml $f(page)]
+
+    if { $result(status) eq "error" } {
+        ns_log Debug "news_aggregator::source::update: Couldn't parse feed, error = $result(error)"
+	return 0
     }
 
     array set channel $result(channel)
@@ -263,6 +274,8 @@ ad_proc -public news_aggregator::source::update {
     } else {
 	db_dml update_source_no_new ""
     }
+
+    return 1
 }
 
 ad_proc -private news_aggregator::source::generate_guid {
@@ -292,13 +305,13 @@ ad_proc -public news_aggregator::source::delete {
 ad_proc -public news_aggregator::source::update_all {
     -all_sources:boolean
 } {
-    @author Simon Carstensen (simon@bcuni.net)
-    @author Guan Yang (guan@unicast.org)
 
     Update sources by a one hour interval.
-
+    
+    @author Simon Carstensen (simon@bcuni.net)
+    @author Guan Yang (guan@unicast.org)
     @param all_sources Update every source. Normally this proc
-    will only update the 25% of the existing sources.
+    will only update the 25% of the existing sources per run.
 } {
     ns_log Notice "Updating news aggregator sources"
     
@@ -327,11 +340,13 @@ ad_proc -public news_aggregator::source::update_all {
                 set feed_url [lindex $source 1]
                 set last_modified [lindex $source 2]
                 
-                news_aggregator::source::update \
-                        -source_id $source_id \
-                        -feed_url $feed_url \
-                        -modified $last_modified
+                if { ![news_aggregator::source::update \
+			   -source_id $source_id \
+			   -feed_url $feed_url \
+			   -modified $last_modified] } {
+		    ns_log warning "source::update_all: error updating $feed_url"
+		}
             }
-        }
+	}
     }
 }
