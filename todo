@@ -1,6 +1,7 @@
-MS: some thoughts for improvements; should also mine bloglines, newsgator and yahoo (et. al) for more ideas
+MS: some thoughts for improvements; should also mine bloglines, newsgator and yahoo, etc. for more ideas
 
 version 1.1
+ - make source::update more robust; an error in one feed shouldn't affect the updating of others (done, need QA)
  - fix portlet
  - parameterize the query limit for items (hard coded to 600)
   - ok, this is actually handled on index page with parameter but we should only get what we want to display
@@ -16,6 +17,7 @@ version 1.3
 version 1.4
  - search
 version 1.4+
+ - DeleteAfterFailCount parameter so that we can automatically remove a feed that's broken (if admin wishes)
  - per subscription keywords
  - other display options?
 
