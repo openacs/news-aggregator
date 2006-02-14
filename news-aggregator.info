@@ -8,22 +8,24 @@
     <singleton-p>f</singleton-p>
     <auto-mount>na</auto-mount>
 
-    <version name="1.0b" url="http://openacs.org/repository/download/apm/news-aggregator-1.0b.apm">
-        <owner url="http://michael.steigman.net">Michael Steigman</owner>
+    <version name="1.0" url="http://openacs.org/repository/download/apm/news-aggregator-1.0.apm">
         <owner url="http://unicast.org/">Guan Yang</owner>
+        <owner url="http://michael.steigman.net">Michael Steigman</owner>
         <summary>Read news sources on your website.</summary>
-        <release-date>2006-02-03</release-date>
+        <release-date>2006-02-14</release-date>
+        <vendor>OpenACS</vendor>
         <description format="text/plain">The news aggregator periodically reads a set of news sources, in one of several XML-based formats, finds the new bits, and displays them in reverse-chronological order on a single page.</description>
 
-        <provides url="news-aggregator" version="1.0b"/>
+        <provides url="news-aggregator" version="1.0"/>
         <requires url="feed-parser" version="0.3d"/>
 
         <callbacks>
-            <callback type="before-uninstantiate"  proc="news_aggregator::apm::before_uninstantiate"/>
             <callback type="after-upgrade"  proc="news_aggregator::apm::after_upgrade"/>
+            <callback type="before-uninstantiate"  proc="news_aggregator::apm::before_uninstantiate"/>
         </callbacks>
         <parameters>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="AllowAggregatorEditP"  default="1" description="Should user be allowed to edit aggregator properties?"/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="blogger_url"  description="What is the URL for the lars-blogger instance we should post item content to, relative to the server root. Leave blank if no post button. (not implemented)"/>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="EnablePurgeP"  default="1" description="Should we enable purges at all?"/>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="max_purges"  default="5" description="The maximum number of purges per aggregator before we clear &quot;holes&quot;"/>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="MultipleAggregatorsP"  default="1" description="Should users have the option of having multiple aggregators?"/>
