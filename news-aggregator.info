@@ -8,15 +8,15 @@
     <singleton-p>f</singleton-p>
     <auto-mount>na</auto-mount>
 
-    <version name="1.0" url="http://openacs.org/repository/download/apm/news-aggregator-1.0.apm">
-        <owner url="http://unicast.org/">Guan Yang</owner>
+    <version name="1.0.1" url="http://openacs.org/repository/download/apm/news-aggregator-1.0.1.apm">
         <owner url="http://michael.steigman.net">Michael Steigman</owner>
+        <owner url="http://unicast.org/">Guan Yang</owner>
         <summary>Read news sources on your website.</summary>
-        <release-date>2006-02-14</release-date>
+        <release-date>2006-02-16</release-date>
         <vendor>OpenACS</vendor>
         <description format="text/plain">The news aggregator periodically reads a set of news sources, in one of several XML-based formats, finds the new bits, and displays them in reverse-chronological order on a single page.</description>
 
-        <provides url="news-aggregator" version="1.0"/>
+        <provides url="news-aggregator" version="1.0.1"/>
         <requires url="feed-parser" version="0.3d"/>
 
         <callbacks>

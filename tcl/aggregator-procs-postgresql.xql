@@ -30,8 +30,8 @@
                i.original_guid as item_original_guid,
                i.permalink_p as item_permalink_p,
                i.author as item_author,
-               to_char(i.pub_date at time zone 'UTC', 'YYYY-MM-DD') as sort_date,
-               to_char(i.pub_date at time zone 'UTC', 'YYYY-MM-DD HH24:MI:SS') as item_pub_date,
+               to_char(i.pub_date at time zone 'UTC' $with_utc_offset, 'YYYY-MM-DD') as pub_date,
+               to_char(i.pub_date at time zone 'UTC' $with_utc_offset, 'YYYY-MM-DD HH24:MI:SS') as pub_date_time,
                s.last_modified
         from   (
                    na_aggregators a join
@@ -42,7 +42,7 @@
 	where  a.package_id = :package_id
         and    a.aggregator_id = :aggregator_id
             $items_purges
-	order  by sort_date desc
+	order  by pub_date desc, s.title, pub_date_time desc
 	limit  $sql_limit
 </querytext>
 </fullquery>

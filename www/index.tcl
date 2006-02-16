@@ -204,20 +204,10 @@ db_multirow -extend {
     }
 
     if { [exists_and_not_null content_encoded] } {
-# 	if { [exists_and_not_null item_title] } {
-# 	    set content "<a href=\"$item_link\">$item_title</a>. $content_encoded"
-# 	} else {
-            set content $content_encoded
-#	}
+	set content $content_encoded
     } else {
         set text_only [util_remove_html_tags $item_description]
-
-#         if { [exists_and_not_null item_title] } {
-#             set content "<a href=\"$item_link\">$item_title</a>. 		    <span class=\"item_author\">$item_author</span>
-# $item_description"
-#         } else {
 	set content $item_description
-#        }
     }
     
     if { $item_permalink_p == "t" } {
@@ -225,12 +215,12 @@ db_multirow -extend {
     } else {
         set item_guid_link $item_link
     }
+
     set item_title [string_truncate -len 80 -- $item_title]
-    #set diff [news_aggregator::last_scanned -diff [expr [expr [clock seconds] - [clock scan $last_scanned]] / 60]]
     set source_url [export_vars -base source {source_id}]
     set technorati_url "http://www.technorati.com/cosmos/links.html?url=$link&sub=Get+Link+Cosmos"
 
-    set pub_timestamp [clock scan [lc_time_utc_to_local $item_pub_date]]
+    set pub_timestamp [clock scan $pub_date_time]
     set pub_datestamp [clock scan [clock format $pub_timestamp -format "%Y-%m-%d 00:00:00"]]
     set inner_sort_col "${pub_datestamp},${source_id}"
     set chunk_updated [news_aggregator::chunk_updated [expr [expr [clock seconds] - $pub_datestamp] / 60]]
@@ -259,8 +249,6 @@ db_multirow -extend {
 	break
     }
 }
-
-template::multirow sort items -decreasing pub_datestamp title pub_timestamp
 
 if { $enable_purge_p &&
      [exists_and_not_null top] && [exists_and_not_null bottom] &&

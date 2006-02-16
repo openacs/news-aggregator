@@ -157,7 +157,17 @@ ad_proc -private news_aggregator::aggregator::items_sql {
     
     set limit [ad_parameter -package_id $package_id "number_of_items_shown"]
     set sql_limit [expr $limit_multiple*$limit]
-    
+
+    # Convert to local time while retrieving entries
+    if { [lang::system::timezone_support_p] } {
+        set utc_offset_raw [lang::system::timezone_utc_offset] 
+        set operation [string index $utc_offset_raw 0]
+        set hours "[string range $utc_offset_raw 1 end] hours"
+        set with_utc_offset "$operation '$hours' ::interval"
+    } else {
+        set with_utc_offset ""
+    }
+
     set sql [db_map items]
     return $sql
 }

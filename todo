@@ -1,11 +1,9 @@
 MS: some thoughts for improvements; should also mine bloglines, newsgator and yahoo, etc. for more ideas
 
 version 1.1
- - make source::update more robust; an error in one feed shouldn't affect the updating of others (done, need QA)
  - fix portlet
- - parameterize the query limit for items (hard coded to 600)
-  - ok, this is actually handled on index page with parameter but we should only get what we want to display
  - code cleanup and complete tests
+ - redirected to public-aggregators, then /register?
 version 1.2
  - update data model for 5.2
  - richtext widget for aggregator description?
@@ -13,11 +11,10 @@ version 1.2
  - edit subscription title
 version 1.3
  - notifications (convert multiple rss feeds to email. cool?!?)
- - rework index page query to convert time in DB (sort is by date, source, time)
 version 1.4
  - search
 version 1.4+
- - DeleteAfterFailCount parameter so that we can automatically remove a feed that's broken (if admin wishes)
+ - DeleteAfterFailCount parameter so that we can automatically remove a feed that's broken (if admin sets parameter)
  - per subscription keywords
  - other display options?
 
