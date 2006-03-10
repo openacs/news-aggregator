@@ -161,9 +161,14 @@ ad_proc -private news_aggregator::aggregator::items_sql {
     # Convert to local time while retrieving entries
     if { [lang::system::timezone_support_p] } {
         set utc_offset_raw [lang::system::timezone_utc_offset] 
-        set operation [string index $utc_offset_raw 0]
-        set hours "[string range $utc_offset_raw 1 end] hours"
-        set with_utc_offset "$operation '$hours' ::interval"
+	if { $utc_offset_raw eq 0 } {
+	    # no offset
+	    set with_utc_offset ""
+	} else {
+	    set operation [string index $utc_offset_raw 0]
+	    set hours "[string range $utc_offset_raw 1 end] hours"
+	    set with_utc_offset "$operation '$hours' ::interval"
+	}
     } else {
         set with_utc_offset ""
     }
