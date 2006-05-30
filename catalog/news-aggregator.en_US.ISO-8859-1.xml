@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="news-aggregator" package_version="0.8d" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="news-aggregator" package_version="1.0.2" locale="en_US" charset="ISO-8859-1">
 
   <msg key="lt_Create_New_Aggregator">Create New Aggregator</msg>
   <msg key="lt_Manage_This_Aggregato">Manage This Aggregator</msg>
