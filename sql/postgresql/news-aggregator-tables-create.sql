@@ -105,6 +105,7 @@ select acs_object_type__create_type (
 --
 ----------------
 
+create sequence na_items_item_id_seq cache 1;
 create table na_items (
        item_id                      integer
                                     default nextval('na_items_item_id_seq')
@@ -130,7 +131,6 @@ create table na_items (
     pub_date                        timestamptz
 );
 
-create sequence na_items_item_id_seq cache 1;
 create index na_items_guid_idx on na_items(guid);
 create index na_items_source_id_idx on na_items(source_id);
 
