@@ -151,7 +151,12 @@ ad_proc -public news_aggregator::source::update {
     }
 
     if { ![string equal 200 $f(status)] } {
-	ns_log Debug "source::update: httpget didn't return 200 but $f(status)"
+ 	ns_log Debug "source::update: httpget didn't return 200 but $f(status)"
+	return 0
+    }
+
+    if { $f(page) eq "File not found." } {
+ 	ns_log Debug "source::update: httpget could not find the file $feed_url $headers"
 	return 0
     }
 
@@ -339,8 +344,7 @@ ad_proc -public news_aggregator::source::update_all {
                 set source_id [lindex $source 0]
                 set feed_url [lindex $source 1]
                 set last_modified [lindex $source 2]
-                
-                if { ![news_aggregator::source::update \
+		if { ![news_aggregator::source::update \
 			   -source_id $source_id \
 			   -feed_url $feed_url \
 			   -modified $last_modified] } {

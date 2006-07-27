@@ -13,21 +13,21 @@ available on the <a href="./settings">settings</a> page.
       <div class="tab" id="subnavbar-here">General</div>
      </if>
      <else>
-      <div class="tab"><a href="aggregator-edit">General</a></div>
+      <div class="tab"><a href="aggregator-edit?aggregator_id=@aggregator_id@">General</a></div>
      </else
 
      <if @tab@ eq "subscriptions">
       <div class="tab" id="subnavbar-here">Subscriptions</div>
      </if>
      <else>
-      <div class="tab"><a href="subscriptions">Subscriptions</a></div>
+      <div class="tab"><a href="subscriptions?aggregator_id=@aggregator_id@">Subscriptions</a></div>
      </else>
 
      <if @tab@ eq "permissions">
       <div class="tab" id="subnavbar-here">Permissions</div>
      </if>
      <else>
-      <div class="tab"><a href="permissions">Permissions</a></div>
+      <div class="tab"><a href="permissions?aggregator_id=@aggregator_id@">Permissions</a></div>
      </else>
 
     </div>

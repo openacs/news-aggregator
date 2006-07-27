@@ -147,6 +147,7 @@ db_foreach select_other_feeds {} {
 
 ad_form -name add_subscription -action subscriptions -form {
     {subscription_id:integer(hidden),key}
+    {aggregator_id:integer(hidden) {value $aggregator_id}}
     {feed_url:text(text),optional
         {value $feed_url_val} 
         {label "URL"}
