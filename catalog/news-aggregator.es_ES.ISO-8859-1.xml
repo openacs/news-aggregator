@@ -5,5 +5,7 @@
   <msg key="lt_Manage_This_Aggregato">Administrar este agregador</msg>
   <msg key="Manage_Subscriptions">Administrar Suscripciones</msg>
   <msg key="No_items">Sin datos</msg>
+  <msg key="Off">Off</msg>
+  <msg key="On">On</msg>
   <msg key="Post">Enviar</msg>
 </message_catalog>

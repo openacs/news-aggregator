@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="news-aggregator" package_version="1.0.2" locale="pt_BR" charset="ISO-8859-1">
+
+  <msg key="lt_Create_New_Aggregator">Criar Novo Agregador</msg>
+  <msg key="lt_Manage_This_Aggregato">Gerenciar este Agregador</msg>
+  <msg key="Manage_Subscriptions">Gerenciar Inscrições</msg>
+  <msg key="No_items">Não há itens</msg>
+  <msg key="Off">Desligado</msg>
+  <msg key="On">Ligado</msg>
+  <msg key="Post">Postar</msg>
+  <msg key="Purges">Removidas:</msg>
+  <msg key="raquo">&amp;raquo;</msg>
+  <msg key="updated_x_time_ago">atualizado %items.diff%</msg>
+</message_catalog>
