@@ -1,7 +1,6 @@
-<h2>Manage @ag_info.aggregator_name@</h2>
+<h2>#news-aggregator.Manage# @ag_info.aggregator_name@</h2>
 
-Use tabs below to modify options for this aggregator. Options for @instance_name@ are 
-available on the <a href="./settings">settings</a> page.
+#news-aggregator.lt_Use_tabs_below_to_mod# <a href="./settings">#news-aggregator.settings#</a> #news-aggregator.page#
 
 <p>
 
@@ -10,26 +9,27 @@ available on the <a href="./settings">settings</a> page.
     <div id="subnavbar">
 
      <if @tab@ eq "general">
-      <div class="tab" id="subnavbar-here">General</div>
+      <div class="tab" id="subnavbar-here">#news-aggregator.General#</div>
      </if>
      <else>
-      <div class="tab"><a href="aggregator-edit?aggregator_id=@aggregator_id@">General</a></div>
+      <div class="tab"><a href="aggregator-edit?aggregator_id=@aggregator_id@">#news-aggregator.General#</a></div>
      </else
 
      <if @tab@ eq "subscriptions">
-      <div class="tab" id="subnavbar-here">Subscriptions</div>
+      <div class="tab" id="subnavbar-here">#news-aggregator.Subscriptions#</div>
      </if>
      <else>
-      <div class="tab"><a href="subscriptions?aggregator_id=@aggregator_id@">Subscriptions</a></div>
+      <div class="tab"><a href="subscriptions?aggregator_id=@aggregator_id@">#news-aggregator.Subscriptions#</a></div>
      </else>
 
      <if @tab@ eq "permissions">
-      <div class="tab" id="subnavbar-here">Permissions</div>
+      <div class="tab" id="subnavbar-here">#news-aggregator.Permissions#</div>
      </if>
      <else>
-      <div class="tab"><a href="permissions?aggregator_id=@aggregator_id@">Permissions</a></div>
+      <div class="tab"><a href="permissions?aggregator_id=@aggregator_id@">#news-aggregator.Permissions#</a></div>
      </else>
 
     </div>
   </div>
 </div>
+

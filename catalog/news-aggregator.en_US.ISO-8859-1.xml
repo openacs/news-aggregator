@@ -1,14 +1,71 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <message_catalog package_key="news-aggregator" package_version="1.0.2" locale="en_US" charset="ISO-8859-1">
 
+  <msg key="Add">Add</msg>
+  <msg key="Add_new_weblog">Add new weblog</msg>
+  <msg key="Blog">Blog</msg>
+  <msg key="Copy">Copy</msg>
+  <msg key="Copy_Selected">Copy selected subscriptions to %title%</msg>
+  <msg key="Description">Description</msg>
+  <msg key="Enter_the_URL_of_an_XML_news_feed"> Enter the URL of an XML news feed you want to subscribe to or choose a feed the system already knows about and then click on the Add button.</msg>
+  <msg key="Export_Subscriptions">Export Subscriptions</msg>
+  <msg key="Export_your_subscriptions_as_an_OPML_file">Export_your_subscriptions as an OPML file</msg>
+  <msg key="Feed">Feed</msg>
+  <msg key="General">General</msg>
+  <msg key="Help_Msg_aggregator">A public aggregator is intended to be used by a group of people and will not have a Purge button. Instead, the most recent 100 items will be displayed. Private aggregators will, by default, only be viewable by the creator.</msg>
+  <msg key="Last_Scan">Last Scan</msg>
+  <msg key="Last_Update">Last Update</msg>
   <msg key="lt_Create_New_Aggregator">Create New Aggregator</msg>
+  <msg key="lt_Create_new_aggregator">Create new aggregator</msg>
+  <msg key="lt_Edit_attributes_for_t">Edit attributes for this aggregator:</msg>
+  <msg key="lt_Manage_detailed_permi">Manage detailed permissions for this aggregator. You can use this form to allow other users to view your personal feeds.</msg>
   <msg key="lt_Manage_This_Aggregato">Manage This Aggregator</msg>
+  <msg key="lt_No_weblog_options_ava">No weblog options available!</msg>
+  <msg key="lt_Posted_itemspub_time_">Posted: %items.pub_time_pretty%</msg>
+  <msg key="lt_The_following_feeds_w">The following feeds were found in the OPML file at</msg>
+  <msg key="lt_The_following_table_l">The following table lists the XML news feeds you've subscribed to. 
+      To delete a subscription, check it and then click on the Unsubscribe button 
+      at the bottom of the page.</msg>
+  <msg key="lt_The_weblogs_below_wil">The weblogs below will show up as options (in addition to any blogger instances you can post to on your subsite) 
+when you choose to blog about a news item.</msg>
+  <msg key="lt_This_page_lists">This page lists &lt;b&gt;the most recent items&lt;/b&gt; from the feeds you've &lt;a href=&quot;@url@subscriptions&quot;&gt;subscribed&lt;/a&gt; to.</msg>
+  <msg key="lt_Use_tabs_below_to_mod">Use tabs below to modify options for this aggregator. Options for %instance_name% are 
+available on the</msg>
+  <msg key="lt_You_can_hit_the_Purge">You can hit the Purge button to clean out the page. Clicking the &lt;a href=&quot;#&quot; class=&quot;button&quot;&gt;Save&lt;/a&gt; button will prevent an item from being purged.</msg>
+  <msg key="lt_You_can_import_OPML_e">You can import OPML either from an URL, or by uploading a file.</msg>
+  <msg key="lt_You_have_the_ability_">You have the ability to view the following aggregators in %instance_name%. If You select a default aggregator,  
+you will automatically be directed there when visiting %instance_name%. If you have write privileges on 
+a particular aggregator, you will have the option to edit or delete it as well.</msg>
+  <msg key="lt_You_will_not_usually_">You will not usually come back to the aggregator.</msg>
+  <msg key="Manage">Manage</msg>
   <msg key="Manage_Subscriptions">Manage Subscriptions</msg>
+  <msg key="Move">Move</msg>
+  <msg key="Move_Selected">Move selected subscriptions to %title%</msg>
+  <msg key="Name">Name</msg>
+  <msg key="No">No</msg>
   <msg key="No_items">No items.</msg>
+  <msg key="Note">Note:</msg>
   <msg key="Off">Off</msg>
   <msg key="On">On</msg>
+  <msg key="page">page.</msg>
+  <msg key="Permissions">Permissions</msg>
   <msg key="Post">Post</msg>
+  <msg key="pretty_name">News Aggregator</msg>
+  <msg key="Public">Public?</msg>
   <msg key="Purges">Purges:</msg>
   <msg key="raquo">&amp;raquo;</msg>
+  <msg key="Save">Save</msg>
+  <msg key="settings">settings</msg>
+  <msg key="Source">Source:</msg>
+  <msg key="Subscriptions">Subscriptions</msg>
+  <msg key="Titles_Only">Titles Only?</msg>
+  <msg key="Toggle">Toggle</msg>
+  <msg key="Unsave">Unsave</msg>
+  <msg key="Unsubscribe">Unsubscribe</msg>
   <msg key="updated_x_time_ago">updated %items.diff%</msg>
+  <msg key="URL">URL</msg>
+  <msg key="View_the_XML">View the XML source for this subscriptions</msg>
+  <msg key="Yes">Yes</msg>
+  <msg key="You_have_been_unsubscribed">You have been unsubscribed from one source.</msg>
+  <msg key="You_have_been_unsubscribed_from">You have been unsubscribed from %delete_count% sources.</msg>
 </message_catalog>

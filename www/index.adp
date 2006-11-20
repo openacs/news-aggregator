@@ -18,12 +18,12 @@
 
  <else>
   </div>
-   This page lists <b>the most recent items</b> from the feeds you've <a href="@url@subscriptions">subscribed</a> to.
- </else>
+	#news-aggregator.lt_This_page_lists#
+  </else>
 
 <div>
  <if @enable_purge_p@ true and @public_p@ false>
-   You can hit the Purge button to clean out the page. Clicking the <a href="#" class="button">Save</a> button will prevent an item from being purged.
+   #news-aggregator.lt_You_can_hit_the_Purge#
  </if>
  <if @write_p@ true and @blog_p@ true>
    Click the <a href="#" class="button">Blog</a> button to post the item to a weblog (you will have a choice of weblogs to post to).

@@ -7,8 +7,9 @@
 </p>
 
 <p>
-    You can import OPML either from an URL, or by uploading a file.
+    #news-aggregator.lt_You_can_import_OPML_e#
 </p>
 
 <formtemplate id="opml"></formtemplate>
+
 

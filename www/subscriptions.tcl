@@ -15,7 +15,7 @@ permission::require_permission \
     -object_id $aggregator_id \
     -privilege write
 
-set page_title "Manage Subscriptions"
+set page_title "[_ news-aggregator.Manage_Subscriptions]"
 array set ag_info [news_aggregator::aggregator::aggregator_info -aggregator_id $aggregator_id]
 set context [list [list "." "$ag_info(aggregator_name)"] "$page_title"]
 
@@ -45,9 +45,9 @@ if { [exists_and_not_null source_id] } {
 	incr delete_count
     }
     if { $delete_count > 1 } {
-	set message "You have been unsubscribed from $delete_count sources."
+	set message "[_ news-aggregator.You_have_been_unsubscribed_from]"
     } else {
-	set message "You have been unsubscribed from one source."
+	set message "[_ news-aggregator.You_have_been_unsubscribed]"
     }
     ad_returnredirect -message $message subscriptions
     ad_script_abort
@@ -60,7 +60,7 @@ db_foreach count_aggregators {} {
 }
 
 set bulk_actions {
-    Unsubscribe subscriptions Unsubscribe
+    #news-aggregator.Unsubscribe# subscriptions #news-aggregator.Unsubscribe#
 }
 
 if { $aggregator_count > 1 } {
@@ -71,8 +71,8 @@ if { $aggregator_count > 1 } {
         set title [db_string select_name {}]
     }
     lappend bulk_actions \
-        Copy subscription-copy "Copy selected subscriptions to $title" \
-        Move subscription-move "Move selected subscriptions to $title"
+        \#news-aggregator.Copy\# Copy subscription-copy "\#news-aggregator.Copy_Selected\#" \
+        \#news-aggregator.Move\# subscription-move "\#news-aggregator.Move_Selected\#"
 
 }
 
@@ -82,31 +82,30 @@ list::create \
     -key source_id \
     -row_pretty_plural "subscriptions" \
     -actions {
-       "Export Subscriptions" "opml" "Export your subscriptions as an OPML file"
+       "\#news-aggregator.Export_Subscriptions\#" "opml" "\#news-aggregator.Export_your_subscriptions_as_an_OPML_file\#"
     } -bulk_actions $bulk_actions -elements {
         title {
-            label "Name"
+            label "\#news-aggregator.Name\#"
             link_url_eval $link
         }
         last_scanned {
-            label "Last Scan"
+            label "\#news-aggregator.Last_Scan\#"
         }
 	last_modified {
-	    label "Last Update"
+	    label "\#news-aggregator.Last_Update\#"
 	}
 	show_description_p {
-	    label "Titles Only?"
+	    label "\#news-aggregator.Titles_Only\#"
 	    display_template {
-		<center><if @sources.show_description_p@ true>No</if><else>Yes</else> <a href="@sources.toggle_show_desc_url@" title="toggle" class="button">toggle</a></center>
+		<center><if @sources.show_description_p@ true>\#news-aggregator.No\#</if><else>\#news-aggregator.Yes\#</else> <a href="@sources.toggle_show_desc_url@" title="toggle" class="button">toggle</a></center>
 	    }
 	}
         feed_url {
-            label "Source"
+            label "\#news-aggregator.Source\#"
             display_template {
-                <a href="@sources.feed_url@" title="View the XML 
-                source for this subscriptions."
+                <a href="@sources.feed_url@" title="\#news-aggregator.View_the_XML\#"
                 ><img src="@sources.xml_graphics_url@" height="14" width="36" 
-                alt="View the XML source for this subscription" border="0"></a>
+                alt="\#news-aggregator.View_the_XML\#" border="0"></a>
             }
         }
     } -orderby {
@@ -145,21 +144,21 @@ db_foreach select_other_feeds {} {
     lappend other_feeds [list $title $source_id]
 }
 
-ad_form -name add_subscription -action subscriptions -form {
+ad_form -name add_subscription -form {
     {subscription_id:integer(hidden),key}
     {aggregator_id:integer(hidden) {value $aggregator_id}}
     {feed_url:text(text),optional
         {value $feed_url_val} 
-        {label "URL"}
+        {label "#news-aggregator.URL#"}
 	{value "http://"}
         {html {size 55}}
     }
     {new_source_id:integer(select),optional
-	{label "Feed"}
+	{label "\#news-aggregator.Feed\#"}
 	{options $other_feeds}
     }
     {add_submit:text(submit),optional
-        {label "Add"}
+        {label "[_ news-aggregator.Add]"}
     }
 } -validate {
     {feed_url
