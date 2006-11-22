@@ -21,17 +21,17 @@ if { ![parameter::get -package_id $package_id -parameter PerUserAggregatorsP -de
 ad_form -name aggregator -action aggregator -select_query_name select_aggregator -form {
     {aggregator_id:integer(hidden),key}
     {aggregator_name:text
-        {label "\#news-aggregator.Name\#"}
+        {label "Name"}
         {html {size 50}}
     }
     {description:text(textarea),optional
-        {label "\#news-aggregator.Description\#"}
+        {label "Description"}
         {html {cols 60 rows 10}}
     }
     {public_p:text(radio)
-        {label "\#news-aggregator.Public\#"}
-        {options {{"[_ news-aggregator.Yes]" t} {"[_ news-aggregator.No]" f}}}
-	{help_text "[_ news-aggregator.Help_Msg_aggregator]"}
+        {label "Public?"}
+        {options {{"Yes" t} {"No" f}}}
+	{help_text "A public aggregator is intended to be used by a group of people and will not have a Purge button. Instead, the most recent 100 items will be displayed. Private aggregators will, by default, only be viewable by the creator."}
     }
     {return_url:text(hidden)
         {value $return_url}

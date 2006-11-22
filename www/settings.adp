@@ -4,19 +4,21 @@
 
 <h2>@page_title@</h2>
 <p>
-#news-aggregator.lt_You_have_the_ability_#
+You have the ability to view the following aggregators in @instance_name@. If You select a default aggregator,  
+you will automatically be directed there when visiting @instance_name@. If you have write privileges on 
+a particular aggregator, you will have the option to edit or delete it as well.
   <listtemplate name="aggregators"></listtemplate>
 </p>
 <p>
-  <b>&raquo;</b> <a href="@aggregator_link@">#news-aggregator.lt_Create_new_aggregator#</a>
+  <b>&raquo;</b> <a href="@aggregator_link@">Create new aggregator</a>
 </p>
 
 <p>&nbsp;</p>
 <p>
-#news-aggregator.lt_The_weblogs_below_wil# 
+The weblogs below will show up as options (in addition to any blogger instances you can post to on your subsite) 
+when you choose to blog about a news item. 
   <listtemplate name="weblogs"></listtemplate>
 </p>
 <p>
-  <b>&raquo;</b> <a href="@package_url@weblog">#news-aggregator.Add_new_weblog#</a>
+  <b>&raquo;</b> <a href="@package_url@weblog">Add new weblog</a>
 </p>
-

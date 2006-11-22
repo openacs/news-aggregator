@@ -85,7 +85,7 @@ ad_proc -private news_aggregator::chunk_updated { updated_day } {
 	    return "Yesterday"
 	}
 	default {
-            return "$days Days Ago"
+	    return "$days Days Ago"
 	}
     }
 }

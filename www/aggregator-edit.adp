@@ -5,6 +5,6 @@
 <include src="aggregator-tabs" tab="general">
 
 <p>
-#news-aggregator.lt_Edit_attributes_for_t#
+Edit attributes for this aggregator:
 
 <include src="aggregator">

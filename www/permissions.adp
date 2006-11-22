@@ -6,7 +6,6 @@
   <include src="aggregator-tabs" tab="permissions">
 
   <p>
-  #news-aggregator.lt_Manage_detailed_permi#
+  Manage detailed permissions for this aggregator. You can use this form to allow other users to view your personal feeds.
   <p>
   <include src="/packages/acs-subsite/www/permissions/perm-include" object_id="@aggregator_id@">
-
