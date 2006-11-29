@@ -8,4 +8,6 @@
   <msg key="Off">Off</msg>
   <msg key="On">On</msg>
   <msg key="Post">Enviar</msg>
+  <msg key="Purges">Limpiados:</msg>
+  <msg key="updated_x_time_ago">actualizado %items.diff%</msg>
 </message_catalog>

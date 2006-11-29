@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="news-aggregator" package_version="1.0.2" locale="nl_NL" charset="ISO-8859-1">
+
+  <msg key="lt_Create_New_Aggregator">Maak nieuwe samenklonteraar</msg>
+  <msg key="lt_Manage_This_Aggregato">Beheer deze samenklonteraar</msg>
+  <msg key="Manage_Subscriptions">Beheer inschrijvingen</msg>
+  <msg key="No_items">Geen elementen.</msg>
+  <msg key="Off">Uit</msg>
+  <msg key="On">Aan</msg>
+  <msg key="Post">Plaats</msg>
+  <msg key="Purges">Opruimen:</msg>
+  <msg key="updated_x_time_ago">%items.diff% bijgewerkt</msg>
+</message_catalog>
