@@ -17,7 +17,7 @@ ad_proc -public news_aggregator::aggregator::aggregator_info {
     
     @author Guan Yang (guan@unicast.org)
     @creation-date 2003-11-10
-    @returns Tcl array-list with the information, or empty
+    @return Tcl array-list with the information, or empty
              string on error.
 } {
     if { ![db_0or1row aggregator_info ""] } {
@@ -49,7 +49,7 @@ ad_proc -public news_aggregator::aggregator::as_xml {
     
     @author Guan Yang (guan@unicast.org)
     @creation-date 2003-07-10
-    @returns tDOM document node
+    @return tDOM document node
 } {
     set items_query [news_aggregator::aggregator::items_sql \
         -aggregator_id $aggregator_id \
@@ -169,7 +169,7 @@ ad_proc -public news_aggregator::aggregator::as_opml {
 
     @author Guan Yang (guan@unicast.org)
     @creation-date 2003-07-10
-    @returns A string containing the XML document.
+    @return A string containing the XML document.
 } {
     dom setResultEncoding "utf-8"
     set doc [dom createDocument "opml"]
