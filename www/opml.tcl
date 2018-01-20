@@ -13,3 +13,4 @@ if { [catch {set opml [news_aggregator::aggregator::as_opml \
 } else {
     doc_return 200 application/xml $opml
 }
+ad_script_abort

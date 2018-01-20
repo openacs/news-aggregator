@@ -56,7 +56,7 @@ template::list::create \
             display_template {
                 <a href="@aggregators.url@@aggregators.aggregator_id@/" title="View this aggregator"
                 >@aggregators.aggregator_name@</a>
-                <if @aggregators.default_p@ eq 1>
+                <if @aggregators.default_p;literal@ true>
                 (default)
                 </if>        
             }

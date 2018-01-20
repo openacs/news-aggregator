@@ -5,13 +5,13 @@
 .item_pub_date { font-size: 10px; }  
  --></style></property>
 
-<if @write_p@ true>
+<if @write_p;literal@ true>
   <p>
     <b>&raquo;</b> <a href="@url@subscriptions">#news-aggregator.Manage_Subscriptions#</a> <br />
-    <if @allow_aggregator_edit_p@ true>
+    <if @allow_aggregator_edit_p;literal@ true>
         <b>#news-aggregator.raquo#</b> <a href="@aggregator_url@">#news-aggregator.lt_Manage_This_Aggregato#</a> <br />
     </if>
-    <if @multiple_aggregators_p@ true>
+    <if @multiple_aggregators_p;literal@ true>
         <b>#news-aggregator.raquo#</b> <a href="@create_url@">#news-aggregator.lt_Create_New_Aggregator#</a><br />
     </if>
   <p>
@@ -20,7 +20,7 @@
     </if>
     <else>
       This page lists <b>the most recent items</b> from the feeds you've <a href="@url@subscriptions">subscribed</a> to.
-      <if @enable_purge_p@ true>
+      <if @enable_purge_p;literal@ true>
           You can hit the <b>Purge button</b> to clean out the page. Clicking the <b>Save</b> icon <img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /> will prevent an item from being purged.
           Click on the <b>#news-aggregator.Post#</b> icon <img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /> to add the item to your weblog.
       </if>
