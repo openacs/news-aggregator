@@ -156,8 +156,8 @@ db_multirow -extend {
         }
     }
 
-    if { ([info exists content_encoded] && $content_encoded ne "") } {
-	if { ([info exists item_title] && $item_title ne "") } {
+    if { [info exists content_encoded] && $content_encoded ne "" } {
+	if { [info exists item_title] && $item_title ne "" } {
 	    set content "<a href=\"$item_link\">$item_title</a>. $content_encoded"
 	} else {
             set content $content_encoded
@@ -165,7 +165,7 @@ db_multirow -extend {
     } else {
         set text_only [util_remove_html_tags $item_description]
 
-        if { ([info exists item_title] && $item_title ne "") } {
+        if { [info exists item_title] && $item_title ne "" } {
             set content "<a href=\"$item_link\">$item_title</a>. 		    <span class=\"item_author\">$item_author</span>
 $item_description"
         } else {
@@ -179,7 +179,7 @@ $item_description"
         set item_guid_link $item_link
     }
 
-    set diff [news_aggregator::last_scanned -diff [expr [expr {[clock seconds] - [clock scan $last_scanned]}] / 60]]
+    set diff [news_aggregator::last_scanned -diff [expr {([clock seconds] - [clock scan $last_scanned]) / 60}]]
     set source_url [export_vars -base source {source_id}]
     set technorati_url "http://www.technorati.com/cosmos/links.html?url=$link&sub=Get+Link+Cosmos"
 
@@ -192,7 +192,7 @@ $item_description"
     }
 
     if {$write_p eq "1"} {
-	if { [lsearch $saved_items $item_id] == -1 } {
+	if {$item_id ni $saved_items} {
             set save_url [export_vars -base "${url}item-save" {item_id}]
 	    set unsave_url ""
 	} else {
@@ -212,10 +212,11 @@ $item_description"
     }
 }
 
-if { $enable_purge_p &&
-     ([info exists top] && $top ne "") && ([info exists bottom] && $bottom ne "") &&
-     $top >= $bottom && $public_p == "f" &&
-     [permission::permission_p -party_id $user_id -object_id $aggregator_id -privilege write] } {
+if { $enable_purge_p
+     && [info exists top] && $top ne ""
+     && [info exists bottom] && $bottom ne ""
+     && $top >= $bottom && $public_p == "f"
+     && [permission::permission_p -party_id $user_id -object_id $aggregator_id -privilege write] } {
     
     ad_form -name purge -action "[ad_conn package_url]$aggregator_id/purge" -form {
         {purge_top:integer(hidden) 
