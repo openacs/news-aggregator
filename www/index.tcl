@@ -146,10 +146,12 @@ db_multirow -extend {
         set purged_p 0
         # Handle purged items
         foreach purge $purges {
-            if { $item_id <= [lindex $purge 0] && $item_id >= [lindex $purge 1] &&
-             [lsearch $saved_items $item_id] == -1 } {
-            set purged_p 1
-        }
+            if { $item_id <= [lindex $purge 0]
+		 && $item_id >= [lindex $purge 1]
+		 && $item_id ni $saved_items
+	     }  {
+		set purged_p 1
+	    }
         }
         if { $purged_p } {
             continue
