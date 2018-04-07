@@ -25,7 +25,7 @@ ad_proc -public news_aggregator::source::new {
 
     if { [db_0or1row source {}] } {
         ns_log Debug "news_aggregator::source::new: Source exists"
-        if { ([info exists aggregator_id] && $aggregator_id ne "") } {
+        if { $aggregator_id ne "" } {
             ns_log Debug "news_aggregator::source::new: Source exists, creating new subscription"
             news_aggregator::subscription::new \
                 -aggregator_id $aggregator_id \
@@ -69,7 +69,7 @@ ad_proc -public news_aggregator::source::new {
 
     update -source_id $source_id -feed_url $feed_url -modified ""
     
-    if { ([info exists aggregator_id] && $aggregator_id ne "") } {
+    if { $aggregator_id ne "" } {
         news_aggregator::subscription::new \
             -aggregator_id $aggregator_id \
             -source_id $source_id
@@ -103,13 +103,14 @@ ad_proc -public news_aggregator::source::get_identifier {
     {-domain:required}
     {-description:required}
 } {
-    if { ([info exists guid] && $guid ne "") } {
+    if { $guid ne "" } {
         return guid
-    } elseif { ([info exists link] && $link ne "") && [news_aggregator::check_link \
-                                                  -link $link \
-                                                  -domain $domain] } {
+    } elseif { $link ne ""
+	       && [news_aggregator::check_link \
+		       -link $link \
+		       -domain $domain] } {
         return link
-    } elseif { ([info exists description] && $description ne "")  } {
+    } elseif { $description ne "" } {
         return description
     }
 }

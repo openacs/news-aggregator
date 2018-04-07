@@ -294,7 +294,7 @@ ad_proc -private news_aggregator::aggregator::user_default {
 
     if {$aggregator_id eq "0"} {
         set aggregator_id [db_string lowest_aggregator ""]
-	if { ([info exists aggregator_id] && $aggregator_id ne "") } {
+	if { $aggregator_id ne "" } {
 	    news_aggregator::aggregator::set_user_default \
 	  				-user_id $user_id \
 					-aggregator_id $aggregator_id

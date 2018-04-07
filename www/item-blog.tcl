@@ -12,12 +12,14 @@ set context [list $page_title]
 
 db_1row select_item {}
 
-if { ([info exists content_encoded] && $content_encoded ne "") } {
+if { [info exists content_encoded] && $content_encoded ne "" } {
     set content $content_encoded
 } else {
     set text_only [util_remove_html_tags $item_description]
-    
-    if {([info exists item_title] && $item_title ne "") && ![string equal -nocase $item_title $text_only] } {
+
+    if {[info exists item_title] && $item_title ne ""
+        && ![string equal -nocase $item_title $text_only]
+    } {
         set content "<a href=\"$item_link\">$item_title</a>. $item_description"
     } else {
         set content $item_description
@@ -42,14 +44,14 @@ ad_form -name blog_item -form {
 } -on_submit {
 
     set user_id [ad_conn user_id]
-    
+
     permission::require_permission \
         -object_id $weblog_id \
         -privilege read
 
     db_1row select_weblog ""
 
-    if { ([info exists content_encoded] && $content_encoded ne "") } {
+    if { [info exists content_encoded] && $content_encoded ne "" } {
         set text $content_encoded
     } else {
         set text $item_description
@@ -61,7 +63,13 @@ ad_form -name blog_item -form {
                     -title $item_title \
                     -text $text \
                     -link $link]
-                    
+
     ad_returnredirect $post_url
     ad_script_abort
 }
+
+# Local variables:
+#    mode: tcl
+#    tcl-indent-level: 4
+#    indent-tabs-mode: nil
+# End:

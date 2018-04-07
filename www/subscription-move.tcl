@@ -18,7 +18,7 @@ set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
 set package_url [ad_conn package_url]
 
-if { ([info exists move_to] && $move_to ne "") } {
+if { $move_to ne "" } {
 
     foreach source_id $source_ids {
         news_aggregator::subscription::move \

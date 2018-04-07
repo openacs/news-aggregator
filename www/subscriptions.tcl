@@ -5,7 +5,7 @@ ad_page_contract {
   @creation-date Jan 2003
 } {
     aggregator_id:integer
-    new_source_id:integer,optional
+    {new_source_id:integer,optional ""}
     {source_id:integer,multiple ""}
     {feed_url ""}
     {orderby:token ""}
@@ -35,7 +35,7 @@ if { $feed_url eq "" } {
     #ad_returnredirect "[ad_conn package_url]opml/$aggregator_id/mySubscriptions.opml"
     #ad_script_abort
 
-if { ([info exists source_id] && $source_id ne "") } {
+if { $source_id ne "" } {
     set delete_count 0
     foreach delete_id $source_id {
         news_aggregator::subscription::delete \
@@ -144,7 +144,7 @@ ad_form -name add_subscription -form {
     }
 } -validate {
     {feed_url
-	{ ([info exists feed_url] && $feed_url ne "") && "http://" ne $feed_url } 
+	{ [info exists feed_url] && $feed_url ne "" && "http://" ne $feed_url } 
         { You must specify a URL }
     }
 } -new_data {

@@ -18,7 +18,7 @@ set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
 set package_url [ad_conn package_url]
 
-if { ([info exists copy_to] && $copy_to ne "") } {
+if { $copy_to ne "" } {
 
     foreach source_id $source_ids {
         news_aggregator::subscription::copy \
