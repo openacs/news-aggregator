@@ -154,7 +154,7 @@ ad_proc -private news_aggregator::aggregator::items_sql {
         set items_purges ""
     }
     
-    set limit [ad_parameter -package_id $package_id "number_of_items_shown"]
+    set limit [parameter::get -package_id $package_id -parameter "number_of_items_shown"]
     set sql_limit [expr $limit_multiple*$limit]
     
     set sql [db_map items]
@@ -247,7 +247,7 @@ ad_proc -private news_aggregator::aggregator::purge {
         # Find out how many purges the aggregator has
         # and clear some if there are too many
         set purge_count [db_string count_purges ""]
-        set max_purges [ad_parameter "max_purges"]
+        set max_purges [parameter::get -parameter "max_purges"]
         if { $purge_count > $max_purges } {
             db_1row get_range ""
 	    db_dml purge_all_purges ""

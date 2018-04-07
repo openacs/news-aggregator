@@ -8,7 +8,7 @@ ad_page_contract {
     new_source_id:integer,optional
     {source_id:integer,multiple ""}
     {feed_url ""}
-    {orderby ""}
+    {orderby:token ""}
 }
 
 permission::require_permission \

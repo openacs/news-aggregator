@@ -128,7 +128,7 @@ ad_proc -public news_aggregator::source::update {
     
     set headers [ns_set create]
     ns_set put $headers "If-Modified-Since" $modified
-    ns_set put $headers "Referer" [ad_parameter "referer"]
+    ns_set put $headers "Referer" [parameter::get -parameter "referer"]
 
     if { [catch { array set f [ad_httpget \
                                     -url $feed_url \
@@ -209,7 +209,7 @@ ad_proc -public news_aggregator::source::update {
                         -description $item(description) \
                         -guid $item(guid)]
         
-        if { [lsearch -exact $existing_guids $guid] == -1 } {
+        if {$guid ni $existing_guids} {
             set new_p 1
 	    ns_log Debug "source::update: guid $guid marked as new"
         } else {

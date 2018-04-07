@@ -84,7 +84,7 @@ set aggregator_url [export_vars -base aggregator { return_url aggregator_id }]
 
 set create_url "${package_url}/aggregator"
 
-set limit [ad_parameter "number_of_items_shown"]
+set limit [parameter::get -parameter "number_of_items_shown"]
 set sql_limit [expr 7*$limit]
 
 set top 0
