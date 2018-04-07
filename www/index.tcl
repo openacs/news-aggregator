@@ -20,26 +20,26 @@ set allow_aggregator_edit_p [parameter::get -package_id $package_id -parameter A
 if { ![info exists aggregator_id] } {
     # Check whether the user has an aggregator
     if { !$user_id } {
-	if { !$per_user_aggregators_p } {
-	    ad_returnredirect "public-aggregators"
-	}
-	ad_redirect_for_registration
-	ad_script_abort
+        if { !$per_user_aggregators_p } {
+            ad_returnredirect "public-aggregators"
+        }
+        ad_redirect_for_registration
+        ad_script_abort
     }
 
     set aggregator_id [news_aggregator::aggregator::user_default -user_id $user_id]
 
     if { !$aggregator_id && $per_user_aggregators_p } {
-        
+
         set user_name [db_string select_user_name {}]
         set aggregator_name "${user_name}'s News Aggregator"
 
-	set aggregator_id [news_aggregator::aggregator::new \
-				-aggregator_name $aggregator_name \
-				-package_id $package_id \
-				-public_p 0 \
-				-creation_user $user_id \
-				-creation_ip [ad_conn peeraddr]]
+        set aggregator_id [news_aggregator::aggregator::new \
+                                -aggregator_name $aggregator_name \
+                                -package_id $package_id \
+                                -public_p 0 \
+                                -creation_user $user_id \
+                                -creation_ip [ad_conn peeraddr]]
 
         #load preinstalled subscriptions into aggregator
         news_aggregator::aggregator::load_preinstalled_subscriptions \
@@ -53,10 +53,10 @@ if { ![info exists aggregator_id] } {
 if { $aggregator_id == 0 } {
     # May this user create her own aggregator?
     set write_p [permission::permission_p \
-		     -object_id $package_id \
-		     -privilege write]
+                     -object_id $package_id \
+                     -privilege write]
     if { $write_p } {
-	ad_returnredirect "settings"
+        ad_returnredirect "settings"
     }
     ad_returnredirect "public-aggregators"
 }
@@ -123,16 +123,16 @@ if { $purge_p } {
                     -aggregator_id $aggregator_id \
                     -package_id $package_id \
                     -purge_p $purge_p \
-		    -limit_multiple 1]
+                    -limit_multiple 1]
 }
 
-db_multirow -extend { 
-    content 
+db_multirow -extend {
+    content
     diff
-    source_url 
-    save_url 
-    unsave_url 
-    item_blog_url 
+    source_url
+    save_url
+    unsave_url
+    item_blog_url
     technorati_url
     item_guid_link
     pub_date
@@ -142,16 +142,16 @@ db_multirow -extend {
         if { $item_id > $top } {
             set top $item_id
         }
-        
+
         set purged_p 0
         # Handle purged items
         foreach purge $purges {
             if { $item_id <= [lindex $purge 0]
-		 && $item_id >= [lindex $purge 1]
-		 && $item_id ni $saved_items
-	     }  {
-		set purged_p 1
-	    }
+                 && $item_id >= [lindex $purge 1]
+                 && $item_id ni $saved_items
+             }  {
+                set purged_p 1
+            }
         }
         if { $purged_p } {
             continue
@@ -159,22 +159,22 @@ db_multirow -extend {
     }
 
     if { [info exists content_encoded] && $content_encoded ne "" } {
-	if { [info exists item_title] && $item_title ne "" } {
-	    set content "<a href=\"$item_link\">$item_title</a>. $content_encoded"
-	} else {
+        if { [info exists item_title] && $item_title ne "" } {
+            set content "<a href=\"$item_link\">$item_title</a>. $content_encoded"
+        } else {
             set content $content_encoded
-	}
+        }
     } else {
         set text_only [util_remove_html_tags $item_description]
 
         if { [info exists item_title] && $item_title ne "" } {
-            set content "<a href=\"$item_link\">$item_title</a>. 		    <span class=\"item_author\">$item_author</span>
+            set content "<a href=\"$item_link\">$item_title</a>.                    <span class=\"item_author\">$item_author</span>
 $item_description"
         } else {
             set content $item_description
         }
     }
-    
+
     if { $item_permalink_p == "t" } {
         set item_guid_link $item_original_guid
     } else {
@@ -194,23 +194,23 @@ $item_description"
     }
 
     if {$write_p eq "1"} {
-	if {$item_id ni $saved_items} {
+        if {$item_id ni $saved_items} {
             set save_url [export_vars -base "${url}item-save" {item_id}]
-	    set unsave_url ""
-	} else {
-	    set unsave_url [export_vars -base "${url}item-unsave" {item_id}]
-	    set save_url ""
-	}
+            set unsave_url ""
+        } else {
+            set unsave_url [export_vars -base "${url}item-unsave" {item_id}]
+            set save_url ""
+        }
         set item_blog_url [export_vars -base "${url}item-blog" {item_id}]
     }
 
     if { $item_id < $bottom } {
-	set bottom $item_id
+        set bottom $item_id
     }
 
     incr counter
     if { $counter > $limit } {
-	break
+        break
     }
 }
 
@@ -219,24 +219,30 @@ if { $enable_purge_p
      && [info exists bottom] && $bottom ne ""
      && $top >= $bottom && $public_p == "f"
      && [permission::permission_p -party_id $user_id -object_id $aggregator_id -privilege write] } {
-    
+
     ad_form -name purge -action "[ad_conn package_url]$aggregator_id/purge" -form {
-        {purge_top:integer(hidden) 
+        {purge_top:integer(hidden)
             {value $top}
         }
-        {purge_bottom:integer(hidden) 
+        {purge_bottom:integer(hidden)
             {value $bottom}
         }
-        {purge_submit:text(submit) 
-            {label "Purge this page of news"} 
+        {purge_submit:text(submit)
+            {label "Purge this page of news"}
             {html {accesskey "p"}}
         }
     }
     set purge 1
-    
+
 } else {
     set purge 0
 }
 
 set purge_off_url "[ad_conn package_url]$aggregator_id/?purge_p=f"
 set purge_on_url "[ad_conn package_url]$aggregator_id"
+
+# Local variables:
+#    mode: tcl
+#    tcl-indent-level: 4
+#    indent-tabs-mode: nil
+# End:
