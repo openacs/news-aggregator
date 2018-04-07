@@ -22,13 +22,13 @@ ad_proc -public news_aggregator::weblog::new {
     @author Simon Carstensen (simon@bcuni.net)
     @creation-date 2003-07-14
 } {
-    if { [empty_string_p $package_id]} {
+    if { $package_id eq ""} {
         set package_id [ad_conn package_id]
     }
-    if { [empty_string_p $user_id]} {
+    if { $user_id eq ""} {
         set user_id [ad_conn user_id]
     }
-    if { [empty_string_p $ip]} {
+    if { $ip eq ""} {
 	set ip [ns_conn peeraddr]
     }
 

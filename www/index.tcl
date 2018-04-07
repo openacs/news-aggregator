@@ -85,7 +85,7 @@ set aggregator_url [export_vars -base aggregator { return_url aggregator_id }]
 set create_url "${package_url}/aggregator"
 
 set limit [parameter::get -parameter "number_of_items_shown"]
-set sql_limit [expr 7*$limit]
+set sql_limit [expr {7*$limit}]
 
 set top 0
 set bottom 1073741824
@@ -156,8 +156,8 @@ db_multirow -extend {
         }
     }
 
-    if { [exists_and_not_null content_encoded] } {
-	if { [exists_and_not_null item_title] } {
+    if { ([info exists content_encoded] && $content_encoded ne "") } {
+	if { ([info exists item_title] && $item_title ne "") } {
 	    set content "<a href=\"$item_link\">$item_title</a>. $content_encoded"
 	} else {
             set content $content_encoded
@@ -165,7 +165,7 @@ db_multirow -extend {
     } else {
         set text_only [util_remove_html_tags $item_description]
 
-        if { [exists_and_not_null item_title] } {
+        if { ([info exists item_title] && $item_title ne "") } {
             set content "<a href=\"$item_link\">$item_title</a>. 		    <span class=\"item_author\">$item_author</span>
 $item_description"
         } else {
@@ -179,7 +179,7 @@ $item_description"
         set item_guid_link $item_link
     }
 
-    set diff [news_aggregator::last_scanned -diff [expr [expr [clock seconds] - [clock scan $last_scanned]] / 60]]
+    set diff [news_aggregator::last_scanned -diff [expr [expr {[clock seconds] - [clock scan $last_scanned]}] / 60]]
     set source_url [export_vars -base source {source_id}]
     set technorati_url "http://www.technorati.com/cosmos/links.html?url=$link&sub=Get+Link+Cosmos"
 
@@ -191,7 +191,7 @@ $item_description"
         set pub_date [clock format $localtime -format "%m-%d %H:%M"]
     }
 
-    if { [string equal $write_p "1"] } {
+    if {$write_p eq "1"} {
 	if { [lsearch $saved_items $item_id] == -1 } {
             set save_url [export_vars -base "${url}item-save" {item_id}]
 	    set unsave_url ""
@@ -213,7 +213,7 @@ $item_description"
 }
 
 if { $enable_purge_p &&
-     [exists_and_not_null top] && [exists_and_not_null bottom] &&
+     ([info exists top] && $top ne "") && ([info exists bottom] && $bottom ne "") &&
      $top >= $bottom && $public_p == "f" &&
      [permission::permission_p -party_id $user_id -object_id $aggregator_id -privilege write] } {
     

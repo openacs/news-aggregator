@@ -26,7 +26,7 @@ set opml_url "${package_url}opml/$aggregator_id/mySubscriptions.opml"
 
 # This is done in case we want to implement some user interface
 # stuff in the future where it might be useful.
-if { [empty_string_p $feed_url] } {
+if { $feed_url eq "" } {
     set feed_url_val ""
 } else {
     set feed_url_val $feed_url
@@ -35,7 +35,7 @@ if { [empty_string_p $feed_url] } {
     #ad_returnredirect "[ad_conn package_url]opml/$aggregator_id/mySubscriptions.opml"
     #ad_script_abort
 
-if { [exists_and_not_null source_id] } {
+if { ([info exists source_id] && $source_id ne "") } {
     set delete_count 0
     foreach delete_id $source_id {
         news_aggregator::subscription::delete \
@@ -144,7 +144,7 @@ ad_form -name add_subscription -form {
     }
 } -validate {
     {feed_url
-	{ [exists_and_not_null feed_url] && ![string equal "http://" $feed_url] } 
+	{ ([info exists feed_url] && $feed_url ne "") && "http://" ne $feed_url } 
         { You must specify a URL }
     }
 } -new_data {

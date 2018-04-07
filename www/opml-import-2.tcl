@@ -34,7 +34,7 @@ if { [catch {
 
     array set opml [news_aggregator::opml::parse -xml $f(page)]
 
-    if { $opml(status) == "failure" } {
+    if { $opml(status) eq "failure" } {
 	error "OPML parse error: $opml(errmsg)"
     }
 

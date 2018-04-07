@@ -12,12 +12,12 @@ set context [list $page_title]
 
 db_1row select_item {}
 
-if { [exists_and_not_null content_encoded] } {
+if { ([info exists content_encoded] && $content_encoded ne "") } {
     set content $content_encoded
 } else {
     set text_only [util_remove_html_tags $item_description]
     
-    if {[exists_and_not_null item_title] && ![string equal -nocase $item_title $text_only] } {
+    if {([info exists item_title] && $item_title ne "") && ![string equal -nocase $item_title $text_only] } {
         set content "<a href=\"$item_link\">$item_title</a>. $item_description"
     } else {
         set content $item_description
@@ -49,7 +49,7 @@ ad_form -name blog_item -form {
 
     db_1row select_weblog ""
 
-    if { [exists_and_not_null content_encoded] } {
+    if { ([info exists content_encoded] && $content_encoded ne "") } {
         set text $content_encoded
     } else {
         set text $item_description

@@ -25,7 +25,7 @@ ad_proc -public news_aggregator::source::new {
 
     if { [db_0or1row source {}] } {
         ns_log Debug "news_aggregator::source::new: Source exists"
-        if { [exists_and_not_null aggregator_id] } {
+        if { ([info exists aggregator_id] && $aggregator_id ne "") } {
             ns_log Debug "news_aggregator::source::new: Source exists, creating new subscription"
             news_aggregator::subscription::new \
                 -aggregator_id $aggregator_id \
@@ -49,7 +49,7 @@ ad_proc -public news_aggregator::source::new {
 
     array set f [ad_httpget -url $feed_url -depth 4]
 
-    if { ![string equal 200 $f(status)] || [catch { array set result [feed_parser::parse_feed -xml $f(page)] }] } {
+    if { "200" ne $f(status) || [catch { array set result [feed_parser::parse_feed -xml $f(page)] }] } {
         ns_log Debug "news_aggregator::source::new: Couldn't httpget, status = $f(status)"
         return 0
     }
@@ -69,7 +69,7 @@ ad_proc -public news_aggregator::source::new {
 
     update -source_id $source_id -feed_url $feed_url -modified ""
     
-    if { [exists_and_not_null aggregator_id] } {
+    if { ([info exists aggregator_id] && $aggregator_id ne "") } {
         news_aggregator::subscription::new \
             -aggregator_id $aggregator_id \
             -source_id $source_id
@@ -103,13 +103,13 @@ ad_proc -public news_aggregator::source::get_identifier {
     {-domain:required}
     {-description:required}
 } {
-    if { [exists_and_not_null guid] } {
+    if { ([info exists guid] && $guid ne "") } {
         return guid
-    } elseif { [exists_and_not_null link] && [news_aggregator::check_link \
+    } elseif { ([info exists link] && $link ne "") && [news_aggregator::check_link \
                                                   -link $link \
                                                   -domain $domain] } {
         return link
-    } elseif { [exists_and_not_null description]  } {
+    } elseif { ([info exists description] && $description ne "")  } {
         return description
     }
 }
@@ -137,7 +137,7 @@ ad_proc -public news_aggregator::source::update {
         return
     }
 
-    if { ![string equal 200 $f(status)] } {
+    if { "200" ne $f(status) } {
 	ns_log Debug "source::update: httpget didn't return 200 but $f(status)"
 	return
     }
@@ -221,8 +221,8 @@ ad_proc -public news_aggregator::source::update {
         }
         
         if { (!$new_p
-          && (![string equal $db_title $title] ||
-              ![string equal $db_description $description]))
+          && ($db_title ne $title ||
+              $db_description ne $description ))
                         ||
                     $new_p } {
             set updated_p 1
@@ -277,7 +277,7 @@ ad_proc -private news_aggregator::source::generate_guid {
     Generate a private GUID for an entry that is used only
     by news-aggregator.
 } {
-    if { ![exists_and_not_null guid] } {
+    if { (![info exists guid] || $guid eq "") } {
         set message [list $title $link $description]
         set guid [ns_sha1 $message]
     }
@@ -309,7 +309,7 @@ ad_proc -public news_aggregator::source::update_all {
         set source_count [db_string source_count ""]
         if { $source_count >= 1 } {
             if { !$all_sources_p } {
-                set limit [expr int($source_count/4)]
+                set limit [expr {int($source_count/4)}]
                 if { $limit < 1 } {
                     set limit 1
                 }

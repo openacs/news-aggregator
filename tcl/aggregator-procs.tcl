@@ -118,7 +118,7 @@ ad_proc -public news_aggregator::aggregator::as_xml {
         $link_node appendChild $text_node
         $item_node appendChild $link_node
         
-        if { ![string equal $content_encoded ""] } {
+        if { $content_encoded ne "" } {
             set content $content_encoded
         } else {
             set content $item_description
@@ -155,7 +155,7 @@ ad_proc -private news_aggregator::aggregator::items_sql {
     }
     
     set limit [parameter::get -package_id $package_id -parameter "number_of_items_shown"]
-    set sql_limit [expr $limit_multiple*$limit]
+    set sql_limit [expr {$limit_multiple*$limit}]
     
     set sql [db_map items]
     return $sql
@@ -292,9 +292,9 @@ ad_proc -private news_aggregator::aggregator::user_default {
 } {
     set aggregator_id [db_string find_default {} -default 0]
 
-    if { [string equal $aggregator_id "0"] } {
+    if {$aggregator_id eq "0"} {
         set aggregator_id [db_string lowest_aggregator ""]
-	if { [exists_and_not_null aggregator_id] } {
+	if { ([info exists aggregator_id] && $aggregator_id ne "") } {
 	    news_aggregator::aggregator::set_user_default \
 	  				-user_id $user_id \
 					-aggregator_id $aggregator_id
@@ -341,15 +341,15 @@ ad_proc -public news_aggregator::aggregator::new {
     @creation-date 2003-06-29
 } {
 
-    if { ![exists_and_not_null creation_user] } {
+    if { (![info exists creation_user] || $creation_user eq "") } {
         set creation_user [ad_conn user_id]
     }
 
-    if { ![exists_and_not_null creation_ip] } {
+    if { (![info exists creation_ip] || $creation_ip eq "") } {
         set creation_ip [ad_conn peeraddr]
     }
 
-    if { ![exists_and_not_null package_id] } {
+    if { (![info exists package_id] || $package_id eq "") } {
         set package_id [ad_conn package_id]
     }
 

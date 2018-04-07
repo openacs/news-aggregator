@@ -45,7 +45,7 @@ ad_form -name aggregator -select_query_name select_aggregator -form {
         -description $description \
         -public_p $public_p
     
-    if { [exists_and_not_null return_url] } {
+    if { ([info exists return_url] && $return_url ne "") } {
         ad_returnredirect $return_url
     } else {
         ad_returnredirect settings
@@ -58,7 +58,7 @@ ad_form -name aggregator -select_query_name select_aggregator -form {
                                -description $description \
                                -public_p $public_p]
     
-    if { [exists_and_not_null return_url] } {
+    if { ([info exists return_url] && $return_url ne "") } {
         ad_returnredirect $return_url
     } else {
         ad_returnredirect "[ad_conn package_url]$new_aggregator_id"

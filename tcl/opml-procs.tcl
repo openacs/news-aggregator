@@ -20,7 +20,7 @@ ad_proc -public news_aggregator::opml::parse {
         set doc [dom parse $xml]
         
         set doc_node [$doc documentElement]
-        if { ![string equal [$doc_node nodeName] "opml"] } {
+        if { [$doc_node nodeName] ne "opml" } {
             error "Document element is not opml"
         }
         
@@ -36,7 +36,7 @@ ad_proc -public news_aggregator::opml::parse {
             error "There is not exactly one title element in head: $title_texts"
         }
         set title_text [[lindex $title_texts 0] nodeValue]
-        if { ![string equal $title_text "mySubscriptions"] } {
+        if { $title_text ne "mySubscriptions" } {
             error "OPML title is not 'mySubscriptions'. This does not appear to be an OPML file in mySubscriptions format."
         }
         
@@ -55,8 +55,8 @@ ad_proc -public news_aggregator::opml::parse {
             set url [$node getAttribute xmlUrl ""]
             set html_url [$node getAttribute htmlUrl ""]
             
-            if { ![string equal $title ""] && ![string equal url ""] &&
-                 ![string equal $html_url ""] &&
+            if { $title ne "" && ![string equal url ""] &&
+                 $html_url ne "" &&
                  [util_url_valid_p $url] } {
                 set feed(title) $title
                 set feed(url) $url

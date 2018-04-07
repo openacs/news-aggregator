@@ -83,7 +83,7 @@ db_multirow -extend {
     delete_onclick 
     default_p
 } aggregators select_aggregators {} {
-    if { [string equal $public_p t] } {
+    if {$public_p == "t"} {
         set public_p "Yes"
     } else {
         set public_p "No"
@@ -94,7 +94,7 @@ db_multirow -extend {
     set delete_url [export_vars -base aggregator-delete {{delete_aggregator_id $aggregator_id}}]
     set delete_onclick "return confirm('Are you sure you want to delete this news aggregator?');"
 
-    if { [string equal $aggregator_id $default_aggregator] } {
+    if {$aggregator_id eq $default_aggregator} {
         set default_p 1
     } else {
         set default_p 0
