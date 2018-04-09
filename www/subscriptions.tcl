@@ -1,8 +1,8 @@
 ad_page_contract {
-  The News Aggregator subscription page.
+    The News Aggregator subscription page.
 
-  @author Simon Carstensen (simon@bcuni.net)
-  @creation-date Jan 2003
+    @author Simon Carstensen (simon@bcuni.net)
+    @creation-date Jan 2003
 } {
     aggregator_id:integer
     {new_source_id:integer,optional ""}
@@ -31,9 +31,9 @@ if { $feed_url eq "" } {
 } else {
     set feed_url_val $feed_url
 }
-    
-    #ad_returnredirect "[ad_conn package_url]opml/$aggregator_id/mySubscriptions.opml"
-    #ad_script_abort
+
+#ad_returnredirect "[ad_conn package_url]opml/$aggregator_id/mySubscriptions.opml"
+#ad_script_abort
 
 if { $source_id ne "" } {
     set delete_count 0
@@ -41,12 +41,12 @@ if { $source_id ne "" } {
         news_aggregator::subscription::delete \
             -source_id $delete_id \
             -aggregator_id $aggregator_id
-	incr delete_count
+        incr delete_count
     }
     if { $delete_count > 1 } {
-	set message "You have been unsubscribed from $delete_count sources."
+        set message "You have been unsubscribed from $delete_count sources."
     } else {
-	set message "You have been unsubscribed from one source."
+        set message "You have been unsubscribed from one source."
     }
     ad_returnredirect -message $message "${package_url}$aggregator_id"
     ad_script_abort
@@ -68,7 +68,6 @@ if { $aggregator_count > 1 } {
     lappend bulk_actions \
         Copy subscription-copy "Copy selected subscriptions to $title" \
         Move subscription-move "Move selected subscriptions to $title"
-
 }
 
 list::create \
@@ -77,54 +76,54 @@ list::create \
     -key source_id \
     -row_pretty_plural "subscriptions" \
     -actions {
-       "Export Subscriptions" "opml" "Export your subscriptions as an OPML file"
-    } -bulk_actions $bulk_actions -elements {
-        title {
-            label "Name"
-            link_url_eval $link
-        }
-        last_scanned {
-            label "Last Scan"
-        }
-	last_modified {
-	    label "Last Update"
-	}
-        updates {
-            label "Updates"
-            html {align center}
-        }
-        feed_url {
-            label "Source"
-            display_template {
-                <a href="@sources.feed_url@" title="View the XML 
-                source for this subscriptions."
-                ><img src="@sources.xml_graphics_url@" height="14" width="36" 
-                alt="View the XML source for this subscription" border="0"></a>
-            }
-        }
-    } -orderby {
-        default_value title,asc
-        title {
-            label "Name"
-            orderby_asc "lower(title) asc"
-            orderby_desc "lower(title) desc"
-        }
-        last_scanned {
-            label "Last Updated"
-            orderby_desc "last_scanned desc"
-            orderby_asc "last_scanned asc"
-        }
-	last_modified {
-	    label "Last Update"
-	    orderby_desc "last_modified_stamp desc"
-	    orderby_asc "last_modified_stamp asc"
-	}
-        updates {
-            label "Updates"
-            orderby_asc "updates asc"
-            orderby_desc "updates desc"
+        "Export Subscriptions" "opml" "Export your subscriptions as an OPML file"
+} -bulk_actions $bulk_actions -elements {
+    title {
+        label "Name"
+        link_url_eval $link
+    }
+    last_scanned {
+        label "Last Scan"
+    }
+    last_modified {
+        label "Last Update"
+    }
+    updates {
+        label "Updates"
+        html {align center}
+    }
+    feed_url {
+        label "Source"
+        display_template {
+            <a href="@sources.feed_url@" title="View the XML 
+            source for this subscriptions."
+            ><img src="@sources.xml_graphics_url@" height="14" width="36" 
+            alt="View the XML source for this subscription" border="0"></a>
         }
     }
+} -orderby {
+    default_value title,asc
+    title {
+        label "Name"
+        orderby_asc "lower(title) asc"
+        orderby_desc "lower(title) desc"
+    }
+    last_scanned {
+        label "Last Updated"
+        orderby_desc "last_scanned desc"
+        orderby_asc "last_scanned asc"
+    }
+    last_modified {
+        label "Last Update"
+        orderby_desc "last_modified_stamp desc"
+        orderby_asc "last_modified_stamp asc"
+    }
+    updates {
+        label "Updates"
+        orderby_asc "updates asc"
+        orderby_desc "updates desc"
+    }
+}
 
 set package_url [ad_conn package_url]
 
@@ -134,9 +133,9 @@ db_multirow -extend {xml_graphics_url} sources sources {} {
 
 ad_form -name add_subscription -form {
     {subscription_id:integer(hidden),key}
-    {feed_url:text(text) 
-        {value $feed_url_val} 
-        {label "URL:"} 
+    {feed_url:text(text)
+        {value $feed_url_val}
+        {label "URL:"}
         {html {size 55}}
     }
     {add_submit:text(submit) 
@@ -144,16 +143,16 @@ ad_form -name add_subscription -form {
     }
 } -validate {
     {feed_url
-    { $feed_url ne "" && "http://" ne $feed_url }
+        { $feed_url ne "" && "http://" ne $feed_url }
         { You must specify a URL }
     }
 } -new_data {
     set channel_array [news_aggregator::source::new \
-                           -feed_url $feed_url \
-                           -aggregator_id $aggregator_id \
-                           -user_id $user_id \
-                           -package_id $package_id \
-			   -array]
+        -feed_url $feed_url \
+        -aggregator_id $aggregator_id \
+        -user_id $user_id \
+        -package_id $package_id \
+        -array]
     if { $channel_array eq "0" } {
         ad_returnredirect -message "The feed $feed_url has an error."
         ad_script_abort
