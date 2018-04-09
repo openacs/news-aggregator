@@ -40,7 +40,7 @@ ad_proc -public news_aggregator::source::new {
                 return $source_id
             }
         }
-        
+
         ns_log Debug "news_aggregator::source::new: Source exists but no aggregator provided, returning 0"
         return 0
     } else {
@@ -60,15 +60,15 @@ ad_proc -public news_aggregator::source::new {
     set channel_title $title
     set link [string_truncate -len 500 -- $channel(link)]
     set description [string_truncate -len 500 -- $channel(description)]
-    
+
     set source_id [db_nextval "acs_object_id_seq"]
     set creation_ip [ad_conn peeraddr]
     set last_modified $f(modified)
-    
+
     db_exec_plsql add_source {}
 
     update -source_id $source_id -feed_url $feed_url -modified ""
-    
+
     if { $aggregator_id ne "" } {
         news_aggregator::subscription::new \
             -aggregator_id $aggregator_id \
@@ -273,16 +273,16 @@ ad_proc -private news_aggregator::source::generate_guid {
     {-feed_url:required}
     {-title:required}
     {-description:required}
-    {-guid}
+    {-guid ""}
 } {
     Generate a private GUID for an entry that is used only
     by news-aggregator.
 } {
-    if { (![info exists guid] || $guid eq "") } {
+    if { $guid eq "" } {
         set message [list $title $link $description]
         set guid [ns_sha1 $message]
     }
-    
+
     return "$guid@$feed_url"
 }
 
@@ -304,7 +304,7 @@ ad_proc -public news_aggregator::source::update_all {
     will only update the 25% of the existing sources.
 } {
     ns_log Notice "Updating news aggregator sources"
-    
+
     ds_comment "test"
     db_transaction {
         set source_count [db_string source_count ""]
@@ -318,19 +318,19 @@ ad_proc -public news_aggregator::source::update_all {
             } else {
                 set limit_sql ""
             }
-            
+
             if { !$all_sources_p } {
                 set time_limit [db_map time_limit]
             } else {
                 set time_limit {}
             }
-            
+
             set sources [db_list_of_lists sources ""]
             foreach source $sources {
                 set source_id [lindex $source 0]
                 set feed_url [lindex $source 1]
                 set last_modified [lindex $source 2]
-                
+
                 news_aggregator::source::update \
                         -source_id $source_id \
                         -feed_url $feed_url \

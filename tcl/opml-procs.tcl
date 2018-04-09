@@ -1,6 +1,6 @@
 ad_library {
     Some random procs to parse (not generate) OPML.
-    
+
     @author Guan Yang (guan@unicast.org)
     @creation-date 2003-07-17
 }
@@ -12,20 +12,20 @@ ad_proc -public news_aggregator::opml::parse {
 } {
     Parse the OPML and return a wonderful special data structure.
     This is Guan's Ultra Liberal OPML Parser (GULOP).
-        
+
     @author Guan Yang (guan@unicast.org)
     @creation-date 2003-07-17
 } {
     if { [catch {
         set doc [dom parse $xml]
-        
+
         set doc_node [$doc documentElement]
         if { [$doc_node nodeName] ne "opml" } {
             error "Document element is not opml"
         }
-        
+
         set opml(status) "success"
-        
+
         set head_nodes [$doc_node selectNodes {/opml/*[local-name()='head']}]
         if { [llength $head_nodes] != 1 } {
             error "There is not exactly one head element"
@@ -39,7 +39,7 @@ ad_proc -public news_aggregator::opml::parse {
         if { $title_text ne "mySubscriptions" } {
             error "OPML title is not 'mySubscriptions'. This does not appear to be an OPML file in mySubscriptions format."
         }
-        
+
         set body_nodes [$doc_node selectNodes {/opml/*[local-name()='body']}]
         if { [llength $body_nodes] == 0 } {
             # No body node
@@ -47,15 +47,15 @@ ad_proc -public news_aggregator::opml::parse {
         }
         # If there is more than one body child, we take the first one
         set body_node [lindex $body_nodes 0]
-        
+
         set elements [list]
-        
+
         foreach node [$body_node getElementsByTagName "outline"] {
             set title [$node getAttribute title ""]
             set url [$node getAttribute xmlUrl ""]
             set html_url [$node getAttribute htmlUrl ""]
-            
-            if { $title ne "" && ![string equal url ""] &&
+
+            if { $title ne "" && $url ne "" &&
                  $html_url ne "" &&
                  [util_url_valid_p $url] } {
                 set feed(title) $title
@@ -64,14 +64,14 @@ ad_proc -public news_aggregator::opml::parse {
                 lappend elements [array get feed]
             }
         }
-        
+
         set opml(elements) $elements
     } errmsg] } {
         set error(status) "failure"
         set error(errmsg) $errmsg
-        
+
         return [array get error]
     }
-    
+
     return [array get opml]
 }

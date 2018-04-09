@@ -341,15 +341,15 @@ ad_proc -public news_aggregator::aggregator::new {
     @creation-date 2003-06-29
 } {
 
-    if { (![info exists creation_user] || $creation_user eq "") } {
+    if { $creation_ip eq "" } {
         set creation_user [ad_conn user_id]
     }
 
-    if { (![info exists creation_ip] || $creation_ip eq "") } {
+    if { $creation_ip eq "" } {
         set creation_ip [ad_conn peeraddr]
     }
 
-    if { (![info exists package_id] || $package_id eq "") } {
+    if { $package_id eq "" } {
         set package_id [ad_conn package_id]
     }
 

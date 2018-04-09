@@ -144,7 +144,7 @@ ad_form -name add_subscription -form {
     }
 } -validate {
     {feed_url
-	{ [info exists feed_url] && $feed_url ne "" && "http://" ne $feed_url } 
+    { $feed_url ne "" && "http://" ne $feed_url }
         { You must specify a URL }
     }
 } -new_data {
