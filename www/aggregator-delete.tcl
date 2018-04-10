@@ -17,7 +17,8 @@ if {$delete_aggregator_id eq $default_aggregator} {
     # We are deleting the user's default aggregator
     # Set user's oldest aggregator as new default
     set new_default_aggregator [db_string select_oldest_aggregator {} -default ""]
-    if { $new_default_aggregator ne "" } {
+    # Test if the variable whose *name* is assigned to new_default_aggregator, exists and is not empty
+    if { [info exists $new_default_aggregator] && [set $new_default_aggregator] ne "" } {
         news_aggregator::aggregator::set_user_default \
             -user_id $user_id \
             -aggregator_id $new_default_aggregator
