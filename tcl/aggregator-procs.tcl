@@ -341,7 +341,7 @@ ad_proc -public news_aggregator::aggregator::new {
     @creation-date 2003-06-29
 } {
 
-    if { $creation_ip eq "" } {
+    if { $creation_user eq "" } {
         set creation_user [ad_conn user_id]
     }
 
