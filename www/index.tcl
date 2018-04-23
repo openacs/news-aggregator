@@ -70,7 +70,7 @@ db_1row aggregator_info {}
 #if { $public_p == "f" } {
 #    permission::require_permission \
 #        -object_id $aggregator_id \
-#        -privilege write]
+#        -privilege write
 #}
 
 set page_title $aggregator_name

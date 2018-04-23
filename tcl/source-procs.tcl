@@ -18,7 +18,7 @@ ad_proc -public news_aggregator::source::new {
 } {
     @author Simon Carstensen
 
-    Parse feed_url for link, title, and description. Then insert the source if it does not excist already. Subscribe the specified aggregator to the source.
+    Parse feed_url for link, title, and description. Then insert the source if it does not exist already. Subscribe the specified aggregator to the source.
 
     @param array Return more into in an array
 } {
@@ -246,7 +246,7 @@ ad_proc -public news_aggregator::source::update {
             if { $pub_date eq "" } {
                 set pub_date_sql "now()"
             } else {
-                # massage pub_date
+                # message pub_date
                 set pub_date [clock format $pub_date -format "%Y-%m-%d %T UTC"]
                 set pub_date_sql ":pub_date"
             }
