@@ -109,8 +109,8 @@ if { $purge_p } {
     set saved_items [db_list saved_items ""]
 } else {
 #    set items_purges ""
-    set purges [list]
-    set saved_items [list]
+    set purges {}
+    set saved_items {}
 }
 
 if { $purge_p } {
