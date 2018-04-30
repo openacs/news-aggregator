@@ -215,8 +215,7 @@ ad_proc -public news_aggregator::source::update {
             ns_log Debug "source::update: guid $guid marked as new"
         } else {
             set new_p 0
-            set db_title [lindex $existing_items($guid) 0]
-            set db_description [lindex $existing_items($guid) 1]
+            lassign $existing_items($guid) db_title db_description
 
             ns_log Debug "source::update: guid $guid marked as existing\ttitle = $db_title\tdescription = $db_description"
         }
