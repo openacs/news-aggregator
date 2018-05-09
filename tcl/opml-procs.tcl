@@ -48,7 +48,7 @@ ad_proc -public news_aggregator::opml::parse {
         # If there is more than one body child, we take the first one
         set body_node [lindex $body_nodes 0]
 
-        set elements {}
+        set elements [list]
 
         foreach node [$body_node getElementsByTagName "outline"] {
             set title [$node getAttribute title ""]
