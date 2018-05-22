@@ -2,7 +2,7 @@
   <property name="title">@page_title@</property>
   <property name="context">@context@</property>
   <property name="header_stuff"><style type="text/css"><!-- .item_pub_date, .item_author { color: #777; padding-right: 1em; }
-.item_pub_date { font-size: 10px; }  
+.item_pub_date { font-size: 10px; }
  --></style></property>
 
 <if @write_p;literal@ true>
@@ -43,7 +43,7 @@
 	    <group column="sort_date">
               <tr bgcolor="#eeeeee">
                 <td colspan=2>
-                  <b><a href="@items.link@" title="@items.description@">@items.title@</a>#news-aggregator.updated_x_time_ago#</b>                   
+                  <b><a href="@items.link@" title="@items.description@">@items.title@</a>#news-aggregator.updated_x_time_ago#</b>
                   <a href="@items.technorati_url@"><img src="@graphics_url@technorati.png" width ="50" height="14" alt="Technorati Cosmos" border="0"></a>
                 </td>
               </tr>
@@ -56,7 +56,7 @@
 		    </if>
 		  </td>
                   <td valign="top" width="40" align="left">
-                    <if @public_p@ false and @write_p@ true>
+                    <if @public_p;literal@ false and @write_p;literal@ true>
        		      <if @items.save_url@ not nil>
 		        <a href="@items.save_url@"><img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /></a>
 		      </if>
@@ -65,7 +65,7 @@
 		      </if>
                       <a href="@items.item_blog_url@"><img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /></a>
                     </if>
-                    
+
                     <span class="item_pub_date">@items.pub_date@</span>
 		  </td>
                 </tr>
@@ -78,19 +78,19 @@
   </table>
 </else>
 
-<if @enable_purge_p@ true and @public_p@ false and @purge@ true and @purge_p@ true>
+<if @enable_purge_p;literal@ true and @public_p;literal@ false and @purge@ true and @purge_p;literal@ true>
   <formtemplate id="purge"></formtemplate>
 </if>
 
-    
-<if @enable_purge_p@ true and @public_p@ false and @purge_p@ true>
+
+<if @enable_purge_p;literal@ true and @public_p;literal@ false and @purge_p;literal@ true>
     <p>
         #news-aggregator.Purges# <b>#news-aggregator.On#</b> | <a href="@purge_off_url@">#news-aggregator.Off#</a>
     </p>
 </if>
-<if @enable_purge_p@ true and @public_p@ false and @purge_p@ false>
+<if @enable_purge_p;literal@ true and @public_p;literal@ false and @purge_p;literal@ false>
     <p>
-        #news-aggregator.Purges# <a href="@purge_on_url@">#news-aggregator.On#</a> | <b>#news-aggregator.Off#</b> 
-    </p>   
+        #news-aggregator.Purges# <a href="@purge_on_url@">#news-aggregator.On#</a> | <b>#news-aggregator.Off#</b>
+    </p>
 </if>
 
