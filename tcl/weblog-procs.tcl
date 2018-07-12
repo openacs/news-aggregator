@@ -140,7 +140,7 @@ ad_proc -public news_aggregator::weblog::get_post_url {
     -link:required
     -text:required
 } {
-    Attempt to return an URL which will bring the user to a page
+    Attempt to return a URL which will bring the user to a page
     where he can post a weblog entry. If we don't succeed, throw
     an error.
 
