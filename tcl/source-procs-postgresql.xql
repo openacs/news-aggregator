@@ -39,24 +39,23 @@
     </querytext>
 </partialquery>
 
-
 <fullquery name="news_aggregator::source::new.add_source">
         <querytext>
             select na_source__new (
-                :source_id,
+                null, -- object_id
                 :feed_url,
-		        :link,
-                :title,
+		:link,
+                :channel_title,
                 :description,
-		        :last_modified,
+		:last_modified,
                 '1',
                 :package_id,
                 :user_id,
                 :creation_ip
             )
         </querytext>
-    </fullquery>
-    
+</fullquery>
+
 <fullquery name="news_aggregator::source::new.add_item_pub_date_now">
     <querytext>
         now()

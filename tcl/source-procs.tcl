@@ -18,80 +18,64 @@ ad_proc -public news_aggregator::source::new {
 } {
     @author Simon Carstensen
 
-    Parse feed_url for link, title, and description. Then insert the source if it does not exist already. Subscribe the specified aggregator to the source.
+    Parse feed_url for link, title, and description. Then insert the
+    source if it does not exist already. Subscribe the specified
+    aggregator to the source.
 
-    @param array Return more into in an array
+    @param array Return more into in array get or dict format
 } {
+    # aggregator_id is de-facto mandatory, but cannot be made required
+    # atm, as this proc's contract was not defined in this way
+    # originally.
+    if { $aggregator_id eq "" } {
+        ns_log Debug "news_aggregator::source::new: No aggregator provided, returning 0"
+        return 0
+    }
 
-    if { [db_0or1row source {}] } {
+    if {[db_0or1row source {
+        select source_id,
+               title as channel_title
+          from na_sources
+         where feed_url = :feed_url
+    }]} {
         ns_log Debug "news_aggregator::source::new: Source exists"
-        if { $aggregator_id ne "" } {
-            ns_log Debug "news_aggregator::source::new: Source exists, creating new subscription"
-            news_aggregator::subscription::new \
-                -aggregator_id $aggregator_id \
-                -source_id $source_id
-            if { $array_p } {
-                ns_log Debug "news_aggregator::source::new: New subscription created, returning array"
-                set info(source_id) $source_id
-                set info(title) $source_title
-                return [array get info]
-            } else {
-                ns_log Debug "news_aggregator::source::new: New subscription created, returning source_id"
-                return $source_id
-            }
-        }
-
-        ns_log Debug "news_aggregator::source::new: Source exists but no aggregator provided, returning 0"
-        return 0
     } else {
-        ns_log Debug "news_aggregator::source::new: Source doesn't exist, proceeding"
+        ns_log Debug "news_aggregator::source::new: Creating new source"
+        set response [util::http::get -url $feed_url -max_depth 4]
+        set status [dict get $response status]
+        set page   [dict get $response page]
+
+        if { $status != 200 ||
+             [catch { set result [feed_parser::parse_feed -xml $page] }] } {
+            ns_log Debug "news_aggregator::source::new: Couldn't httpget, status = $status"
+            return 0
+        }
+        ns_log Debug "news_aggregator::source::new: HTTP GET successful, [string length $page] bytes"
+
+        set channel [dict get $result channel]
+        set channel_title [string_truncate -len 500 -- [dict get $channel title]]
+        set link          [string_truncate -len 500 -- [dict get $channel link]]
+        set description   [string_truncate -len 500 -- [dict get $channel description]]
+
+        set creation_ip [ad_conn peeraddr]
+        set last_modified [dict get $response modified]
+
+        set source_id [db_exec_plsql add_source {}]
+
+        update -source_id $source_id -feed_url $feed_url -modified ""
     }
 
-    array set f [ad_httpget -url $feed_url -depth 4]
-
-    if { "200" ne $f(status) || [catch { array set result [feed_parser::parse_feed -xml $f(page)] }] } {
-        ns_log Debug "news_aggregator::source::new: Couldn't httpget, status = $f(status)"
-        return 0
-    }
-    ns_log Debug "news_aggregator::source::new: httpget successful, [string length $f(page)] bytes"
-
-    array set channel $result(channel)
-    set title [string_truncate -len 500 -- $channel(title)]
-    set channel_title $title
-    set link [string_truncate -len 500 -- $channel(link)]
-    set description [string_truncate -len 500 -- $channel(description)]
-
-    set source_id [db_nextval "acs_object_id_seq"]
-    set creation_ip [ad_conn peeraddr]
-    set last_modified $f(modified)
-
-    db_exec_plsql add_source {}
-
-    update -source_id $source_id -feed_url $feed_url -modified ""
-
-    if { $aggregator_id ne "" } {
-        news_aggregator::subscription::new \
-            -aggregator_id $aggregator_id \
-            -source_id $source_id
-    }
-
-    set items $result(items)
-
-    foreach array $items {
-        array set item $array
-        set title [string_truncate -len 500 -- $item(title)]
-        set link [string_truncate -len 500 -- $item(link)]
-        set guid [string_truncate -len 500 -- $item(guid)]
-        set permalink_p $item(permalink_p)
-        set description $item(description)
-        set content_encoded $item(content_encoded)
-    }
+    ns_log Debug "news_aggregator::source::new: Creating new subscription"
+    news_aggregator::subscription::new \
+        -aggregator_id $aggregator_id \
+        -source_id $source_id
 
     if { $array_p } {
-        set info(source_id) $source_id
-        set info(title) $channel_title
-        return [array get info]
+        ns_log Debug "news_aggregator::source::new: New subscription created, returning array"
+        return [list source_id $source_id \
+                     title     $channel_title]
     } else {
+        ns_log Debug "news_aggregator::source::new: New subscription created, returning source_id"
         return $source_id
     }
 }
