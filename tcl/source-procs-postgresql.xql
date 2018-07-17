@@ -4,17 +4,6 @@
 
 <rdbms><type>postgresql</type><version>7.2</version></rdbms>
 
-<fullquery name="news_aggregator::source::update.update_source_no_new">
-    <querytext>
-        update na_sources
-	set last_scanned = now(),
-	    title = :title,
-	    link = :link,
-	    description = :description
-	where source_id = :source_id
-    </querytext>
-</fullquery>
-
 <partialquery name="news_aggregator::source::update_all.time_limit">
     <querytext>
         where  last_scanned < (now() - '00:48:00'::time)
@@ -82,20 +71,6 @@
         </querytext>
     </fullquery>
 
-<fullquery name="news_aggregator::source::update.update_source">
-      <querytext>
-        update na_sources
-        set    link = :link,
-               title = :title,
-               description = :description,
- 	       updates = (updates + 1),
-	       last_scanned = now(),
-	       last_modified = now(),
-	       last_modified_stamp = now()
-        where  source_id = :source_id
-        </querytext>
-    </fullquery>
-
 <fullquery name="news_aggregator::source::update.add_item">
       <querytext>
         select na_item__new (
@@ -108,7 +83,7 @@
                 :description,
                 :content_encoded,
                 :author,
-                $pub_date_sql
+                coalesce(:pub_date, current_timestamp)
         );
         </querytext>
     </fullquery>

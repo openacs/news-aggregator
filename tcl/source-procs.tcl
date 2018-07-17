@@ -115,33 +115,30 @@ ad_proc -public news_aggregator::source::update {
     ns_set put $headers "If-Modified-Since" $modified
     ns_set put $headers "Referer" [parameter::get -parameter "referer"]
 
-    if { [catch { array set f [ad_httpget \
-                                    -url $feed_url \
-                                    -headers $headers] }] } {
-        ns_log Debug "source::update: httpget failed"
+    if { [catch {
+        set response [util::http::get \
+                          -url $feed_url \
+                          -headers $headers]
+    }] } {
+        ns_log Debug "source::update: HTTP GET failed"
         return
     }
 
-    if { "200" ne $f(status) } {
-        ns_log Debug "source::update: httpget didn't return 200 but $f(status)"
+    set status [dict get $response status]
+
+    if { $status != 200 } {
+        ns_log Debug "source::update: httpget didn't return 200 but $status"
         return
     }
 
     if { [catch {
-        set parse_result [feed_parser::parse_feed \
-            -xml $f(page)]
-        array set result $parse_result
+        set result [feed_parser::parse_feed -xml [dict get $response page]]
     } err] } {
-        ns_log Debug "source::update: parse failed, error = $err"
+        ns_log warning "source::update: parse failed, error = $err"
         return
     }
 
-    array set channel $result(channel)
-    set items $result(items)
-
-    set no_items 0
-    set updated_p 0
-    set guid_list [list]
+    set items [dict get $result items]
 
     if { [llength $items] == 0 } {
         # No items
@@ -152,86 +149,70 @@ ad_proc -public news_aggregator::source::update {
     #       feed_url, guid
     # Then we fetch the guids that we want to deal with
     # Finally, we insert those.
-    foreach array $items {
-        array set item $array
-        set guid [news_aggregator::source::generate_guid \
-                        -link $item(link) \
-                        -feed_url $feed_url \
-                        -title $item(title) \
-                        -description $item(description) \
-                        -guid $item(guid)]
-
-        lappend guid_list "'$guid'"
+    set guids [list]
+    foreach item $items {
+        lappend guids [news_aggregator::source::generate_guid \
+                           -link        [dict get $item link] \
+                           -feed_url    $feed_url \
+                           -title       [dict get $item title] \
+                           -description [dict get $item description] \
+                           -guid        [dict get $item guid]]
     }
 
-    set guids [join $guid_list ", "]
-    set existing_guids [list]
-
-    db_foreach items "" {
-        lappend existing_guids $guid
-        set existing_items($guid) [list $title $description]
+    set existing_items [dict create]
+    set guids '[join $guids "', '"]'
+    db_foreach items [subst {
+        select  guid, i.title, i.description
+        from    na_items i join
+                na_sources s on (i.source_id = s.source_id)
+        where   s.feed_url = :feed_url
+        and     guid in ($guids)
+    }] {
+        dict set existing_items $guid [list $title $description]
         ns_log Debug "source::update: existing guid $guid\n\ttitle = $title"
     }
 
-    ns_log Debug "source::update: existing_guids = $existing_guids"
+    ns_log Debug "source::update: existing_guids = [dict keys $existing_items]"
 
-    foreach array $items {
-        array set item $array
-
-        set title [string_truncate -len 500 -- $item(title)]
-        set link [string_truncate -len 500 -- $item(link)]
-        set original_guid [string_truncate -len 500 -- $item(guid)]
-        set permalink_p $item(permalink_p)
-        set content_encoded $item(content_encoded)
-        set description $item(description)
-        set author $item(author)
-        set pub_date $item(pub_date)
+    set no_items 0
+    set updated_p false
+    foreach item $items {
+        set title [string_truncate -len 500 -- [dict get $item title]]
+        set link [string_truncate -len 500 -- [dict get $item link]]
+        set original_guid [string_truncate -len 500 -- [dict get $item guid]]
+        set permalink_p [dict get $item permalink_p]
+        set content_encoded [dict get $item content_encoded]
+        set description [dict get $item description]
+        set author [dict get $item author]
+        set pub_date [dict get $item pub_date]
 
         set guid [news_aggregator::source::generate_guid \
-                        -link $item(link) \
-                        -feed_url $feed_url \
-                        -title $item(title) \
-                        -description $item(description) \
-                        -guid $item(guid)]
+                      -link [dict get $item link] \
+                      -feed_url $feed_url \
+                      -title [dict get $item title] \
+                      -description [dict get $item description] \
+                      -guid [dict get $item guid]]
 
-        if {$guid ni $existing_guids} {
-            set new_p 1
+        set new_p [expr {![dict exists $existing_items $guid]}]
+        if {$new_p} {
             ns_log Debug "source::update: guid $guid marked as new"
         } else {
-            set new_p 0
-            lassign $existing_items($guid) db_title db_description
-
+            lassign [dict get $existing_items $guid] db_title db_description
             ns_log Debug "source::update: guid $guid marked as existing\ttitle = $db_title\tdescription = $db_description"
         }
 
-        if { (!$new_p
-          && ($db_title ne $title ||
-              $db_description ne $description ))
-                        ||
-                    $new_p } {
-            set updated_p 1
+        if { $new_p || $db_title ne $title || $db_description ne $description } {
+            set updated_p true
             ns_log Debug "source::update: guid $guid marked as existing but updated; title=!$title! description=!$description!"
-            if { [info exists db_title] && [info exists db_description] } {
+            if { !$new_p } {
                 ns_log Debug "source::update:\tdb_title=!$db_title! db_description=!$db_description!"
                 ns_log Debug "source::update:\tfirst_equal=[string equal $db_title $title] second_equal=[string equal $db_description $description] new_p=$new_p item_title=[string length $title] chars db_title=[string length $db_title] chars"
-            } elseif { $new_p } {
+            } else {
                 ns_log Debug "source::update: guid $guid is new and will be inserted; title=$title description=$description"
             }
 
-            # set title $item(title)
-            # set description $item(description)
-            # set content_encoded $item(content_encoded)
-            # set original_guid $item(guid)
-            # set permalink_p $item(permalink_p)
-            # set link $item(link)
-
-            # pub_date_sql
-            if { $pub_date eq "" } {
-                set pub_date_sql "now()"
-            } else {
-                # message pub_date
+            if { $pub_date ne "" } {
                 set pub_date [clock format $pub_date -format "%Y-%m-%d %T UTC"]
-                set pub_date_sql ":pub_date"
             }
 
             db_exec_plsql add_item {}
@@ -241,13 +222,32 @@ ad_proc -public news_aggregator::source::update {
         }
     }
 
-    set link $channel(link)
-    set title $channel(title)
-    set description $channel(description)
+    set channel [dict get $result channel]
+    set link        [dict get $channel link]
+    set title       [dict get $channel title]
+    set description [dict get $channel description]
+
     if { $updated_p } {
-        db_dml update_source ""
+        db_dml update_source {
+            update na_sources set
+                link = :link,
+                title = :title,
+                description = :description,
+                updates = (updates + 1),
+                last_scanned = current_timestamp,
+                last_modified = current_timestamp,
+                last_modified_stamp = current_timestamp
+            where source_id = :source_id
+        }
     } else {
-        db_dml update_source_no_new ""
+        db_dml update_source_no_new {
+            update na_sources set
+                last_scanned = current_timestamp,
+	        title = :title,
+	        link = :link,
+	        description = :description
+	     where source_id = :source_id
+        }
     }
 }
 
