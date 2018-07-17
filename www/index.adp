@@ -31,7 +31,7 @@
   <p>
 </else>
 
-<if @items:rowcount@ false>
+<if @items:rowcount@ eq 0>
   <i>#news-aggregator.No_items#</i>
 </if>
 <else>
