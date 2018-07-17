@@ -56,7 +56,6 @@ ad_proc -public news_aggregator::aggregator::as_xml {
         -package_id $package_id \
         -purge_p 0]
     
-    dom setResultEncoding "utf-8"
     set doc [dom createDocument "aggregator"]
     
     set doc_node [$doc documentElement]
@@ -171,7 +170,6 @@ ad_proc -public news_aggregator::aggregator::as_opml {
     @creation-date 2003-07-10
     @return A string containing the XML document.
 } {
-    dom setResultEncoding "utf-8"
     set doc [dom createDocument "opml"]
 
     set doc_node [$doc documentElement]
