@@ -29,9 +29,11 @@
     </if>
     <else>
       This page lists <b>the most recent items</b> from the feeds you've <a href="@url@subscriptions">subscribed</a> to.
-      <if @purge;literal@ true>
+      <if @write_p;literal@ true and @purge_p;literal@ true>
           You can hit the <b>Purge button</b> to clean out the page. Clicking the <b>Save</b> icon <img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /> will prevent an item from being purged.
-          Click on the <b>#news-aggregator.Post#</b> icon <img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /> to add the item to your weblog.
+      </if>
+      <if @write_p;literal@ true and @public_p;literal@ false>
+        Click on the <b>#news-aggregator.Post#</b> icon <img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /> to add the item to your weblog.
       </if>
     </else>
   </p>

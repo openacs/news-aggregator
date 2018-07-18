@@ -90,6 +90,8 @@ set aggregator_url [export_vars -base aggregator { return_url aggregator_id }]
 
 set create_url "${package_url}/aggregator"
 
+set purge_p [expr {$enable_purge_p && $purge_p}]
+
 # We only handle purges if the aggregator is not public
 if { $enable_purge_p || !$public_p || $purge_p } {
     set purges [db_list_of_lists purges {
@@ -192,14 +194,16 @@ $item_description"
     }
 
     if {$write_p} {
-        if {$item_id ni $saved_items} {
-            set save_url [export_vars -base "${url}item-save" {item_id}]
-            set unsave_url ""
-        } else {
-            set unsave_url [export_vars -base "${url}item-unsave" {item_id}]
-            set save_url ""
+        if {!$public_p} {
+            set item_blog_url [export_vars -base "${url}item-blog" {item_id}]
         }
-        set item_blog_url [export_vars -base "${url}item-blog" {item_id}]
+        if {$purge_p} {
+            if {$item_id ni $saved_items} {
+                set save_url [export_vars -base "${url}item-save" {item_id}]
+            } else {
+                set unsave_url [export_vars -base "${url}item-unsave" {item_id}]
+            }
+        }
     }
 
     if { $item_id < $bottom } {
@@ -215,7 +219,8 @@ $item_description"
 set purge [expr {$enable_purge_p
                  && $top >= $bottom
                  && !$public_p
-                 && $write_p}]
+                 && $write_p
+                 && $purge_p}]
 if {$purge} {
     ad_form -name purge -action "[ad_conn package_url]$aggregator_id/purge" -form {
         {purge_top:integer(hidden)
