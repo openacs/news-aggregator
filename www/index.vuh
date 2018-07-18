@@ -1,13 +1,12 @@
 set path_info_list [split [ad_conn path_info] "/"]
 
-set aggregator_id [lindex $path_info_list 0]
-set form [rp_getform]
-if { [string equal [ns_set iget $form aggregator_id] ""] } {
-	rp_form_put aggregator_id $aggregator_id
+set aggregator_id [ns_set iget [rp_getform] aggregator_id]
+if {$aggregator_id eq ""} {
+    set aggregator_id [lindex $path_info_list 0]
+    rp_form_put aggregator_id $aggregator_id
 }
 
-if { [llength $path_info_list] == 2 } {
-    rp_internal_redirect "/packages/news-aggregator/www/[lindex $path_info_list 1]" 
-} else {
-    rp_internal_redirect "/packages/news-aggregator/www/index"
-}
+set url [expr {[llength $path_info_list] == 2 ?
+               [lindex $path_info_list 1] : "index"}]
+rp_internal_redirect "/packages/news-aggregator/www/${url}"
+
