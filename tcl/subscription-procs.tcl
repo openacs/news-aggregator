@@ -13,8 +13,22 @@ ad_proc -public news_aggregator::subscription::new {
     {-aggregator_id:required}
     {-source_id:required}
 } {
-    if { ![db_string subscription_exists_p {} -default "0"] } {
-        db_dml insert_subscription {}
+    if {![db_string subscription_exists_p {
+        select exists (select 1 from na_subscriptions
+                       where aggregator_id = :aggregator_id
+                         and source_id = :source_id)
+    }]} {
+        db_dml insert_subscription {
+            insert into na_subscriptions (
+                aggregator_id,
+                source_id,
+                creation_date
+            ) values (
+                :aggregator_id,
+                :source_id,
+                current_timestamp
+            )
+        }
     }
 }
 
@@ -22,7 +36,11 @@ ad_proc -public news_aggregator::subscription::delete {
     {-source_id:required}
     {-aggregator_id:required}
 } {
-    db_dml delete_subscription {}
+    db_dml delete_subscription {
+        delete from na_subscriptions
+        where source_id = :source_id
+          and aggregator_id = :aggregator_id
+    }
 }
 
 ad_proc -public news_aggregator::subscription::move {
@@ -35,7 +53,12 @@ ad_proc -public news_aggregator::subscription::move {
     @author Simon Carstensen
     @creation-date 2003-08-23
 } {
-    db_dml move_subscription {}
+    db_dml move_subscription {
+        update na_subscriptions set
+           aggregator_id = :move_to
+        where source_id = :source_id
+          and aggregator_id = :move_from
+    }
 }
 
 ad_proc -public news_aggregator::subscription::copy {
@@ -47,5 +70,7 @@ ad_proc -public news_aggregator::subscription::copy {
     @author Simon Carstensen
     @creation-date 2003-08-23
 } {
-    db_dml copy_subscription {}
+    news_aggregator::subscription::new \
+        -aggregator_id $copy_to \
+        -source_id $source_id
 }
