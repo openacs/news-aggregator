@@ -2,7 +2,7 @@
   <property name="doc(title)">@page_title;literal@</property>
   <property name="context">@context;literal@</property>
   <property name="title">@page_title;literal@</property>
-  <property name="header_stuff">
+  <property name="head">
     <style type="text/css">
       .item_pub_date, .item_author {
            color: #777;
