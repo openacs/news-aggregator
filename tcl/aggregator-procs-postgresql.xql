@@ -45,23 +45,6 @@
     </querytext>
 </partialquery>
 
-    <fullquery name="news_aggregator::aggregator::as_opml.maintainer">
-    <querytext>
-      select
-      		email,
-		person__name(party_id) as person_name,
-		to_char(o.creation_date, 'Dy, DD Mon YYYY HH24:MI:SS TZ') as creation_date,
-		to_char(o.creation_date, 'Dy, DD Mon YYYY HH24:MI:SS TZ') as modified_date
-      from
-      		na_aggregators a,
-		parties p,
-		acs_objects o
-      where
-               a.aggregator_id = o.object_id and a.maintainer_id = p.party_id
-	       and a.aggregator_id = :aggregator_id
-	       </querytext>
-	       </fullquery>
-    
     <fullquery name="news_aggregator::aggregator::as_opml.subscriptions">
         <querytext>
 	  select
