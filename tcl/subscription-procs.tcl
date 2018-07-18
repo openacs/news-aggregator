@@ -13,6 +13,9 @@ ad_proc -public news_aggregator::subscription::new {
     {-aggregator_id:required}
     {-source_id:required}
 } {
+    Creates a new subscription to a source in an aggregator. If one
+    already exists this proc would just skipt the new creation.
+} {
     if {![db_string subscription_exists_p {
         select exists (select 1 from na_subscriptions
                        where aggregator_id = :aggregator_id
@@ -35,6 +38,8 @@ ad_proc -public news_aggregator::subscription::new {
 ad_proc -public news_aggregator::subscription::delete {
     {-source_id:required}
     {-aggregator_id:required}
+} {
+    Delete a subscription to a source in an aggregator.
 } {
     db_dml delete_subscription {
         delete from na_subscriptions

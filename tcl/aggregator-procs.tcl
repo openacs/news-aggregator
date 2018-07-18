@@ -375,9 +375,14 @@ ad_proc -public news_aggregator::aggregator::load_preinstalled_subscriptions {
     -aggregator_id:required
     -package_id:required
 } {
-
-    db_foreach select_feeds {} {
-
+    Subscribe aggregator to every pre-subscribed feed for the
+    specified package.
+} {
+    foreach source_id [db_list select_feeds {
+       select source_id
+         from na_presubscribed_feeds
+        where package_id = :package_id
+    }] {
         news_aggregator::subscription::new \
             -aggregator_id $aggregator_id \
             -source_id $source_id
