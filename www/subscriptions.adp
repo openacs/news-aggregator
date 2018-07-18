@@ -1,6 +1,7 @@
 <master>
-  <property name="title">@page_title@</property>
-  <property name="context">@context@</property>
+  <property name="doc(title)">@page_title;literal@</property>
+  <property name="context">@context;literal@</property>
+  <property name="title">@page_title;literal@</property>
 
   <p>
     <a href="./">Back to news aggregator</a>
@@ -27,7 +28,7 @@
     </table>
   </formtemplate>
 
-  <if @sources:rowcount@ >
+  <if @sources:rowcount;literal@ gt 0>
     <p>
       The following table lists the XML news feeds you've subscribed to. 
       To delete a subscription, check it and then click on the Unsubscribe button 
