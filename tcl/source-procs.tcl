@@ -81,11 +81,13 @@ ad_proc -public news_aggregator::source::new {
 }
 
 
-ad_proc -public news_aggregator::source::get_identifier {
+ad_proc -deprecated -public news_aggregator::source::get_identifier {
     {-guid:required}
     {-link:required}
     {-domain:required}
     {-description:required}
+} {
+    Deprecated: this proc has no usage in current uptsream codebase.
 } {
     if { $guid ne "" } {
         return guid
@@ -272,6 +274,8 @@ ad_proc -private news_aggregator::source::generate_guid {
 ad_proc -public news_aggregator::source::delete {
     {-source_id:required}
 } {
+    Delete a news source.
+} {
     db_exec_plsql delete_source {}
 }
 
@@ -281,37 +285,38 @@ ad_proc -public news_aggregator::source::update_all {
     @author Simon Carstensen (simon@bcuni.net)
     @author Guan Yang (guan@unicast.org)
 
-    Update sources by a one hour interval.
+    Update sources.
 
-    @param all_sources Update every source. Normally this proc
-    will only update the 25% of the existing sources.
+    @param all_sources Update every source. Normally this proc will
+                       only update the 25% of the existing sources and
+                       limit to those that were scanned earlier than
+                       '48' minutes ago
 } {
     ns_log Notice "Updating news aggregator sources"
 
-    ds_comment "test"
     db_transaction {
-        set source_count [db_string source_count ""]
+        set source_count [db_string source_count {
+            select count(*) from na_sources
+        }]
         if { $source_count >= 1 } {
             if { !$all_sources_p } {
-                set limit [expr {int($source_count/4)}]
-                if { $limit < 1 } {
-                    set limit 1
-                }
+                set limit [expr {max(1, int($source_count/4))}]
                 set limit_sql [db_map sources_limit]
             } else {
                 set limit_sql ""
             }
 
-            if { !$all_sources_p } {
-                set time_limit [db_map time_limit]
-            } else {
-                set time_limit {}
-            }
-
-            set sources [db_list_of_lists sources ""]
-            foreach source $sources {
+            foreach source [db_list_of_lists sources [subst {
+                select source_id,
+                       feed_url,
+                       last_modified
+                 from na_sources
+                where :all_sources_p or
+                      last_scanned < (current_timestamp - interval '48 minutes')
+             order by last_scanned asc
+                $limit_sql
+            }]] {
                 lassign $source source_id feed_url last_modified
-
                 news_aggregator::source::update \
                         -source_id $source_id \
                         -feed_url $feed_url \
