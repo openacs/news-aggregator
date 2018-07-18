@@ -1,9 +1,18 @@
 <master>
-  <property name="title">@page_title@</property>
-  <property name="context">@context@</property>
-  <property name="header_stuff"><style type="text/css"><!-- .item_pub_date, .item_author { color: #777; padding-right: 1em; }
-.item_pub_date { font-size: 10px; }
- --></style></property>
+  <property name="doc(title)">@page_title;literal@</property>
+  <property name="context">@context;literal@</property>
+  <property name="title">@page_title;literal@</property>
+  <property name="header_stuff">
+    <style type="text/css">
+      .item_pub_date, .item_author {
+           color: #777;
+           padding-right: 1em;
+      }
+      .item_pub_date {
+           font-size: 10px;
+      }
+    </style>
+  </property>
 
 <if @write_p;literal@ true>
   <p>
@@ -20,7 +29,7 @@
     </if>
     <else>
       This page lists <b>the most recent items</b> from the feeds you've <a href="@url@subscriptions">subscribed</a> to.
-      <if @enable_purge_p;literal@ true>
+      <if @purge;literal@ true>
           You can hit the <b>Purge button</b> to clean out the page. Clicking the <b>Save</b> icon <img border="0" src="@graphics_url@save.gif" width="16" height="16" alt="Save" /> will prevent an item from being purged.
           Click on the <b>#news-aggregator.Post#</b> icon <img border="0" src="@graphics_url@post.gif" width="16" height="16" alt="Post this item to your Weblog" /> to add the item to your weblog.
       </if>
@@ -44,7 +53,6 @@
               <tr bgcolor="#eeeeee">
                 <td colspan=2>
                   <b><a href="@items.link@" title="@items.description@">@items.title@</a>#news-aggregator.updated_x_time_ago#</b>
-                  <a href="@items.technorati_url@"><img src="@graphics_url@technorati.png" width ="50" height="14" alt="Technorati Cosmos" border="0"></a>
                 </td>
               </tr>
 	      <group column="source_id">
@@ -78,7 +86,7 @@
   </table>
 </else>
 
-<if @enable_purge_p;literal@ true and @public_p;literal@ false and @purge@ true and @purge_p;literal@ true>
+<if @purge;literal@ true>
   <formtemplate id="purge"></formtemplate>
 </if>
 

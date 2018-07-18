@@ -5,7 +5,7 @@ ad_page_contract {
     @creation-date 28-06-2003
 } {
     aggregator_id:integer,optional
-    purge_p:boolean,optional
+    {purge_p:boolean,optional false}
 }
 
 set user_id [ad_conn user_id]
@@ -31,7 +31,7 @@ if { ![info exists aggregator_id] } {
 
     if { !$aggregator_id && $per_user_aggregators_p } {
 
-        set user_name [db_string select_user_name {}]
+        set user_name [person::name -person_id $user_id]
         set aggregator_name "${user_name}'s News Aggregator"
 
         set aggregator_id [news_aggregator::aggregator::new \
@@ -47,7 +47,8 @@ if { ![info exists aggregator_id] } {
             -package_id $package_id
     }
 
-    ad_returnredirect "$aggregator_id"
+    ad_returnredirect $aggregator_id
+    ad_script_abort
 }
 
 if { $aggregator_id == 0 } {
@@ -57,22 +58,27 @@ if { $aggregator_id == 0 } {
                      -privilege write]
     if { $write_p } {
         ad_returnredirect "settings"
+        ad_script_abort
     }
     ad_returnredirect "public-aggregators"
+    ad_script_abort
 }
 
 set write_p [permission::permission_p \
                  -object_id $aggregator_id \
                  -privilege write]
 
-db_1row aggregator_info {}
+set info [news_aggregator::aggregator::aggregator_info \
+              -aggregator_id $aggregator_id]
+set aggregator_name        [dict get $info aggregator_name]
+set aggregator_description [dict get $info aggregator_description]
+set public_p               [dict get $info public_p]
 
 #if { $public_p == "f" } {
 #    permission::require_permission \
 #        -object_id $aggregator_id \
 #        -privilege write
 #}
-
 set page_title $aggregator_name
 set context [list $page_title]
 
@@ -84,36 +90,25 @@ set aggregator_url [export_vars -base aggregator { return_url aggregator_id }]
 
 set create_url "${package_url}/aggregator"
 
-set limit [parameter::get -parameter "number_of_items_shown"]
-set sql_limit [expr {7*$limit}]
-
-set top 0
-set bottom 1073741824
-
-set counter 0
-
-if { [info exists purge_p] && $public_p == "f" && $purge_p == "f" } {
-    set purge_p 0
-} elseif { $public_p == "t" } {
-    set purge_p 0
-} elseif { !$enable_purge_p } {
-    set purge_p 0
-} else {
-    set purge_p 1
-}
-
 # We only handle purges if the aggregator is not public
-if { $purge_p } {
-#    set items_purges [db_map items_purges]
-    set purges [db_list_of_lists purges ""]
-    set saved_items [db_list saved_items ""]
+if { $enable_purge_p || !$public_p || $purge_p } {
+    set purges [db_list_of_lists purges {
+        select top, bottom
+	  from na_purges
+	 where aggregator_id = :aggregator_id
+ 	order by top desc, bottom desc
+    }]
+    set saved_items [db_list saved_items {
+        select item_id
+        from na_saved_items
+        where aggregator_id = :aggregator_id
+    }]
 } else {
-#    set items_purges ""
     set purges [list]
     set saved_items [list]
 }
 
-if { $purge_p } {
+if { $enable_purge_p || !$public_p || $purge_p } {
     set items_query [news_aggregator::aggregator::items_sql \
                     -aggregator_id $aggregator_id \
                     -package_id $package_id \
@@ -126,6 +121,14 @@ if { $purge_p } {
                     -limit_multiple 1]
 }
 
+
+set limit [parameter::get -parameter "number_of_items_shown"]
+
+set top 0
+set bottom 1073741824
+
+set counter 0
+
 db_multirow -extend {
     content
     diff
@@ -133,7 +136,6 @@ db_multirow -extend {
     save_url
     unsave_url
     item_blog_url
-    technorati_url
     item_guid_link
     pub_date
 } items items $items_query {
@@ -175,15 +177,11 @@ $item_description"
         }
     }
 
-    if { $item_permalink_p == "t" } {
-        set item_guid_link $item_original_guid
-    } else {
-        set item_guid_link $item_link
-    }
+    set item_guid_link [expr {$item_permalink_p ? $item_original_guid : $item_link}]
 
-    set diff [news_aggregator::last_scanned -diff [expr {([clock seconds] - [clock scan $last_scanned]) / 60}]]
+    set diff [news_aggregator::last_scanned \
+                  -diff [expr {([clock seconds] - [clock scan $last_scanned]) / 60}]]
     set source_url [export_vars -base source {source_id}]
-    set technorati_url "http://www.technorati.com/cosmos/links.html?url=$link&sub=Get+Link+Cosmos"
 
     set localtime [clock scan [lc_time_utc_to_local $item_pub_date] -gmt 1]
     set utctime [clock scan $item_pub_date -gmt 1]
@@ -193,7 +191,7 @@ $item_description"
         set pub_date [clock format $localtime -format "%m-%d %H:%M"]
     }
 
-    if {$write_p eq "1"} {
+    if {$write_p} {
         if {$item_id ni $saved_items} {
             set save_url [export_vars -base "${url}item-save" {item_id}]
             set unsave_url ""
@@ -214,12 +212,11 @@ $item_description"
     }
 }
 
-if { $enable_purge_p
-     && [info exists top] && $top ne ""
-     && [info exists bottom] && $bottom ne ""
-     && $top >= $bottom && $public_p == "f"
-     && [permission::permission_p -party_id $user_id -object_id $aggregator_id -privilege write] } {
-
+set purge [expr {$enable_purge_p
+                 && $top >= $bottom
+                 && !$public_p
+                 && $write_p}]
+if {$purge} {
     ad_form -name purge -action "[ad_conn package_url]$aggregator_id/purge" -form {
         {purge_top:integer(hidden)
             {value $top}
@@ -232,14 +229,10 @@ if { $enable_purge_p
             {html {accesskey "p"}}
         }
     }
-    set purge 1
-
-} else {
-    set purge 0
 }
 
-set purge_off_url "[ad_conn package_url]$aggregator_id/?purge_p=f"
-set purge_on_url "[ad_conn package_url]$aggregator_id"
+set purge_off_url ${return_url}/?purge_p=f
+set purge_on_url ${return_url}/?purge_p=t
 
 # Local variables:
 #    mode: tcl
