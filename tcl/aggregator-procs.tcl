@@ -317,7 +317,7 @@ ad_proc -private news_aggregator::aggregator::user_default {
     @creation-date 2003-06-29
 } {
     set aggregator_id [db_string find_default {
-        select default_aggregator
+        select coalesce(default_aggregator, 0)
         from na_user_preferences
         where user_id = :user_id
     } -default 0]
