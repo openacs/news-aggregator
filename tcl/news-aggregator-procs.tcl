@@ -6,9 +6,7 @@ ad_library {
      @creation-date 2003-06-28
 }
 
-
 namespace eval news_aggregator {}
-
 
 ad_proc -public news_aggregator::check_link {
     {-domain:required}
@@ -24,10 +22,9 @@ ad_proc -public news_aggregator::check_link {
 ad_proc -public news_aggregator::last_scanned {
     {-diff:required}
 } {
-
     Returns the number of hours and minutes since the feed was last updated.
 
-    @author Simon Carstensen    
+    @author Simon Carstensen
 } {
     if {$diff < 120 && $diff > 60} {
         set to_return "1 hour and "
