@@ -79,47 +79,6 @@
 	</querytext>
     </fullquery>
 
-    <fullquery name="news_aggregator::aggregator::purge.count_purges">
-        <querytext>
-		select count(purge_id)
-		from na_purges
-		where aggregator_id = :aggregator_id
-	</querytext>
-    </fullquery>
-
-    <fullquery name="news_aggregator::aggregator::purge.get_range">
-    	<querytext>
-		select max(top) as max_top, min(bottom) as min_bottom,
-			nextval('na_purges_seq') as purge_id
-		from na_purges
-		where aggregator_id = :aggregator_id
-	</querytext>
-    </fullquery>
-
-    <fullquery name="news_aggregator::aggregator::purge.aggregator_purge">
-    	<querytext>
-		update na_aggregators
-		set aggregator_bottom = :aggregator_bottom
-		where aggregator_id = :aggregator_id
-	</querytext>
-    </fullquery>
-
-    <fullquery name="news_aggregator::aggregator::purge.purge_all_purges">
-        <querytext>
-		delete from na_purges
-		where aggregator_id = :aggregator_id
-	</querytext>
-    </fullquery>
-
-    <fullquery name="news_aggregator::aggregator::purge.insert_purge">
-        <querytext>
-		insert into na_purges
-			(purge_id, top, bottom, aggregator_id, purge_date)
-		values
-			(:purge_id, :top, :bottom, :aggregator_id, now())
-	</querytext>
-    </fullquery>
-
     <fullquery name="news_aggregator::aggregator::set_user_default.create_pref">
     	<querytext>
 		insert into na_user_preferences

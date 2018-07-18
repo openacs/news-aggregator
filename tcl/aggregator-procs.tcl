@@ -250,24 +250,37 @@ ad_proc -private news_aggregator::aggregator::purge {
     db_transaction {
         # Find out how many purges the aggregator has
         # and clear some if there are too many
-        set purge_count [db_string count_purges ""]
+        set purge_count [db_string count_purges {
+            select count(purge_id) from na_purges
+            where aggregator_id = :aggregator_id
+        }]
         set max_purges [parameter::get -parameter "max_purges"]
         if { $purge_count > $max_purges } {
-            db_1row get_range ""
-	    db_dml purge_all_purges ""
+	    db_dml purge_all_purges {
+                delete from na_purges
+		where aggregator_id = :aggregator_id
+            }
 
 	    # The aggregator's bottom is set to the argument
 	    # top because aggregator_bottom is actually the
 	    # highest-numbered item to be displayed. Yes, it
 	    # is confusing.
 	    set aggregator_bottom $top
-	    db_dml aggregator_purge ""
-
+	    db_dml aggregator_purge {
+		update na_aggregators
+		set aggregator_bottom = :aggregator_bottom
+		where aggregator_id = :aggregator_id
+            }
 	    return
         }
 
         set purge_id [db_nextval na_purges_seq]
-	db_dml insert_purge ""
+	db_dml insert_purge {
+            insert into na_purges
+                    (purge_id, top, bottom, aggregator_id, purge_date)
+            values
+                    (:purge_id, :top, :bottom, :aggregator_id, current_timestamp)
+        }
     }
 }
 
