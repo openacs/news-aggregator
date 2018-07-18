@@ -20,13 +20,15 @@ ad_proc -public news_aggregator::aggregator::aggregator_info {
     @return Tcl array-list with the information, or empty
              string on error.
 } {
-    if { ![db_0or1row aggregator_info ""] } {
+    if { ![db_0or1row aggregator_info {
+        select aggregator_name,
+               description as aggregator_description,
+               public_p
+        from   na_aggregators
+        where  aggregator_id = :aggregator_id
+    } -column_array info] } {
         return ""
     }
-
-    set info(aggregator_name) $aggregator_name
-    set info(aggregator_description) $aggregator_description
-    set info(public_p) $public_p
 
     return [array get info]
 }
@@ -60,11 +62,7 @@ ad_proc -public news_aggregator::aggregator::as_xml {
 
     set doc_node [$doc documentElement]
     $doc_node setAttribute "version" "0.9"
-
-    # Create the xml processing instruction
-    set pi [$doc createProcessingInstruction "xml" {version="1.0"}]
     set root [$doc_node selectNode /]
-    $root insertBefore $pi $doc_node
 
     # If applicable, create the xml-stylesheet processing instruction
     if { [info exists stylesheet] && [info exists stylesheet_type] } {
@@ -79,15 +77,16 @@ ad_proc -public news_aggregator::aggregator::as_xml {
     set head_node [$doc createElement head]
     $doc_node appendChild $head_node
 
-    array set info [news_aggregator::aggregator::aggregator_info \
-                                    -aggregator_id $aggregator_id]
+    set info [news_aggregator::aggregator::aggregator_info \
+                  -aggregator_id $aggregator_id]
 
-    set header_fields [list \
-                        [list aggregator_name name] \
-                        [list aggregator_description description]]
+    set header_fields {
+        {aggregator_name name}
+        {aggregator_description description}
+    }
     foreach header_field $header_fields {
         set node [$doc createElement [lindex $header_field 1]]
-        set text_node [$doc createTextNode $info([lindex $header_field 0])]
+        set text_node [$doc createTextNode [dict get $info [lindex $header_field 0]]]
         $node appendChild $text_node
         $head_node appendChild $node
     }
@@ -133,7 +132,14 @@ ad_proc -public news_aggregator::aggregator::as_xml {
         set previous_source_id $source_id
     }
 
-    set xml [$doc asXML]
+    # apisano 2018-07-18: at least on tDOM 0.8.3, adding the xml
+    # processing instruction via the api returns an error. Newer tDOM
+    # versions allow to specify a flag saying whether we want this to
+    # be included when doing asXML, but we cannot assume one will use
+    # the latest tDOM and therefore, in order to behave like the
+    # original author wanted, we append the declaration manually.
+    set xml {<?xml version="1.0"?>}
+    append xml \n [$doc asXML]
     $doc delete
     return $xml
 }

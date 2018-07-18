@@ -2,16 +2,6 @@
 
 <queryset>
    <rdbms><type>postgresql</type><version>7.1</version></rdbms>
-   
-<fullquery name="news_aggregator::aggregator::aggregator_info.aggregator_info">
-    <querytext>
-          select aggregator_name, 
-                 description as aggregator_description, 
-                 public_p
-          from   na_aggregators
-          where  aggregator_id = :aggregator_id
-    </querytext>
-</fullquery>
 
 <fullquery name="news_aggregator::aggregator::items_sql.items">
       <querytext>
