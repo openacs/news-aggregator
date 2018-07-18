@@ -293,9 +293,18 @@ ad_proc -private news_aggregator::aggregator::set_user_default {
     @author Guan Yang (guan@unicast.org)
     @creation-date 2003-07-04
 } {
-    db_dml set_default ""
+    db_dml set_default {
+        update na_user_preferences set
+        default_aggregator = :aggregator_id
+        where user_id = :user_id
+    }
     if { ![db_resultrows] } {
-    	db_dml create_pref ""
+    	db_dml create_pref {
+            insert into na_user_preferences
+            (user_id, default_aggregator)
+            values
+            (:user_id, :aggregator_id)
+        }
     }
 }
 
@@ -307,16 +316,23 @@ ad_proc -private news_aggregator::aggregator::user_default {
     @author Guan Yang (guan@unicast.org)
     @creation-date 2003-06-29
 } {
-    set aggregator_id [db_string find_default {} -default 0]
+    set aggregator_id [db_string find_default {
+        select default_aggregator
+        from na_user_preferences
+        where user_id = :user_id
+    } -default 0]
 
-    if {$aggregator_id eq "0"} {
-        set aggregator_id [db_string lowest_aggregator ""]
-	if { $aggregator_id ne "" } {
+    if {$aggregator_id == 0} {
+        set aggregator_id [db_string lowest_aggregator {
+            select coalesce(min(object_id), 0)
+            from   acs_objects
+            where  object_type = 'na_aggregator'
+            and    creation_user = :user_id
+        } -default 0]
+	if { $aggregator_id != 0 } {
 	    news_aggregator::aggregator::set_user_default \
-	  				-user_id $user_id \
-					-aggregator_id $aggregator_id
-	} else {
-	    return 0
+                -user_id       $user_id \
+                -aggregator_id $aggregator_id
 	}
     }
 
@@ -331,17 +347,18 @@ ad_proc -public news_aggregator::aggregator::edit {
 } {
     Edit the aggregator's name or listing status.
 
+    @return boolean value telling whether a row was updated
     @author Guan Yang
     @creation-date 2003-06-29
 } {
-    db_dml edit_aggregator {}
-
-    if { [db_resultrows] } {
-        # Error
-    	return 1
-    } else {
-        return 0
+    db_dml edit_aggregator {
+        update na_aggregators set
+            aggregator_name = :aggregator_name,
+            description     = :description,
+            public_p        = :public_p
+        where aggregator_id = :aggregator_id
     }
+    return [expr {[db_resultrows] > 0}]
 }
 
 ad_proc -public news_aggregator::aggregator::new {

@@ -79,43 +79,6 @@
 	</querytext>
     </fullquery>
 
-    <fullquery name="news_aggregator::aggregator::set_user_default.create_pref">
-    	<querytext>
-		insert into na_user_preferences
-			(user_id, default_aggregator)
-		values
-			(:user_id, :aggregator_id)
-	</querytext>
-    </fullquery>
-
-    <fullquery name="news_aggregator::aggregator::set_user_default.set_default">
-    	<querytext>
-		update na_user_preferences
-		set default_aggregator = :aggregator_id
-		where user_id = :user_id
-	</querytext>
-    </fullquery>
-
-    <fullquery name="news_aggregator::aggregator::user_default.find_default">
-    	<querytext>
-	    select
-	        default_aggregator
-	    from
-	    	na_user_preferences
-	    where
-	    	user_id = :user_id
-	</querytext>
-    </fullquery>
-
-    <fullquery name="news_aggregator::aggregator::user_default.lowest_aggregator">
-          <querytext>
-                select min(object_id) as aggregator_id
-                from   acs_objects
-                where  object_type = 'na_aggregator'
-                and    creation_user = :user_id
-          </querytext>
-    </fullquery>
-
     <fullquery name="news_aggregator::aggregator::delete.delete_aggregator">
           <querytext>
                 select na_aggregator__delete (
@@ -137,18 +100,6 @@
 			:creation_ip
 		)
 	  </querytext>
-    </fullquery>
-
-    <fullquery name="news_aggregator::aggregator::edit.edit_aggregator">
-    	 <querytext>
-		update na_aggregators
-		set
-			aggregator_name = :aggregator_name,
-                        description = :description,
-			public_p = :public_p
-		where
-			aggregator_id = :aggregator_id
-	 </querytext>
     </fullquery>
 
 </queryset>
