@@ -46,8 +46,8 @@ ad_proc -public news_aggregator::source::new {
         set page   [dict get $response page]
 
         if { $status != 200 ||
-             [catch { set result [feed_parser::parse_feed -xml $page] }] } {
-            ns_log Debug "news_aggregator::source::new: Couldn't httpget, status = $status"
+             [catch { set result [feed_parser::parse_feed -xml $page] } errmsg] } {
+            ns_log Warning "news_aggregator::source::new: Couldn't httpget, status = $status, errmsg = $errmsg"
             return 0
         }
         ns_log Debug "news_aggregator::source::new: HTTP GET successful, [string length $page] bytes"
