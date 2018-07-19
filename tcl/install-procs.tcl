@@ -1,7 +1,7 @@
 ad_library {
     Procedures for initializing service contracts etc. for the
     workflow package. Should only be executed once upon installation.
-    
+
     @creation-date 2003-07-04
     @author Simon Carstensen (simon@bcuni.net)
     @author Guan Yang (guan@unicast.org)
@@ -29,7 +29,7 @@ ad_proc -private news_aggregator::install::after_install {
     -package_id:required
 } {
     News Aggregator package install proc
-} {    
+} {
     set package_id [db_string select_package_id {}]
     set user_id [ad_conn user_id]
 
