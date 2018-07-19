@@ -95,9 +95,9 @@ list::create \
     feed_url {
         label "Source"
         display_template {
-            <a href="@sources.feed_url@" title="View the XML 
+            <a href="@sources.feed_url@" title="View the XML
             source for this subscriptions."
-            ><img src="@sources.xml_graphics_url@" height="14" width="36" 
+            ><img src="@sources.xml_graphics_url@" height="14" width="36"
             alt="View the XML source for this subscription" border="0"></a>
         }
     }
@@ -138,7 +138,7 @@ ad_form -name add_subscription -form {
         {label "URL:"}
         {html {size 55}}
     }
-    {add_submit:text(submit) 
+    {add_submit:text(submit)
         {label "Add"}
     }
 } -new_data {
