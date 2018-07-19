@@ -141,12 +141,12 @@ ad_form -name add_subscription -form {
     {add_submit:text(submit) 
         {label "Add"}
     }
-} -validate {
-    {feed_url
-        { $feed_url ne "" && "http://" ne $feed_url }
-        { You must specify a URL }
-    }
 } -new_data {
+    set parsed_feed [ns_parseurl $feed_url]
+    if {![dict exists $parsed_feed proto]} {
+        template::form::set_error add_subscription feed_url "You must specify a valid URL"
+        break
+    }
     set channel_array [news_aggregator::source::new \
         -feed_url $feed_url \
         -aggregator_id $aggregator_id \
