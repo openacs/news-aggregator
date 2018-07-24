@@ -12,7 +12,7 @@
   </p>
 
   <formtemplate id="add_subscription">
-    <table cellspacing="0" cellpadding="2"<if @formerror@ not nil>
+    <table cellspacing="0" cellpadding="2"<if @formerror.feed_url@ not nil>
 		style="border: 1px red dashed"</if>>
       <tr>
         <td>
@@ -30,8 +30,8 @@
 
   <if @sources:rowcount;literal@ gt 0>
     <p>
-      The following table lists the XML news feeds you've subscribed to. 
-      To delete a subscription, check it and then click on the Unsubscribe button 
+      The following table lists the XML news feeds you've subscribed to.
+      To delete a subscription, check it and then click on the Unsubscribe button
       at the bottom of the page.
     </p>
   </if>
