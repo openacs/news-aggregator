@@ -180,6 +180,9 @@ $item_description"
     }
 
     set item_guid_link [expr {$item_permalink_p ? $item_original_guid : $item_link}]
+    if {![dict exists [ns_parseurl $item_guid_link] host]} {
+        set item_guid_link [string trimright ${link} "/"]/[string trimleft ${item_guid_link} "/"]
+    }
 
     set diff [news_aggregator::last_scanned \
                   -diff [expr {([clock seconds] - [clock scan $last_scanned]) / 60}]]
