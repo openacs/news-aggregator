@@ -187,6 +187,9 @@ ad_proc -public news_aggregator::source::update {
         set description [dict get $item description]
         set author [dict get $item author]
         set pub_date [dict get $item pub_date]
+        if { $pub_date ne "" } {
+            set pub_date [clock format $pub_date -format "%Y-%m-%d %T UTC"]
+        }
 
         set guid [news_aggregator::source::generate_guid \
                       -link [dict get $item link] \
@@ -211,10 +214,6 @@ ad_proc -public news_aggregator::source::update {
                 ns_log Debug "source::update:\tfirst_equal=[string equal $db_title $title] second_equal=[string equal $db_description $description] new_p=$new_p item_title=[string length $title] chars db_title=[string length $db_title] chars"
             } else {
                 ns_log Debug "source::update: guid $guid is new and will be inserted; title=$title description=$description"
-            }
-
-            if { $pub_date ne "" } {
-                set pub_date [clock format $pub_date -format "%Y-%m-%d %T UTC"]
             }
 
             db_exec_plsql add_item {}
