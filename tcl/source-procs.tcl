@@ -223,10 +223,10 @@ ad_proc -public news_aggregator::source::update {
         db_dml update_source_no_new {
             update na_sources set
                 last_scanned = current_timestamp,
-	        title = :title,
-	        link = :link,
-	        description = :description
-	     where source_id = :source_id
+                title = :title,
+                link = :link,
+                description = :description
+            where source_id = :source_id
         }
         ns_log Debug "source::update: news source $source_id not updated"
     }
@@ -304,3 +304,9 @@ ad_proc -public news_aggregator::source::update_all {
         }
     }
 }
+
+# Local variables:
+#    mode: tcl
+#    tcl-indent-level: 4
+#    indent-tabs-mode: nil
+# End:
