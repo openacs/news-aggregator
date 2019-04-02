@@ -167,9 +167,6 @@ ad_proc -public news_aggregator::source::update {
             set pub_date [clock format $pub_date -format "%Y-%m-%d %T UTC"]
         }
 
-        # Notice: we are assuming source_id,guid is a superkey of
-        # na_items. This is not technically true, but this upgrade
-        # strategy should enforce it.
         set item_exists_p [db_0or1row get_existing_news_item {
             select title as existing_title, description as existing_description, link as existing_link
             from na_items
