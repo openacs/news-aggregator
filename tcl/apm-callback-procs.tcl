@@ -4,7 +4,7 @@ ad_library {
 
 namespace eval news_aggregator::apm {}
 
-ad_proc -private news_aggregator::apm::after_upgrade {
+ad_proc -private news_aggregator::apm::before_upgrade {
     {-from_version_name:required}
     {-to_version_name:required}
 } {

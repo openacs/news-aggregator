@@ -19,7 +19,7 @@
         <requires url="feed-parser" version="0.1d"/>
 
         <callbacks>
-          <callback type="after-upgrade" proc="news_aggregator::apm::after_upgrade"/>
+          <callback type="before-upgrade" proc="news_aggregator::apm::before_upgrade"/>
         </callbacks>
         <parameters>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="AllowAggregatorEditP"  default="1" description="Should user be allowed to edit aggregator properties?"/>
