@@ -180,7 +180,7 @@ $item_description"
     }
 
     set item_guid_link [expr {$item_permalink_p ? $item_original_guid : $item_link}]
-    if {![dict exists [ns_parseurl $item_guid_link] host]} {
+    if {![util_complete_url_p $item_guid_link]} {
         set item_guid_link [string trimright ${link} "/"]/[string trimleft ${item_guid_link} "/"]
     }
 
