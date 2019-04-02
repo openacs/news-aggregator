@@ -31,7 +31,7 @@ ad_form -name aggregators -form {
         -aggregator_id $default_aggregator_id
 
     ad_returnredirect settings
-    ad_script_abort   
+    ad_script_abort
 }
 
 set return_url settings
@@ -47,10 +47,10 @@ template::list::create \
             label {}
             display_template {
                 <a href="@aggregators.edit_url@" title="Edit this aggregator"
-                ><img src="@aggregators.url@graphics/edit.gif" height="16" width="16" 
+                ><img src="@aggregators.url@graphics/edit.gif" height="16" width="16"
                 alt="Edit this aggregator" border="0"></a>
             }
-        }            
+        }
         aggregator_name {
             label "Name"
             display_template {
@@ -58,7 +58,7 @@ template::list::create \
                 >@aggregators.aggregator_name@</a>
                 <if @aggregators.default_p;literal@ true>
                 (default)
-                </if>        
+                </if>
             }
             link_url_eval {}
             link_html { title "" }
@@ -70,17 +70,17 @@ template::list::create \
             label {}
             display_template {
                 <a href="@aggregators.delete_url@" onclick="@aggregators.delete_onclick@" title="Delete this aggregator"
-                ><img src="@aggregators.url@graphics/delete.gif" height="16" width="16" 
+                ><img src="@aggregators.url@graphics/delete.gif" height="16" width="16"
                 alt="Delete this aggregator" border="0"></a>
             }
         }
     }
 
-db_multirow -extend { 
-    url 
-    edit_url 
-    delete_url 
-    delete_onclick 
+db_multirow -extend {
+    url
+    edit_url
+    delete_url
+    delete_onclick
     default_p
 } aggregators select_aggregators {} {
     if {$public_p == "t"} {
@@ -111,10 +111,10 @@ template::list::create \
             label {}
             display_template {
                 <a href="@weblogs.edit_url@" title="Edit this weblog"
-                ><img src="@weblogs.url@graphics/edit.gif" height="16" width="16" 
+                ><img src="@weblogs.url@graphics/edit.gif" height="16" width="16"
                 alt="Edit this weblog" border="0"></a>
             }
-        }            
+        }
         weblog_name {
             label "Name"
         }
@@ -122,7 +122,7 @@ template::list::create \
             label {}
             display_template {
                 <a href="@weblogs.delete_url@" onclick="@weblogs.delete_onclick@" title="Delete this weblog"
-                ><img src="@weblogs.url@graphics/delete.gif" height="16" width="16" 
+                ><img src="@weblogs.url@graphics/delete.gif" height="16" width="16"
                 alt="Delete this weblog" border="0"></a>
             }
         }
@@ -140,3 +140,9 @@ db_multirow -extend { url edit_url delete_url delete_onclick } weblogs select_we
     set delete_url [export_vars -base weblog-delete {weblog_id}]
     set delete_onclick "return confirm('Are you sure you want to delete this weblog?');"
 }
+
+# Local variables:
+#    mode: tcl
+#    tcl-indent-level: 4
+#    indent-tabs-mode: nil
+# End:

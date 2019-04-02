@@ -133,8 +133,8 @@ ad_proc -public news_aggregator::aggregator::as_xml {
     }
 
     # apisano 2018-07-18: at least on tDOM 0.8.3, adding the xml
-    # processing instruction via the api returns an error. Newer tDOM
-    # versions allow to specify a flag saying whether we want this to
+    # processing instruction via the API returns an error. Newer tDOM
+    # versions allow one to specify a flag saying whether we want this to
     # be included when doing asXML, but we cannot assume one will use
     # the latest tDOM and therefore, in order to behave like the
     # original author wanted, we append the declaration manually.
@@ -196,7 +196,7 @@ ad_proc -public news_aggregator::aggregator::as_opml {
         where o.object_id = a.aggregator_id
           and a.aggregator_id = :aggregator_id
     }] } {
-    	return
+        return
     }
 
     set email [party::email -party_id $maintainer_id]
@@ -207,22 +207,22 @@ ad_proc -public news_aggregator::aggregator::as_opml {
     set head_node [$doc createElement head]
     $doc_node appendChild $head_node
     set headers [list \
-    	[list title "mySubscriptions"] \
-	[list dateCreated $creation_date] \
-	[list dateModified $modified_date] \
-	[list ownerName $person_name] \
-	[list ownerEmail $email] \
-	[list expansionState ""] \
-	[list vertScrollState "1"] \
-	[list windowTop 295] \
-	[list windowLeft 319] \
-	[list windowBottom 495] \
-	[list windowRight 704]]
+        [list title "mySubscriptions"] \
+        [list dateCreated $creation_date] \
+        [list dateModified $modified_date] \
+        [list ownerName $person_name] \
+        [list ownerEmail $email] \
+        [list expansionState ""] \
+        [list vertScrollState "1"] \
+        [list windowTop 295] \
+        [list windowLeft 319] \
+        [list windowBottom 495] \
+        [list windowRight 704]]
     foreach header $headers {
         set node [$doc createElement [lindex $header 0]]
-	set text_node [$doc createTextNode [lindex $header 1]]
-	$node appendChild $text_node
-	$head_node appendChild $node
+        set text_node [$doc createTextNode [lindex $header 1]]
+        $node appendChild $text_node
+        $head_node appendChild $node
     }
 
     set body_node [$doc createElement "body"]
@@ -230,21 +230,21 @@ ad_proc -public news_aggregator::aggregator::as_opml {
 
     db_foreach subscriptions "" {
         set node [$doc createElement "outline"]
-	$node setAttribute text $title
-	$node setAttribute description $description
-	$node setAttribute htmlUrl $link
-	$node setAttribute language "unknown"
-	$node setAttribute title $title
-	$node setAttribute type "rss"
-	$node setAttribute version "RSS"
-	$node setAttribute xmlUrl $feed_url
+        $node setAttribute text $title
+        $node setAttribute description $description
+        $node setAttribute htmlUrl $link
+        $node setAttribute language "unknown"
+        $node setAttribute title $title
+        $node setAttribute type "rss"
+        $node setAttribute version "RSS"
+        $node setAttribute xmlUrl $feed_url
 
-	$body_node appendChild $node
+        $body_node appendChild $node
     }
 
     # apisano 2018-07-18: at least on tDOM 0.8.3, adding the xml
-    # processing instruction via the api returns an error. Newer tDOM
-    # versions allow to specify a flag saying whether we want this to
+    # processing instruction via the API returns an error. Newer tDOM
+    # versions allow one to specify a flag saying whether we want this to
     # be included when doing asXML, but we cannot assume one will use
     # the latest tDOM and therefore, in order to behave like the
     # original author wanted, we append the declaration manually.
@@ -272,26 +272,26 @@ ad_proc -private news_aggregator::aggregator::purge {
         }]
         set max_purges [parameter::get -parameter "max_purges"]
         if { $purge_count > $max_purges } {
-	    db_dml purge_all_purges {
+            db_dml purge_all_purges {
                 delete from na_purges
-		where aggregator_id = :aggregator_id
+                where aggregator_id = :aggregator_id
             }
 
-	    # The aggregator's bottom is set to the argument
-	    # top because aggregator_bottom is actually the
-	    # highest-numbered item to be displayed. Yes, it
-	    # is confusing.
-	    set aggregator_bottom $top
-	    db_dml aggregator_purge {
-		update na_aggregators
-		set aggregator_bottom = :aggregator_bottom
-		where aggregator_id = :aggregator_id
+            # The aggregator's bottom is set to the argument
+            # top because aggregator_bottom is actually the
+            # highest-numbered item to be displayed. Yes, it
+            # is confusing.
+            set aggregator_bottom $top
+            db_dml aggregator_purge {
+                update na_aggregators
+                set aggregator_bottom = :aggregator_bottom
+                where aggregator_id = :aggregator_id
             }
-	    return
+            return
         }
 
         set purge_id [db_nextval na_purges_seq]
-	db_dml insert_purge {
+        db_dml insert_purge {
             insert into na_purges
                     (purge_id, top, bottom, aggregator_id, purge_date)
             values
@@ -315,7 +315,7 @@ ad_proc -private news_aggregator::aggregator::set_user_default {
         where user_id = :user_id
     }
     if { ![db_resultrows] } {
-    	db_dml create_pref {
+        db_dml create_pref {
             insert into na_user_preferences
             (user_id, default_aggregator)
             values
@@ -345,11 +345,11 @@ ad_proc -private news_aggregator::aggregator::user_default {
             where  object_type = 'na_aggregator'
             and    creation_user = :user_id
         } -default 0]
-	if { $aggregator_id != 0 } {
-	    news_aggregator::aggregator::set_user_default \
+        if { $aggregator_id != 0 } {
+            news_aggregator::aggregator::set_user_default \
                 -user_id       $user_id \
                 -aggregator_id $aggregator_id
-	}
+        }
     }
 
     return $aggregator_id
@@ -444,3 +444,9 @@ ad_proc -public news_aggregator::aggregator::options {
 } {
     return [db_list_of_lists select_aggregator_options {}]
 }
+
+# Local variables:
+#    mode: tcl
+#    tcl-indent-level: 4
+#    indent-tabs-mode: nil
+# End:

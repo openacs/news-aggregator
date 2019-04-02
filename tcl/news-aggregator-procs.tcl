@@ -40,3 +40,8 @@ ad_proc -public news_aggregator::last_scanned {
     return $to_return
 }
 
+# Local variables:
+#    mode: tcl
+#    tcl-indent-level: 4
+#    indent-tabs-mode: nil
+# End:

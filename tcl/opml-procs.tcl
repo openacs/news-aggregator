@@ -75,3 +75,9 @@ ad_proc -public news_aggregator::opml::parse {
 
     return [array get opml]
 }
+
+# Local variables:
+#    mode: tcl
+#    tcl-indent-level: 4
+#    indent-tabs-mode: nil
+# End:

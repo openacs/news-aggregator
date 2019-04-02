@@ -96,9 +96,9 @@ set purge_p [expr {$enable_purge_p && $purge_p}]
 if { $enable_purge_p || !$public_p || $purge_p } {
     set purges [db_list_of_lists purges {
         select top, bottom
-	  from na_purges
-	 where aggregator_id = :aggregator_id
- 	order by top desc, bottom desc
+          from na_purges
+         where aggregator_id = :aggregator_id
+        order by top desc, bottom desc
     }]
     set saved_items [db_list saved_items {
         select item_id

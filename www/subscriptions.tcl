@@ -162,3 +162,9 @@ ad_form -name add_subscription -form {
     ad_returnredirect -message "You have been subscribed to $title." subscriptions
     ad_script_abort
 }
+
+# Local variables:
+#    mode: tcl
+#    tcl-indent-level: 4
+#    indent-tabs-mode: nil
+# End:
