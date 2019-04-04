@@ -132,6 +132,7 @@ create table na_items (
 
 create index na_items_guid_idx on na_items(guid);
 create index na_items_source_id_idx on na_items(source_id);
+ALTER TABLE na_items ADD CONSTRAINT na_items_unique_guid UNIQUE (guid,source_id);
 
 create table na_saved_items (
        item_id			    integer
