@@ -53,9 +53,9 @@ ad_proc -public news_aggregator::source::new {
         ns_log Debug "news_aggregator::source::new: HTTP GET successful, [string length $page] bytes"
 
         set channel [dict get $result channel]
-        set channel_title [string_truncate -len 500 -- [dict get $channel title]]
-        set link          [string_truncate -len 500 -- [dict get $channel link]]
-        set description   [string_truncate -len 500 -- [dict get $channel description]]
+        set channel_title [ad_string_truncate -len 500 -- [dict get $channel title]]
+        set link          [ad_string_truncate -len 500 -- [dict get $channel link]]
+        set description   [ad_string_truncate -len 500 -- [dict get $channel description]]
 
         set creation_ip [ad_conn peeraddr]
         set last_modified [dict get $response modified]
@@ -155,9 +155,9 @@ ad_proc -public news_aggregator::source::update {
                       -title       [dict get $item title] \
                       -description [dict get $item description] \
                       -guid        [dict get $item guid]]
-        set title [string_truncate -len 500 -- [dict get $item title]]
-        set link [string_truncate -len 500 -- [dict get $item link]]
-        set original_guid [string_truncate -len 500 -- [dict get $item guid]]
+        set title [ad_string_truncate -len 500 -- [dict get $item title]]
+        set link [ad_string_truncate -len 500 -- [dict get $item link]]
+        set original_guid [ad_string_truncate -len 500 -- [dict get $item guid]]
         set permalink_p [dict get $item permalink_p]
         set content_encoded [dict get $item content_encoded]
         set description [dict get $item description]
