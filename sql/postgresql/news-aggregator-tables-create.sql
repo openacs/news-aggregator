@@ -24,6 +24,7 @@ create table na_aggregators (
         package_id              integer
                                 constraint na_aggregators_pid_fk
                                 references apm_packages(package_id)
+                                on delete cascade
                                 constraint na_aggregators_pid_nn
                                 not null,
         maintainer_id           integer
@@ -140,7 +141,8 @@ create table na_saved_items (
 				    references na_items(item_id),
        aggregator_id		    integer
 		                    constraint na_saved_items_aid_fk
-				    references na_aggregators(aggregator_id),
+				    references na_aggregators(aggregator_id)
+                                    on delete cascade,
        constraint na_saved_items_pk primary key(item_id, aggregator_id)
 );
 
@@ -157,6 +159,7 @@ create table na_purges (
        aggregator_id   integer
 		       constraint na_purges_aid_fk
 		       references na_aggregators(aggregator_id)
+                       on delete cascade
 		       constraint na_purges_aid_nn
 		       not null,
        purge_date      timestamptz
@@ -175,7 +178,8 @@ create sequence na_purges_seq;
 create table na_subscriptions (
 	aggregator_id		integer
                                 constraint na_subscriptions_aid_fk
-                                references na_aggregators(aggregator_id),
+                                references na_aggregators(aggregator_id)
+                                on delete cascade,
 	source_id		integer
                                 constraint na_subscriptions_sid_fk
                                 references na_sources(source_id),
@@ -206,6 +210,7 @@ create table na_user_preferences (
 	default_aggregator	integer
 				constraint na_user_prefs_default_fk
 				references na_aggregators(aggregator_id)
+                                on delete set null
 );
 
 

@@ -73,37 +73,14 @@ end;' language 'plpgsql';
 
 
 create or replace function na_aggregator__delete (
-    integer -- aggregator_id
+    p_aggregator_id na_aggregators.aggregator_id%TYPE -- aggregator_id
 )
-returns integer as '
-declare
-  p_aggregator_id   alias for $1;
+returns integer as $$
 begin
-
-        delete from acs_permissions
-                where object_id = p_aggregator_id;
-
-        delete from na_subscriptions
-                where aggregator_id = p_aggregator_id;
-	
-	update na_user_preferences
-		set default_aggregator = null
-		where default_aggregator = p_aggregator_id;
-
-	delete from na_purges
-		where aggregator_id = p_aggregator_id;
-
-	delete from na_saved_items
-		where aggregator_id = p_aggregator_id;
-	
-        delete from na_aggregators
-                where aggregator_id = p_aggregator_id;
-
-        PERFORM acs_object__delete(p_aggregator_id);
-
-        return 0;
-
-end;' language 'plpgsql';
+    PERFORM acs_object__delete(p_aggregator_id);
+    return 0;
+end;
+$$ language 'plpgsql';
 
 
 create or replace function na_aggregator__name (integer)
