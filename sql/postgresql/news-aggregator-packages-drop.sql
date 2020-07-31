@@ -7,7 +7,7 @@
 drop function na_weblog__delete(integer);
 drop function na_weblog__name(integer);
 drop function na_weblog__new(integer, integer, varchar, varchar, varchar, integer, varchar);
-seledct acs_object_type__drop_type('na_weblog', true);
+select acs_object_type__drop_type('na_weblog', true);
 
 --drop na_subscription functions
 drop function na_subscription__new (
