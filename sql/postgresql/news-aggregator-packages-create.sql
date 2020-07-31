@@ -28,8 +28,8 @@ declare
     p_public_p          alias for $5;
     p_creation_user     alias for $6;
     p_creation_ip       alias for $7;
-    v_aggregator_id          integer;
-    v_max_item_id	     integer;
+    v_aggregator_id     integer;
+    v_max_item_id       integer;
 begin
         v_aggregator_id := acs_object__new (
                              p_aggregator_id,
@@ -40,17 +40,17 @@ begin
                              p_package_id
         );
 
-	select max(item_id) into v_max_item_id
-		from na_items;
-        
+        select max(item_id) into v_max_item_id
+                from na_items;
+
         insert into na_aggregators (
-                aggregator_id, 
+                aggregator_id,
                 aggregator_name,
                 description,
                 maintainer_id,
                 package_id,
                 public_p,
-		aggregator_bottom
+                aggregator_bottom
         ) values (
                 v_aggregator_id,
                 p_aggregator_name,
@@ -58,9 +58,9 @@ begin
                 p_creation_user,
                 p_package_id,
                 p_public_p,
-		v_max_item_id
+                v_max_item_id
         );
-        
+
         PERFORM acs_permission__grant_permission(
                     v_aggregator_id,
                     p_creation_user,
@@ -89,14 +89,14 @@ declare
     p_aggregator_id      alias for $1;
     v_aggregator_name    na_aggregators.aggregator_name%TYPE;
 begin
-        select aggregator_name 
+        select aggregator_name
         into   v_aggregator_name
         from   na_aggregators
         where  aggregator_id = p_aggregator_id;
 
     return v_aggregator_name;
 
-end;' language 'plpgsql'; 
+end;' language 'plpgsql';
 
 
 ----------------
@@ -140,21 +140,21 @@ begin
         );
 
         insert into na_sources (
-                source_id, 
-                feed_url, 
-                link, 
-                title, 
-                description, 
-                last_scanned, 
+                source_id,
+                feed_url,
+                link,
+                title,
+                description,
+                last_scanned,
                 last_modified,
                 listed_p
         ) values (
                 v_source_id,
-                p_feed_url, 
-                p_link, 
-                p_title, 
+                p_feed_url,
+                p_link,
+                p_title,
                 p_description,
-                current_timestamp, 
+                current_timestamp,
                 p_last_modified,
                 p_listed_p
         );
@@ -179,22 +179,22 @@ declare
 begin
 
         delete from acs_permissions
-                   where object_id = p_source_id;
-	
-	delete from na_purges
-		where (top in (select item_id
-				from na_items
-				where source_id = p_source_id)
-		    or bottom in (select item_id
-		    		from na_items
-				where source_id = p_source_id));
+               where object_id = p_source_id;
+
+        delete from na_purges
+                where (top in (select item_id
+                        from na_items
+                        where source_id = p_source_id)
+                or bottom in (select item_id
+                        from na_items
+                        where source_id = p_source_id));
 
         delete from na_items
                 where source_id = p_source_id;
 
         delete from na_subscriptions
                 where source_id = p_source_id;
-	
+
         delete from na_sources
                    where source_id = p_source_id;
 
@@ -211,7 +211,7 @@ declare
     p_source_id      alias for $1;
     v_source_name    na_sources.title%TYPE;
 begin
-        select title 
+        select title
         into   v_source_name
         from   na_sources
         where  source_id = p_source_id;
@@ -254,23 +254,23 @@ begin
 
         insert into na_items (
            source_id,
-           link, 
+           link,
            guid,
            original_guid,
            permalink_p,
-           title, 
+           title,
            description,
            content_encoded,
            author,
-           pub_date, 
+           pub_date,
            creation_date
         ) values (
            p_source_id,
-           p_link, 
+           p_link,
            p_guid,
            p_original_guid,
            p_permalink_p,
-           p_title, 
+           p_title,
            p_description,
            p_content_encoded,
            p_author,
@@ -330,21 +330,21 @@ end;
 create or replace function na_weblog__new (
     integer,     -- weblog_id
     integer,     -- package_id
-    varchar,	 -- blog_type
+    varchar,     -- blog_type
     varchar,     -- weblog_name
     varchar,     -- base_url
     integer,     -- creation_user
     varchar      -- creation_ip
 ) returns integer as '
 declare
-    p_weblog_id               alias for $1;
-    p_package_id           alias for $2;
-    p_blog_type		alias for $3;
-    p_weblog_name                 alias for $4;
-    p_base_url           alias for $5;
-    p_creation_user        alias for $6;
-    p_creation_ip          alias for $7;
-    v_weblog_id          integer;
+    p_weblog_id             alias for $1;
+    p_package_id            alias for $2;
+    p_blog_type             alias for $3;
+    p_weblog_name           alias for $4;
+    p_base_url              alias for $5;
+    p_creation_user         alias for $6;
+    p_creation_ip           alias for $7;
+    v_weblog_id             integer;
 begin
     v_weblog_id := acs_object__new (
         p_weblog_id,
@@ -356,14 +356,14 @@ begin
     );
 
     insert into na_weblogs (
-      weblog_id, 
+      weblog_id,
       package_id,
       blog_type,
       weblog_name,
       base_url,
       user_id
     ) values (
-      v_weblog_id, 
+      v_weblog_id,
       p_package_id,
       p_blog_type,
       p_weblog_name,
@@ -371,7 +371,7 @@ begin
       p_creation_user
     );
 
-    return v_weblog_id;   
+    return v_weblog_id;
 end;
 ' language 'plpgsql';
 
@@ -387,4 +387,3 @@ begin
     return 0;
 end;
 ' language 'plpgsql';
-

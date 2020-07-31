@@ -21,7 +21,7 @@ drop function na_item__new (
     integer,      -- source_id
     varchar,      -- link
     varchar,      -- guid
-    varchar,      -- original_guid 
+    varchar,      -- original_guid
     boolean,      -- permalink_p
     varchar,      -- title
     varchar,       -- description
