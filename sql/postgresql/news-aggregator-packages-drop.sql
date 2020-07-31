@@ -52,12 +52,6 @@ drop function na_source__new(
     varchar       -- creation_ip
 );
 
-delete 
-from acs_permissions 
-where object_id in (select object_id
-                    from acs_objects
-                    where object_type = 'na_source');
-
 --drop na_aggregator functions
 drop function na_aggregator__name (
     integer     -- aggregator_id
@@ -76,9 +70,3 @@ drop function na_aggregator__new (
     integer,    -- creation_user
     varchar     -- creation_ip
 );
-
-delete 
-from acs_permissions 
-where object_id in (select object_id
-                    from acs_objects
-                    where object_type = 'na_aggregator');
