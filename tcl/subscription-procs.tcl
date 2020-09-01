@@ -16,22 +16,18 @@ ad_proc -public news_aggregator::subscription::new {
     Creates a new subscription to a source in an aggregator. If one
     already exists this proc would just skipt the new creation.
 } {
-    if {![db_string subscription_exists_p {
-        select exists (select 1 from na_subscriptions
-                       where aggregator_id = :aggregator_id
-                         and source_id = :source_id)
-    }]} {
-        db_dml insert_subscription {
-            insert into na_subscriptions (
-                aggregator_id,
-                source_id,
-                creation_date
-            ) values (
-                :aggregator_id,
-                :source_id,
-                current_timestamp
-            )
-        }
+    db_dml insert_subscription {
+        insert into na_subscriptions (
+            aggregator_id,
+            source_id,
+            creation_date
+        ) select :aggregator_id,
+                 :source_id,
+                 current_timestamp
+          from dual
+          where not exists (select 1 from na_subscriptions
+                            where aggregator_id = :aggregator_id
+                            and source_id = :source_id)
     }
 }
 
