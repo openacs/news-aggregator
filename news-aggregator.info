@@ -8,14 +8,14 @@
     <singleton-p>f</singleton-p>
     <auto-mount>na</auto-mount>
 
-    <version name="0.12d" url="http://openacs.org/repository/download/apm/news-aggregator-0.12d.apm">
+    <version name="0.13d" url="http://openacs.org/repository/download/apm/news-aggregator-0.13d.apm">
         <owner url="http://unicast.org/">Guan Yang</owner>
         <owner url="http://bcuni.net/">Simon Carstensen</owner>
         <summary>Read news sources from your website.</summary>
         <release-date>2004-06-01</release-date>
         <description format="text/plain">The news aggregator periodically reads a set of news sources, in one of several XML-based formats, finds the new bits, and displays them in reverse-chronological order on a single page.</description>
 
-        <provides url="news-aggregator" version="0.12d"/>
+        <provides url="news-aggregator" version="0.13d"/>
         <requires url="feed-parser" version="0.1d"/>
 
         <callbacks>
