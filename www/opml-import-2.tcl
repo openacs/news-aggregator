@@ -27,12 +27,12 @@ set page_title "OPML Import"
 set context [list $page_title]
 
 if { [catch {
-    array set f [ad_httpget -url $url]
-    if { $f(status) != 200 } {
+    set f [util::http::get -url $url]
+    if { [dict get $f status] ne "200" } {
         error "Could not fetch document via HTTP."
     }
 
-    array set opml [news_aggregator::opml::parse -xml $f(page)]
+    array set opml [news_aggregator::opml::parse -xml [dict get $f page]]
 
     if { $opml(status) eq "failure" } {
 	error "OPML parse error: $opml(errmsg)"
