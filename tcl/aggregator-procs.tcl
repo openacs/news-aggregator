@@ -154,7 +154,11 @@ ad_proc -private news_aggregator::aggregator::items_sql {
     if purge_p is true.
 } {
     if { $purge_p } {
-        set items_purges [db_map items_purges]
+        set items_purges {
+            and    ((i.item_id > coalesce(a.aggregator_bottom, 0)) or
+                    (i.item_id in (select item_id from na_saved_items
+                                   where aggregator_id = :aggregator_id)))
+        }
     } else {
         set items_purges ""
     }
@@ -162,7 +166,37 @@ ad_proc -private news_aggregator::aggregator::items_sql {
     set limit [parameter::get -package_id $package_id -parameter "number_of_items_shown"]
     set sql_limit [expr {$limit_multiple*$limit}]
 
-    set sql [db_map items]
+    set sql [subst -nocommands {
+	select s.source_id,
+               s.link,
+               s.description,
+               s.title,
+               to_char(i.creation_date, 'YYYY-MM-DD HH24:MI:SS') as last_scanned,
+               to_char(i.creation_date, 'YYYY-MM-DD HH24') as sort_date,
+	       s.feed_url,
+	       i.item_id,
+               i.title as item_title,
+               i.link as item_link,
+               i.description as item_description,
+               i.content_encoded,
+               i.guid as item_guid,
+               i.original_guid as item_original_guid,
+               i.permalink_p as item_permalink_p,
+               i.author as item_author,
+               to_char(i.pub_date at time zone 'UTC', 'YYYY-MM-DD HH24:MI:SS') as item_pub_date,
+               s.last_modified
+        from   (
+                   na_aggregators a join
+                   na_subscriptions su on (a.aggregator_id = su.aggregator_id)
+               ) join
+               na_items i on (su.source_id = i.source_id)
+               join na_sources s on (i.source_id = s.source_id)
+	where  a.package_id = :package_id
+        and    a.aggregator_id = :aggregator_id
+            $items_purges
+	order  by i.item_id desc
+	fetch first $sql_limit rows only
+    }]
     return $sql
 }
 
@@ -228,7 +262,20 @@ ad_proc -public news_aggregator::aggregator::as_opml {
     set body_node [$doc createElement "body"]
     $doc_node appendChild $body_node
 
-    db_foreach subscriptions "" {
+    db_foreach subscriptions {
+	  select
+	  	feed_url,
+		link,
+		title,
+		description
+	  from
+	  	na_sources s,
+		na_subscriptions su
+	  where
+	  	s.source_id = su.source_id
+		and su.aggregator_id = :aggregator_id
+	  order by lower(title)
+    } {
         set node [$doc createElement "outline"]
         $node setAttribute text $title
         $node setAttribute description $description
@@ -442,7 +489,13 @@ ad_proc -public news_aggregator::aggregator::options {
 
     @author Simon Carstensen
 } {
-    return [db_list_of_lists select_aggregator_options {}]
+    return [db_list_of_lists select_aggregator_options {
+        select a.aggregator_name,
+               a.aggregator_id
+        from   na_aggregators a join
+               acs_objects o on (a.aggregator_id = o.object_id)
+        where  o.creation_user = :user_id
+    }]
 }
 
 # Local variables:
