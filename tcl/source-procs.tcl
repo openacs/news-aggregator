@@ -277,12 +277,11 @@ ad_proc -public news_aggregator::source::update_all {
         if { $source_count >= 1 } {
             if { !$all_sources_p } {
                 set limit [expr {max(1, int($source_count/4))}]
-                set limit_sql [db_map sources_limit]
             } else {
-                set limit_sql ""
+                set limit ""
             }
 
-            foreach source [db_list_of_lists sources [subst {
+            foreach source [db_list_of_lists sources {
                 select source_id,
                        feed_url,
                        last_modified
@@ -290,8 +289,8 @@ ad_proc -public news_aggregator::source::update_all {
                 where :all_sources_p or
                       last_scanned < (current_timestamp - interval '48 minutes')
              order by last_scanned asc
-                $limit_sql
-            }]] {
+                fetch first :limit rows only
+            }] {
                 lassign $source source_id feed_url last_modified
                 news_aggregator::source::update \
                         -source_id $source_id \

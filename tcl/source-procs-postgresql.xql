@@ -4,12 +4,6 @@
 
 <rdbms><type>postgresql</type><version>7.2</version></rdbms>
 
-<partialquery name="news_aggregator::source::update_all.sources_limit">
-    <querytext>
-	limit $limit
-    </querytext>
-</partialquery>
-
 <fullquery name="news_aggregator::source::new.add_source">
         <querytext>
             select na_source__new (
