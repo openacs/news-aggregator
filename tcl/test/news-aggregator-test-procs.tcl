@@ -6,6 +6,7 @@ ad_library {
 
 aa_register_case -cats {
     smoke
+    production_safe
 } -procs {
     util::http::get
     feed_parser::parse_feed
