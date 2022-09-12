@@ -12,6 +12,13 @@ ad_proc -public news_aggregator::check_link {
     {-domain:required}
     {-link:required}
 } {
+    Make sure a link belongs to the same domain.
+
+    @param domain a domain in the form http(s)://example.com/some/path
+    @param link a link in the form http(s)://notthesame.com/some/other/path
+
+    @return boolean
+
     @author Simon Carstensen
 } {
     regexp {(https?://[^/]+)+} $domain domain
