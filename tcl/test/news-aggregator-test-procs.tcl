@@ -10,6 +10,7 @@ aa_register_case -cats {
 } -procs {
     util::http::get
     feed_parser::parse_feed
+    feed_parser::test::parse_feed
 } source_feeds_ok {
     Check that all source feeds currently configured keep being valid
     and parseable
