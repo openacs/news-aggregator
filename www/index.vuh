@@ -1,9 +1,8 @@
 set path_info_list [split [ad_conn path_info] "/"]
 
-set aggregator_id [ns_set iget [rp_getform] aggregator_id]
-if {$aggregator_id eq ""} {
+if {[ns_queryget aggregator_id] eq ""} {
     set aggregator_id [lindex $path_info_list 0]
-    rp_form_put aggregator_id $aggregator_id
+    ns_set put [ns_getform] aggregator_id $aggregator_id
 }
 
 set url [expr {[llength $path_info_list] == 2 ?
