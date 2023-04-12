@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="news-aggregator" package_version="0.8d" locale="de_DE" charset="ISO-8859-1">
+
+  <msg key="aggregator_name_prefix">Nachrichten für</msg>
+  <msg key="archiv">Archiv</msg>
+  <msg key="archiv_title">Archiv für "%title%"</msg>
+  <msg key="button_cancel">Abbrechen</msg>
+  <msg key="button_delete">Löschen</msg>
+  <msg key="button_save">Speichern</msg>
+  <msg key="Category">Quelle</msg>
+  <msg key="delete_feed_question">Wollen Sie den RSS-Feed "%title%" wirklich löschen?</msg>
+  <msg key="feed_add">RSS-Feed hinzufügen</msg>
+  <msg key="feed_edit">RSS-Feed bearbeiten</msg>
+  <msg key="feed_delete">RSS-Feed löschen</msg>
+  <msg key="feed_creation_message_success">Der RSS-Feed "%title%" wurde erfolgreich hinzugefügt.</msg>
+  <msg key="feed_creation_message_error">Der RSS-Feed "%url%" ist fehlerhaft und kann nicht verarbeitet werden.</msg>
+  <msg key="feed_edit_message_success">Der RSS-Feed "%title%" wurde erfolgreich geändert.</msg>
+  <msg key="feed_deletion_message_success">Der RSS-Feed "%title%" wurde erfolgreich gelöscht.</msg>
+  <msg key="last_update">Letzte Aktualisierung</msg>
+  <msg key="Library">Bibliothek</msg>
+  <msg key="lt_Create_New_Aggregator">Aggregator hinzufügen</msg>
+  <msg key="lt_Manage_This_Aggregato">Aggregator bearbeiten</msg>
+  <msg key="Manage_Subscriptions">Nachrichten verwalten</msg>
+  <msg key="No_items">Keine Einträge vorhanden</msg>
+  <msg key="Off">Aus</msg>
+  <msg key="On">Ein</msg>
+  <msg key="Post">Post</msg>
+  <msg key="pretty_name">Nachrichten</msg>
+  <msg key="pub_date">Datum</msg>
+  <msg key="Purges">Purges:</msg>
+  <msg key="raquo">&amp;raquo;</msg>
+  <msg key="student_services">Studiensupport</msg>
+  <msg key="Subscriptions">Subskriptionen</msg>
+  <msg key="title">Titel</msg>
+  <msg key="university_library">Universitätsbibliothek</msg>
+  <msg key="updated_x_time_ago">, updated %items.diff%</msg>
+  <msg key="url">Feed URL</msg>
+</message_catalog>

@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <message_catalog package_key="news-aggregator" package_version="0.8d" locale="en_US" charset="ISO-8859-1">
 
+  <msg key="aggregator_name_prefix">News feeds for</msg>
+  <msg key="archiv">Archiv</msg>
+  <msg key="archiv_title">Archiv for "%title%"</msg>
+  <msg key="button_cancel">Cancel</msg>
+  <msg key="button_delete">Delete</msg>
+  <msg key="button_save">Save</msg>
+  <msg key="Category">Source</msg>
+  <msg key="delete_feed_question">Are you sure that you want to delete the news feed "%title%"?</msg>
+  <msg key="feed_add">Add news feed</msg>
+  <msg key="feed_edit">Edit news feed</msg>
+  <msg key="feed_delete">Delete news feed</msg>
+  <msg key="feed_creation_message_success">You have been successfully subscribed to "%title%".</msg>
+  <msg key="feed_creation_message_error">The feed url "%url%" has an error.</msg>
+  <msg key="feed_edit_message_success">You have successfully modified "%title%".</msg>
+  <msg key="feed_deletion_message_success">You have been successfully unsubscribed from "%title%".</msg>
+  <msg key="last_update">Last update</msg>
+  <msg key="Library">Library</msg>
   <msg key="lt_Create_New_Aggregator">Create New Aggregator</msg>
   <msg key="lt_Manage_This_Aggregato">Manage This Aggregator</msg>
-  <msg key="Manage_Subscriptions">Manage Subscriptions</msg>
-  <msg key="No_items">No items.</msg>
+  <msg key="Manage_Subscriptions">Manage news feeds</msg>
+  <msg key="No_items">No items</msg>
   <msg key="Off">Off</msg>
   <msg key="On">On</msg>
   <msg key="Post">Post</msg>
+  <msg key="pretty_name">News feeds</msg>
+  <msg key="pub_date">Date</msg>
   <msg key="Purges">Purges:</msg>
   <msg key="raquo">&amp;raquo;</msg>
-  <msg key="updated_x_time_ago">,
-                  updated %items.diff%</msg>
+  <msg key="student_services">Study Support</msg>
+  <msg key="Subscriptions">subscriptions</msg>
+  <msg key="title">Title</msg>
+  <msg key="university_library">University Library</msg>
+  <msg key="updated_x_time_ago">, updated %items.diff%</msg>
+  <msg key="url">Feed URL</msg>
 </message_catalog>
